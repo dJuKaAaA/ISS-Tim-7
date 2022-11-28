@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("api/v1/vehicle")
 public class VehicleController {
@@ -29,5 +31,11 @@ public class VehicleController {
         }
 
         return new ResponseEntity<>(vehicle, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Vehicle>> getAll() {
+        List<Vehicle> vehicles = vehicleService.findAll();
+        return new ResponseEntity<>(vehicles, HttpStatus.OK);
     }
 }
