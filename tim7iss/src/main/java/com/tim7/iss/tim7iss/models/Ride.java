@@ -1,16 +1,13 @@
 package com.tim7.iss.tim7iss.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -31,13 +28,25 @@ public class Ride {
     private boolean splitFare;
     private Enums.RideStatus status;
 
-//    private VehicleType vehicleType;
-//    private Driver driver;
+    @ManyToOne
+    @JoinColumn(name = "driver_id")
+    private Driver driver;
 
-//    private ArrayList<Message> messages;
-//    private ArrayList<Review> reviews;
-//    private ArrayList<Refusal> refusals;
-//    private ArrayList<Passenger> passengers;
-//    private ArrayList<Route> routes;
+//    private VehicleType vehicleType;
+
+    @OneToMany(mappedBy = "ride")
+    private Set<Message> messages = new HashSet<>();
+
+    @OneToMany(mappedBy = "ongoingRide")
+    private Set<Passenger> passengers = new HashSet<>();
+
+    @OneToMany(mappedBy = "ride")
+    private Set<Refusal> refusals = new HashSet<>();
+
+    @OneToMany(mappedBy = "ride")
+    private Set<Review> reviews = new HashSet<>();
+
+    @OneToMany(mappedBy = "ride")
+    private Set<Route> routes = new HashSet<>();
 
 }

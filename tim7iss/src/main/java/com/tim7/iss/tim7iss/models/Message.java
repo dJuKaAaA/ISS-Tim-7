@@ -1,16 +1,11 @@
 package com.tim7.iss.tim7iss.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Random;
 
 @Entity
 @Data
@@ -23,10 +18,20 @@ public class Message {
     private Long id;
 
     private LocalDateTime sentDate;
-//    private User sender;
-//    private User receiver;
-//    private Ride ride;
     private Enums.MessageType type;
     private String content;
+
+//    @ManyToOne
+//    @JoinColumn(name = "sender_id")
+//    private User sender;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "sender_id")
+//    private User receiver;
+
+    @ManyToOne
+    @JoinColumn(name = "ride_id")
+    private Ride ride;
+
 
 }

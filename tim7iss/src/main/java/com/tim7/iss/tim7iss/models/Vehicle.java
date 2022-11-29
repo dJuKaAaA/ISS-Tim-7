@@ -20,7 +20,12 @@ public class Vehicle {
     private int seatNumber;
     private boolean babyAllowed;
     private boolean petsAllowed;
-//    private Driver driver;
-//    private Location location;
+
+    @OneToOne(mappedBy = "vehicle")
+    private Driver driver;
+
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
 
 }

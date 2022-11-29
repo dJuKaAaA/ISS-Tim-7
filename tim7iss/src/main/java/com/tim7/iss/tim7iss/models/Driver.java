@@ -1,12 +1,15 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -16,9 +19,16 @@ public class Driver extends User {
 
     private String document;
     private boolean isActive;
-//    private Vehicle vehicle;
-//    private ArrayList<WorkHours> workHours;
-//    private ArrayList<Ride> rides;
-//    private ArrayList<Panic> panicList;
+
+    @OneToOne
+    @JoinColumn(name = "vehicle_id")
+    private Vehicle vehicle;
+
+    @OneToOne
+    @JoinColumn(name = "work_hours_id")
+    private WorkHours workHours;
+
+    @OneToMany(mappedBy = "driver")
+    private Set<Ride> rides = new HashSet<>();
 
 }

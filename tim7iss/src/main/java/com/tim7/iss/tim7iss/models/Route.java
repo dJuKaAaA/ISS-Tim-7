@@ -1,14 +1,10 @@
 package com.tim7.iss.tim7iss.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,8 +23,16 @@ public class Route {
     private LocalDateTime endDate;
     private LocalDateTime estimatedTime;
 
-//    private Ride ride;
-//    private Location startingPoint;
-//    private Location endPoint;
+    @ManyToOne
+    @JoinColumn(name = "ride_id")
+    private Ride ride;
+
+    @ManyToOne
+    @JoinColumn(name = "starting_point_id")
+    private Location startingPoint;
+
+    @ManyToOne
+    @JoinColumn(name = "end_point_id")
+    private Location endPoint;
 
 }

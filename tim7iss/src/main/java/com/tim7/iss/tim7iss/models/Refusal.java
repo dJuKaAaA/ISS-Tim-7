@@ -1,14 +1,10 @@
 package com.tim7.iss.tim7iss.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,8 +17,15 @@ public class Refusal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
+//    private User user;
+
     private String reason;
     private LocalDateTime time;
-//    private Ride ride;
+
+    @ManyToOne
+    @JoinColumn(name = "ride_id")
+    private Ride ride;
 
 }

@@ -1,14 +1,9 @@
 package com.tim7.iss.tim7iss.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 
 @Entity
 @Data
@@ -22,6 +17,13 @@ public class Review {
 
     private float rating;
     private String comment;
+
+    @ManyToOne
+    @JoinColumn(name = "ride_id")
+    private Ride ride;
+
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
 //    private User user;
 
 }

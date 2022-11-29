@@ -1,13 +1,10 @@
 package com.tim7.iss.tim7iss.models;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Set;
 
 @MappedSuperclass
 @Data
@@ -26,9 +23,16 @@ public abstract class User {
     private String password;
     private boolean isBlocked;
 
+//    @OneToMany(mappedBy = "sender")
 //    private Set<Message> sentMessages;
+//
+//    @OneToMany(mappedBy = "receiver")
 //    private Set<Message> receivedMessages;
-//    private Set<Refusal> refusals;
-//    private Set<Review> reviews;
+
+//    @OneToMany(mappedBy = "user")
+//    private Set<Refusal> refusals = new HashSet<>();
+//
+//    @OneToMany(mappedBy = "user")
+//    private Set<Review> reviews = new HashSet<>();
 
 }

@@ -1,14 +1,10 @@
 package com.tim7.iss.tim7iss.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,7 +19,13 @@ public class Panic {
 
     private LocalDateTime time;
     private String reason;
-//    private Ride ride;
-//    private Passenger passenger;
+
+    @OneToOne
+    @JoinColumn(name = "ride_id")
+    private Ride ride;
+
+//    @OneToOne
+//    @JoinColumn(name = "user_id")
+//    private User user;
 
 }

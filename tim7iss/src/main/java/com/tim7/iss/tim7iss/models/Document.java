@@ -20,6 +20,5 @@ public class Document {
 
     private String name;
     private String picturePath;
-    private String type;  // TODO: Needs to be an enum
 
 }
