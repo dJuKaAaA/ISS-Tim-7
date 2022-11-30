@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class Notification {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne

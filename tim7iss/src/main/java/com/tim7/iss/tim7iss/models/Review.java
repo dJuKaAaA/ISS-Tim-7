@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class Review {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private float rating;
