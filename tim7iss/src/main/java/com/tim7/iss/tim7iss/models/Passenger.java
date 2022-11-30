@@ -1,6 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
-import RequestDTOs.PassengerRequestDTO;
+import com.tim7.iss.tim7iss.RequestDTOs.PassengerRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

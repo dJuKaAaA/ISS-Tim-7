@@ -1,4 +1,4 @@
-package ResponseDTOs;
+package com.tim7.iss.tim7iss.ResponseDTOs;
 
 import com.tim7.iss.tim7iss.models.Passenger;
 

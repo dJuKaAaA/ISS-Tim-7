@@ -1,4 +1,4 @@
-package RequestDTOs;
+package com.tim7.iss.tim7iss.RequestDTOs;
 
 import jakarta.persistence.Entity;
 import jdk.jfr.Enabled;
