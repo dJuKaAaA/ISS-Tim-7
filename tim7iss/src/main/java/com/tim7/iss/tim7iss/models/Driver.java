@@ -1,9 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +15,6 @@ import java.util.Set;
 public class Driver extends User {
 
     private String document;
-    private boolean isActive;
 
     @OneToOne
     @JoinColumn(name = "vehicle_id")

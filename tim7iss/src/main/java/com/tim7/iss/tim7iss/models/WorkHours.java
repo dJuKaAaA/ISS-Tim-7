@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class WorkHours {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne(mappedBy = "workHours")

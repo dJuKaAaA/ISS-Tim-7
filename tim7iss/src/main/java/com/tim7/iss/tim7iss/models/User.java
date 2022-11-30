@@ -1,20 +1,24 @@
 package com.tim7.iss.tim7iss.models;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@MappedSuperclass
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String firstName;
     private String lastName;
     private String profilePicture;
     private String phoneNumber;
@@ -22,13 +26,14 @@ public abstract class User {
     private String address;
     private String password;
     private boolean isBlocked;
+    private boolean isActive;
 
 //    @OneToMany(mappedBy = "sender")
-//    private Set<Message> sentMessages;
+//    private Set<Message> sentMessages = new HashSet<>();
 //
 //    @OneToMany(mappedBy = "receiver")
-//    private Set<Message> receivedMessages;
-
+//    private Set<Message> receivedMessages = new HashSet<>();
+//
 //    @OneToMany(mappedBy = "user")
 //    private Set<Refusal> refusals = new HashSet<>();
 //

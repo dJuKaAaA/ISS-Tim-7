@@ -14,8 +14,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class Passenger extends User {
 
-    private String forDelete;  // TODO: Delete later
-
     @ManyToOne
     @JoinColumn(name = "ongoing_ride_id")
     private Ride ongoingRide;

@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class Message {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime sentDate;
@@ -26,7 +25,7 @@ public class Message {
 //    private User sender;
 //
 //    @ManyToOne
-//    @JoinColumn(name = "sender_id")
+//    @JoinColumn(name = "receiver_id")
 //    private User receiver;
 
     @ManyToOne

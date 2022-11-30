@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class Route {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private int distance;

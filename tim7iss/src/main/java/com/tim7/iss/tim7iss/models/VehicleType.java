@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 public class VehicleType {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private int pricePerKm;

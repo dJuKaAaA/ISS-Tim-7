@@ -15,11 +15,10 @@ import lombok.NoArgsConstructor;
 public class Location {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-    private float x;
-    private float y;
+    private double x;
+    private double y;
 
 }

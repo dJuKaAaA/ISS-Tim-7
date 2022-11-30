@@ -16,7 +16,6 @@ import java.util.Set;
 public class Ride {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private int price;
@@ -32,7 +31,9 @@ public class Ride {
     @JoinColumn(name = "driver_id")
     private Driver driver;
 
-//    private VehicleType vehicleType;
+    @ManyToOne
+    @JoinColumn(name = "vehicle_type_id")
+    private VehicleType vehicleType;
 
     @OneToMany(mappedBy = "ride")
     private Set<Message> messages = new HashSet<>();

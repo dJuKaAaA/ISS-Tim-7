@@ -14,15 +14,14 @@ import java.time.LocalDateTime;
 public class Refusal {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 //    @ManyToOne
 //    @JoinColumn(name = "user_id")
 //    private User user;
-
-    private String reason;
-    private LocalDateTime time;
+//
+//    private String reason;
+//    private LocalDateTime time;
 
     @ManyToOne
     @JoinColumn(name = "ride_id")
