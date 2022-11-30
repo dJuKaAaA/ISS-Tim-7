@@ -22,4 +22,8 @@ public class PassengerService {
     public List<Passenger> findAll() {
         return passengerRepository.findAll();
     }
+
+    public Passenger findById(Long id) {
+        return passengerRepository.findById(id).orElse(null);
+    }
 }
