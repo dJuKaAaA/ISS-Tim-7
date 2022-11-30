@@ -11,8 +11,6 @@ import java.util.Set;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public abstract class User {
 
     @Id
@@ -34,7 +32,7 @@ public abstract class User {
     @ManyToMany
     @JoinTable(
             name = "receivers",
-            joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "message_id", referencedColumnName = "id")
     )
     private Set<Message> receivedMessages = new HashSet<>();
