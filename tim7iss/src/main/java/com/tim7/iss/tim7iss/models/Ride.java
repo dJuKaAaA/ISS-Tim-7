@@ -28,17 +28,17 @@ public class Ride {
     private Enums.RideStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "driver_id")
+    @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
     @ManyToOne
-    @JoinColumn(name = "vehicle_type_id")
+    @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id")
     private VehicleType vehicleType;
 
     @OneToMany(mappedBy = "ride")
     private Set<Message> messages = new HashSet<>();
 
-    @OneToMany(mappedBy = "ongoingRide")
+    @ManyToMany(mappedBy = "ongoingRide")
     private Set<Passenger> passengers = new HashSet<>();
 
     @OneToMany(mappedBy = "ride")

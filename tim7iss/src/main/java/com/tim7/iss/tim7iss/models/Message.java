@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Data
@@ -20,16 +21,15 @@ public class Message {
     private Enums.MessageType type;
     private String content;
 
-//    @ManyToOne
-//    @JoinColumn(name = "sender_id")
-//    private User sender;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "receiver_id")
-//    private User receiver;
+    @ManyToOne
+    @JoinColumn(name = "sender_id", referencedColumnName = "id")
+    private User sender;
+
+    @ManyToMany(mappedBy = "receivedMessages")
+    private Set<User> receiver;
 
     @ManyToOne
-    @JoinColumn(name = "ride_id")
+    @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 
 

@@ -24,7 +24,7 @@ public class Vehicle {
     private Driver driver;
 
     @ManyToOne
-    @JoinColumn(name = "location_id")
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 
 }

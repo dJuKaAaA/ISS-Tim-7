@@ -18,11 +18,11 @@ public class Review {
     private String comment;
 
     @ManyToOne
-    @JoinColumn(name = "ride_id")
+    @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
 }

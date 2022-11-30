@@ -19,8 +19,8 @@ public class UserActivation {
     private LocalDateTime creationDate;
     private LocalDateTime expirationDate;
 
-//    @OneToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
 }

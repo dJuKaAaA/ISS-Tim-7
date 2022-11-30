@@ -16,15 +16,15 @@ public class Refusal {
     @Id
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
-//
-//    private String reason;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    private String reason;
 //    private LocalDateTime time;
 
     @ManyToOne
-    @JoinColumn(name = "ride_id")
+    @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 
 }

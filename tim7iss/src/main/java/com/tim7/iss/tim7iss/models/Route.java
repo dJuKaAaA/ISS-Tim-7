@@ -23,15 +23,15 @@ public class Route {
     private LocalDateTime estimatedTime;
 
     @ManyToOne
-    @JoinColumn(name = "ride_id")
+    @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 
     @ManyToOne
-    @JoinColumn(name = "starting_point_id")
+    @JoinColumn(name = "starting_point_id", referencedColumnName = "id")
     private Location startingPoint;
 
     @ManyToOne
-    @JoinColumn(name = "end_point_id")
+    @JoinColumn(name = "end_point_id", referencedColumnName = "id")
     private Location endPoint;
 
 }

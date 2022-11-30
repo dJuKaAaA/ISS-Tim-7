@@ -17,11 +17,11 @@ public class Driver extends User {
     private String document;
 
     @OneToOne
-    @JoinColumn(name = "vehicle_id")
+    @JoinColumn(name = "vehicle_id", referencedColumnName = "id")
     private Vehicle vehicle;
 
     @OneToOne
-    @JoinColumn(name = "work_hours_id")
+    @JoinColumn(name = "work_hours_id", referencedColumnName = "id")
     private WorkHours workHours;
 
     @OneToMany(mappedBy = "driver")

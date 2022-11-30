@@ -15,7 +15,7 @@ import java.util.Set;
 public class Passenger extends User {
 
     @ManyToOne
-    @JoinColumn(name = "ongoing_ride_id")
+    @JoinColumn(name = "ongoing_ride_id", referencedColumnName = "id")
     private Ride ongoingRide;
 
     @ManyToMany

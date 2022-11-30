@@ -14,12 +14,12 @@ public class Notification {
     @Id
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
     @OneToOne
-    @JoinColumn(name = "message_id")
+    @JoinColumn(name = "message_id", referencedColumnName = "id")
     private Message message;
 
 }

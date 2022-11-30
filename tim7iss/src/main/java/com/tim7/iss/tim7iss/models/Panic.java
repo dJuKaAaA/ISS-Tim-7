@@ -19,12 +19,12 @@ public class Panic {
     private LocalDateTime time;
     private String reason;
 
-    @OneToOne
-    @JoinColumn(name = "ride_id")
+    @ManyToOne
+    @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 
-//    @OneToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
 }
