@@ -1,7 +1,10 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.tim7.iss.tim7iss.DTOs.PassengerDTO;
+import RequestDTOs.PassengerRequestDTO;
+import ResponseDTOs.PassengerResponseDTO;
 import com.tim7.iss.tim7iss.models.Passenger;
+import com.tim7.iss.tim7iss.services.PassengerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,9 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/passenger")
 public class PassengerController {
+    @Autowired
+    PassengerService passengerService;
     @PostMapping
-    public ResponseEntity<PassengerDTO> save(@RequestBody Passenger passenger){
-        PassengerDTO passengerDTO = new PassengerDTO(passenger);
+    public ResponseEntity<PassengerResponseDTO> save(@RequestBody PassengerRequestDTO passengerRequestDTO){
+        Passenger passenger = new Passenger(passengerRequestDTO);
+        passengerService.save(passenger);
+        PassengerResponseDTO passengerDTO = new PassengerResponseDTO(passenger);
         return new ResponseEntity<>(passengerDTO, HttpStatus.OK);
     }
 }

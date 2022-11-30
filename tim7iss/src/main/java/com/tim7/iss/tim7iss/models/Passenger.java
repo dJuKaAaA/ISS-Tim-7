@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
+import RequestDTOs.PassengerRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,4 +35,13 @@ public class Passenger extends User {
     )
     private Set<Route> favouriteRoutes = new HashSet<>();
 
+    public Passenger(PassengerRequestDTO passengerRequestDTO) {
+        this.setFirstName(passengerRequestDTO.name);
+        this.setLastName(passengerRequestDTO.surname);
+        this.setProfilePicture(passengerRequestDTO.profilePicture);
+        this.setPhoneNumber(passengerRequestDTO.telephoneNumber);
+        this.setEmailAddress(passengerRequestDTO.email);
+        this.setAddress(passengerRequestDTO.address);
+        this.setPassword(passengerRequestDTO.password);
+    }
 }

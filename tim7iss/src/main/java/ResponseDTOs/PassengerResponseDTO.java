@@ -1,12 +1,12 @@
-package com.tim7.iss.tim7iss.DTOs;
+package ResponseDTOs;
 
 import com.tim7.iss.tim7iss.models.Passenger;
 
-public class PassengerDTO {
-    Long id;
-    String name,surname,profilePicture,telephoneNumber,email,adress;
+public class PassengerResponseDTO {
+    public Long id;
+    public String name,surname,profilePicture,telephoneNumber,email,adress;
 
-    public PassengerDTO(Passenger passenger) {
+    public PassengerResponseDTO(Passenger passenger) {
         this.id = passenger.getId();
         this.name = passenger.getFirstName();
         this.surname = passenger.getLastName();
