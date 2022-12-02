@@ -26,8 +26,9 @@ public class Message {
     @JoinColumn(name = "sender_id", referencedColumnName = "id")
     private User sender;
 
-    @ManyToMany(mappedBy = "receivedMessages")
-    private Set<User> receiver;
+    @ManyToOne
+    @JoinColumn(name = "receiver_id", referencedColumnName = "id")
+    private User receiver;
 
     @ManyToOne
     @JoinColumn(name = "ride_id", referencedColumnName = "id")

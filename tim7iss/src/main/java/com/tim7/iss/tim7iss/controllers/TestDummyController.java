@@ -40,7 +40,12 @@ public class TestDummyController {
         vehicleService.save(new Vehicle( "Neki tamo model 4", "Redzistrejsn plejt 4", 4, false, true, null, location));
         vehicleService.save(new Vehicle( "Neki tamo model 5", "Redzistrejsn plejt 5", 5, false, true, null, location));
         passengerService.save(new Passenger());
-        driverService.saveDriver(new Driver());
+        driverService.save(new Driver());
+
+        // getting dummy data for drivers
+        for (int i = 0; i < 10; ++i) {
+            driverService.save(new Driver());
+        }
     }
 
 }

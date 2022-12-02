@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.DTOs.DriverDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
