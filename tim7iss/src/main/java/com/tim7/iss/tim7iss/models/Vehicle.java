@@ -21,7 +21,8 @@ public class Vehicle {
     private boolean babyAllowed;
     private boolean petsAllowed;
 
-    @OneToOne(mappedBy = "vehicle")
+    @OneToOne
+    @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
     @ManyToOne

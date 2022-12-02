@@ -15,11 +15,10 @@ import java.util.Set;
 @AllArgsConstructor
 public class Driver extends User {
 
-    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private Set<Document> documents;
 
-    @OneToOne
-    @JoinColumn(name = "vehicle_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "driver", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private Vehicle vehicle;
 
     @OneToOne
