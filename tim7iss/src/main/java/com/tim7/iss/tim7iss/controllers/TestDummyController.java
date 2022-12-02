@@ -1,13 +1,7 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.tim7.iss.tim7iss.models.Driver;
-import com.tim7.iss.tim7iss.models.Location;
-import com.tim7.iss.tim7iss.models.Passenger;
-import com.tim7.iss.tim7iss.models.Vehicle;
-import com.tim7.iss.tim7iss.services.DriverService;
-import com.tim7.iss.tim7iss.services.LocationService;
-import com.tim7.iss.tim7iss.services.PassengerService;
-import com.tim7.iss.tim7iss.services.VehicleService;
+import com.tim7.iss.tim7iss.models.*;
+import com.tim7.iss.tim7iss.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +23,9 @@ public class TestDummyController {
     @Autowired
     private DriverService driverService;
 
+    @Autowired
+    private DocumentService documentService;
+
     @GetMapping
     public void getDummyTestData() {
         Location location = new Location( "Neka tamo lokacija", 1.5, 1.5);
@@ -39,13 +36,15 @@ public class TestDummyController {
         vehicleService.save(new Vehicle( "Neki tamo model 3", "Redzistrejsn plejt 3", 3, false, true, null, location));
         vehicleService.save(new Vehicle( "Neki tamo model 4", "Redzistrejsn plejt 4", 4, false, true, null, location));
         vehicleService.save(new Vehicle( "Neki tamo model 5", "Redzistrejsn plejt 5", 5, false, true, null, location));
-        passengerService.save(new Passenger());
-        driverService.save(new Driver());
 
         // getting dummy data for drivers
-        for (int i = 0; i < 10; ++i) {
-            driverService.save(new Driver());
-        }
+//        for (int i = 0; i < 10; ++i) {
+//            driverService.save(new Driver());
+//        }
+        Driver driverWithId1 = driverService.getById(1L);
+        documentService.save(new Document(1L, "saobracajna", "", driverWithId1));
+        documentService.save(new Document(2L, "vozacka", "", driverWithId1));
+        documentService.save(new Document(3L, "licna", "", driverWithId1));
     }
 
 }

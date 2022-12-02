@@ -15,7 +15,8 @@ import java.util.Set;
 @AllArgsConstructor
 public class Driver extends User {
 
-    private String document;
+    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
+    private Set<Document> documents;
 
     @OneToOne
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id")
