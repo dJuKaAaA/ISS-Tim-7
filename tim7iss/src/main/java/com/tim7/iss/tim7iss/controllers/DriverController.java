@@ -124,4 +124,16 @@ public class DriverController {
         return new ResponseEntity<>(new VehicleDTO(vehicle), HttpStatus.OK);
     }
 
+    @PutMapping("{id}/vehicle")
+    public ResponseEntity<VehicleDTO> changeVehicle(@PathVariable Long id, @RequestBody Vehicle vehicle) {
+        Driver driver = driverService.getById(id);
+        if (driver == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        vehicle.setId(driver.getVehicle().getId());
+        vehicle.setDriver(driver);
+        vehicleService.save(vehicle);
+        return new ResponseEntity<>(new VehicleDTO(vehicle), HttpStatus.OK);
+    }
+
 }

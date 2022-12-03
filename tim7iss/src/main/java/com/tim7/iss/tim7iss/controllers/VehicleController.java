@@ -5,7 +5,6 @@ import com.tim7.iss.tim7iss.services.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public class VehicleController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<Vehicle> getById(@PathVariable Long id) {
 
-        Vehicle vehicle = vehicleService.findById(id);
+        Vehicle vehicle = vehicleService.getById(id);
 
         // course must exist
         if (vehicle == null) {
@@ -32,7 +31,7 @@ public class VehicleController {
 
     @GetMapping
     public ResponseEntity<List<Vehicle>> getAll() {
-        List<Vehicle> vehicles = vehicleService.findAll();
+        List<Vehicle> vehicles = vehicleService.getAll();
         return new ResponseEntity<>(vehicles, HttpStatus.OK);
     }
 }
