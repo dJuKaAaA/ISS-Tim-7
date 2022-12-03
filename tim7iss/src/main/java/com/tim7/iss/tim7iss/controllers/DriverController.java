@@ -104,12 +104,23 @@ public class DriverController {
     }
 
     @GetMapping("{id}/vehicle")
-    public ResponseEntity<VehicleDTO> getDriverVehicle(@PathVariable Long id) {
+    public ResponseEntity<VehicleDTO> getVehicle(@PathVariable Long id) {
         Driver driver = driverService.getById(id);
         if (driver == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
         Vehicle vehicle = vehicleService.getDriverVehicle(id);
+        return new ResponseEntity<>(new VehicleDTO(vehicle), HttpStatus.OK);
+    }
+
+    @PostMapping("{id}/vehicle")
+    public ResponseEntity<VehicleDTO> addVehicle(@PathVariable Long id, @RequestBody Vehicle vehicle) {
+        Driver driver = driverService.getById(id);
+        if (driver == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        vehicle.setDriver(driver);
+        vehicleService.save(vehicle);
         return new ResponseEntity<>(new VehicleDTO(vehicle), HttpStatus.OK);
     }
 
