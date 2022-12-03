@@ -19,10 +19,10 @@ public class Ride {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int price;
+    private double price;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private LocalDateTime estimatedTime;
+    private int estimatedTimeInMinutes;
     private boolean babyOnBoard;
     private boolean petOnBoard;
     private boolean splitFare;
@@ -42,8 +42,8 @@ public class Ride {
     @ManyToMany(mappedBy = "finishedRides")
     private Set<Passenger> passengers = new HashSet<>();
 
-    @OneToMany(mappedBy = "ride")
-    private Set<Refusal> refusals = new HashSet<>();
+    @OneToOne(mappedBy = "ride")
+    private Refusal refusal;
 
     @OneToMany(mappedBy = "ride")
     private Set<Review> reviews = new HashSet<>();

@@ -24,7 +24,7 @@ public class Refusal {
     private String reason;
 //    private LocalDateTime time;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 

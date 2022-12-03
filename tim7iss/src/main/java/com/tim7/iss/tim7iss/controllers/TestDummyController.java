@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.models.*;
+import com.tim7.iss.tim7iss.repositories.RideRepository;
 import com.tim7.iss.tim7iss.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +34,9 @@ public class TestDummyController {
     @Autowired
     private WorkHourService workHoursService;
 
+    @Autowired
+    private RideService rideService;
+
     @PostMapping
     public void getDummyTestData() {
         Location location = new Location( "Neka tamo lokacija", 1.5, 1.5);
@@ -57,6 +61,10 @@ public class TestDummyController {
         Set<Driver> drivers = new HashSet<>();
         drivers.add(driverWithId1);
         workHoursService.save(new WorkHour(1L, drivers, LocalDateTime.now(), LocalDateTime.now(), Enums.Day.MON));
+
+        Ride ride = new Ride();
+        ride.setDriver(driverWithId1);
+        rideService.save(ride);
     }
 
 }

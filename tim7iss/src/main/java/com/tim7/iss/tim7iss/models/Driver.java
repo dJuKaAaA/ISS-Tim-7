@@ -23,7 +23,7 @@ public class Driver extends User {
     @ManyToMany(mappedBy = "drivers", fetch = FetchType.LAZY)
     private Set<WorkHour> workHours = new HashSet<>();
 
-    @OneToMany(mappedBy = "driver")
+    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
     private Set<Ride> rides = new HashSet<>();
 
 }
