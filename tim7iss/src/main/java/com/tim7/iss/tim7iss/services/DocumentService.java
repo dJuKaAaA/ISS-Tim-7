@@ -1,7 +1,6 @@
 package com.tim7.iss.tim7iss.services;
 
 import com.tim7.iss.tim7iss.models.Document;
-import com.tim7.iss.tim7iss.models.Driver;
 import com.tim7.iss.tim7iss.repositories.DocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,7 @@ public class DocumentService {
     @Autowired
     private DocumentRepository documentRepository;
 
-    public Collection<Document> getDriverDocuments(Long driverId) {
+    public Collection<Document> getAllByDriverId(Long driverId) {
         return documentRepository.findByDriverId(driverId);
     }
 

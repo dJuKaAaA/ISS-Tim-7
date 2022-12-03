@@ -6,19 +6,26 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class WorkHours {
+public class WorkHour {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "workHours")
-    private Driver driver;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "driver_work_hours",
+            joinColumns = @JoinColumn(name = "driver_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "work_hour_id", referencedColumnName = "id")
+    )
+    private Set<Driver> drivers = new HashSet<>();
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Enums.Day weekDay;

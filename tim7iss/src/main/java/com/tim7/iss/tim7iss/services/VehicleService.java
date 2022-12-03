@@ -25,8 +25,8 @@ public class VehicleService {
         vehicleRepository.save(vehicle);
     }
 
-    public Vehicle getDriverVehicle(Long driverId) {
-        return vehicleRepository.findByDriverId(driverId);
+    public Vehicle getByDriverId(Long driverId) {
+        return vehicleRepository.findByDriverId(driverId).orElse(null);
     }
 
 }

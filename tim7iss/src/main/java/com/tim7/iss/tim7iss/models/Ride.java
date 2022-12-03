@@ -39,7 +39,7 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Message> messages = new HashSet<>();
 
-    @ManyToMany(mappedBy = "ongoingRide")
+    @ManyToMany(mappedBy = "finishedRides")
     private Set<Passenger> passengers = new HashSet<>();
 
     @OneToMany(mappedBy = "ride")

@@ -3,10 +3,13 @@ package com.tim7.iss.tim7iss.controllers;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @RestController
 @RequestMapping("test/dummy/data")
@@ -26,6 +29,9 @@ public class TestDummyController {
 
     @Autowired
     private DocumentService documentService;
+
+    @Autowired
+    private WorkHourService workHoursService;
 
     @PostMapping
     public void getDummyTestData() {
@@ -48,6 +54,9 @@ public class TestDummyController {
         documentService.save(new Document(3L, "licna", "", driverWithId1));
         vehicleService.save(new Vehicle( "Neki tamo model 6", "Redzistrejsn plejt 6", 5, false, true, driverWithId1, location));
 
+        Set<Driver> drivers = new HashSet<>();
+        drivers.add(driverWithId1);
+        workHoursService.save(new WorkHour(1L, drivers, LocalDateTime.now(), LocalDateTime.now(), Enums.Day.MON));
     }
 
 }
