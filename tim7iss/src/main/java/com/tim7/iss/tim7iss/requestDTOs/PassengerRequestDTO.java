@@ -1,7 +1,5 @@
-package com.tim7.iss.tim7iss.RequestDTOs;
+package com.tim7.iss.tim7iss.requestDTOs;
 
-import jakarta.persistence.Entity;
-import jdk.jfr.Enabled;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 

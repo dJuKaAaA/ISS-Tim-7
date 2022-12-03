@@ -15,8 +15,8 @@ public class PassengerService {
     @Autowired
     private PassengerRepository passengerRepository;
 
-    public void save(Passenger passnger) {
-        passengerRepository.save(passnger);
+    public void save(Passenger passenger) {
+        passengerRepository.save(passenger);
     }
 
     public List<Passenger> findAll() {
@@ -26,4 +26,7 @@ public class PassengerService {
     public Passenger findById(Long id) {
         return passengerRepository.findById(id).orElse(null);
     }
+
+    public boolean existsById(Long id) {return passengerRepository.existsById(id); }
+
 }

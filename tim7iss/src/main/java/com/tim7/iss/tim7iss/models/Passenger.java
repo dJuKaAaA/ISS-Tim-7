@@ -1,16 +1,15 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.RequestDTOs.PassengerRequestDTO;
+import com.tim7.iss.tim7iss.requestDTOs.PassengerRequestDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Passenger extends User {
@@ -19,19 +18,19 @@ public class Passenger extends User {
     @JoinColumn(name = "ongoing_ride_id", referencedColumnName = "id")
     private Ride ongoingRide;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "finished_rides",
-            joinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id")
+            joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id")
     )
     private Set<Ride> finishedRides = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
             name = "favourite_routes",
-            joinColumns = @JoinColumn(name = "route_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id")
+            joinColumns = @JoinColumn(name = "route_id"),
+            inverseJoinColumns = @JoinColumn(name = "passenger_id")
     )
     private Set<Route> favouriteRoutes = new HashSet<>();
 
@@ -44,4 +43,15 @@ public class Passenger extends User {
         this.setAddress(passengerRequestDTO.address);
         this.setPassword(passengerRequestDTO.password);
     }
+
+    public void setParameters(PassengerRequestDTO passengerRequestDTO){
+        this.setFirstName(passengerRequestDTO.name);
+        this.setLastName(passengerRequestDTO.surname);
+        this.setProfilePicture(passengerRequestDTO.profilePicture);
+        this.setPhoneNumber(passengerRequestDTO.telephoneNumber);
+        this.setEmailAddress(passengerRequestDTO.email);
+        this.setAddress(passengerRequestDTO.address);
+        this.setPassword(passengerRequestDTO.password);
+    }
+
 }

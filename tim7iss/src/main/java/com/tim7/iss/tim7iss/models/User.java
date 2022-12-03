@@ -1,9 +1,11 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +22,7 @@ public abstract class User {
     private String lastName;
     private String profilePicture;
     private String phoneNumber;
+    @Email
     private String emailAddress;
     private String address;
     private String password;

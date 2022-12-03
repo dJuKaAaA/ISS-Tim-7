@@ -39,7 +39,7 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Message> messages = new HashSet<>();
 
-    @ManyToMany(mappedBy = "ongoingRide")
+    @ManyToMany(mappedBy = "finishedRides")
     private Set<Passenger> passengers = new HashSet<>();
 
     @OneToMany(mappedBy = "ride")
@@ -48,7 +48,12 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Review> reviews = new HashSet<>();
 
-    @OneToMany(mappedBy = "ride")
-    private Set<Route> routes = new HashSet<>();
+    @OneToOne
+    @JoinColumn(name = "route_id", referencedColumnName = "id")
+    private Route route;
+
+    public Ride(Passenger passenger){
+        this.passengers.add(passenger);
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.tim7.iss.tim7iss.ResponseDTOs;
+package com.tim7.iss.tim7iss.responseDTOs;
 
 import lombok.Data;
 
