@@ -1,16 +1,17 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Data
+@Getter
+@Setter
+@Entity
+@Table(name = "app_users")
 public abstract class User {
 
     @Id
@@ -20,27 +21,26 @@ public abstract class User {
     private String lastName;
     private String profilePicture;
     private String phoneNumber;
+//    @Email
     private String emailAddress;
     private String address;
     private String password;
     private boolean isBlocked;
     private boolean isActive;
 
+    // TODO vrati eager
     @OneToMany(mappedBy = "sender")
     private Set<Message> sentMessages = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "receivers",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "message_id", referencedColumnName = "id")
-    )
+    // TODO staviti
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.PERSIST)
     private Set<Message> receivedMessages = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private Set<Refusal> refusals = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "passenger", cascade = CascadeType.PERSIST)
     private Set<Review> reviews = new HashSet<>();
+
 
 }

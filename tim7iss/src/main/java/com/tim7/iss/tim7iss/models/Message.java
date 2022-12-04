@@ -1,17 +1,16 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Message {
 
     @Id
@@ -26,12 +25,36 @@ public class Message {
     @JoinColumn(name = "sender_id", referencedColumnName = "id")
     private User sender;
 
-    @ManyToMany(mappedBy = "receivedMessages")
-    private Set<User> receiver;
+    @ManyToOne()
+    @JoinColumn(
+            name = "receiver_id",
+            referencedColumnName = "id"
+    )
+    private User receiver;
 
     @ManyToOne
     @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 
+    @Override
+    public String toString() {
+        String string = "";
+        string = "Message:" +
+                "id=" + id +
+                ", sentDate=" + sentDate +
+                ", type=" + type +
+                ", content='" + content;
+        if (ride != null) {
+            string = string + ", sender=" + sender.getId();
+        }
+        if (receiver != null) {
+            string = string + ", receiver=" + receiver.getId();
+        }
 
+        if (ride != null) {
+            string = string + ", ride=" + ride.getId();
+        }
+        return string;
+
+    }
 }

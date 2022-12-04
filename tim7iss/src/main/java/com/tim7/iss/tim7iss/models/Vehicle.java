@@ -1,12 +1,13 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Vehicle {
@@ -28,13 +29,9 @@ public class Vehicle {
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 
-    public Vehicle(String model, String registrationPlate, int seatNumber, boolean babyAllowed, boolean petsAllowed, Driver driver, Location location) {
-        this.model = model;
-        this.registrationPlate = registrationPlate;
-        this.seatNumber = seatNumber;
-        this.babyAllowed = babyAllowed;
-        this.petsAllowed = petsAllowed;
-        this.driver = driver;
-        this.location = location;
-    }
+    @OneToMany(mappedBy = "vehicle",cascade = CascadeType.ALL)
+    private Set<VehicleReview> reviews;
+
+
+
 }

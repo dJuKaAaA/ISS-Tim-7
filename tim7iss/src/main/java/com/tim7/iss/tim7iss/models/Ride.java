@@ -1,18 +1,18 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Ride {
 
     @Id
@@ -22,7 +22,7 @@ public class Ride {
     private int price;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private LocalDateTime estimatedTime;
+    private int estimatedTimeInMinutes;
     private boolean babyOnBoard;
     private boolean petOnBoard;
     private boolean splitFare;
@@ -39,16 +39,32 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Message> messages = new HashSet<>();
 
-    @ManyToMany(mappedBy = "ongoingRide")
+    // TODO izmeniti eager
+    @ManyToMany(mappedBy = "finishedRides")
     private Set<Passenger> passengers = new HashSet<>();
 
-    @OneToMany(mappedBy = "ride")
-    private Set<Refusal> refusals = new HashSet<>();
+    @OneToOne(mappedBy = "ride")
+    private Refusal refusal;
 
     @OneToMany(mappedBy = "ride")
     private Set<Review> reviews = new HashSet<>();
 
-    @OneToMany(mappedBy = "ride")
-    private Set<Route> routes = new HashSet<>();
+    // TODO izmeniti eager
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "route_id", referencedColumnName = "id")
+    private Route route;
 
+    @Override
+    public String toString() {
+        return "Ride{" +
+                "id=" + id +
+                ", price=" + price +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", estimatedTime=" + estimatedTimeInMinutes +
+                ", babyOnBoard=" + babyOnBoard +
+                ", petOnBoard=" + petOnBoard +
+                ", status=" + status +
+                '}';
+    }
 }

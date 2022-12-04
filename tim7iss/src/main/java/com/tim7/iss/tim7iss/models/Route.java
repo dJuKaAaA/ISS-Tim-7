@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -16,23 +17,18 @@ public class Route {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private int distance;
-    private int pricePerKm;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private LocalDateTime estimatedTime;
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "starting_point_id", referencedColumnName = "id")
     private Location startingPoint;
 
-    @ManyToOne
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "end_point_id", referencedColumnName = "id")
-    private Location endPoint;
+    private Set<Location> endPoints = new HashSet<>();
 
 }

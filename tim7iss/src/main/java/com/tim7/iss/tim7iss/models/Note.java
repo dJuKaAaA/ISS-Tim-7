@@ -1,30 +1,26 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Panic {
-
+@Data
+@Builder
+public class Note {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private LocalDateTime time;
-    private String reason;
-
-    @ManyToOne
-    @JoinColumn(name = "ride_id", referencedColumnName = "id")
-    private Ride ride;
+    private String message;
+    private LocalDateTime date;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-
 }
