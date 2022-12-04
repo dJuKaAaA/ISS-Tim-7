@@ -14,11 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class Passenger extends User {
 
-    @ManyToOne
-    @JoinColumn(name = "ongoing_ride_id", referencedColumnName = "id")
-    private Ride ongoingRide;
-
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "finished_rides",
             joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
@@ -29,8 +25,8 @@ public class Passenger extends User {
     @ManyToMany
     @JoinTable(
             name = "favourite_routes",
-            joinColumns = @JoinColumn(name = "route_id"),
-            inverseJoinColumns = @JoinColumn(name = "passenger_id")
+            joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "route_id", referencedColumnName = "id")
     )
     private Set<Route> favouriteRoutes = new HashSet<>();
 

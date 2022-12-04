@@ -2,17 +2,16 @@ package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name = "app_users")
 public abstract class User {
 
     @Id
@@ -32,12 +31,7 @@ public abstract class User {
     @OneToMany(mappedBy = "sender")
     private Set<Message> sentMessages = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "receivers",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "message_id", referencedColumnName = "id")
-    )
+    @OneToMany(mappedBy = "receiver")
     private Set<Message> receivedMessages = new HashSet<>();
 
     @OneToMany(mappedBy = "user")

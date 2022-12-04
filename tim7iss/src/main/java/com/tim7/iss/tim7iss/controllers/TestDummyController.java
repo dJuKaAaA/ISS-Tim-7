@@ -65,6 +65,11 @@ public class TestDummyController {
         p2.setFinishedRides(new HashSet<>(Arrays.asList(r1,r2,r3)));
         p3.setFinishedRides(new HashSet<>(Arrays.asList(r2,r3,r4)));
 
+//        ridesService.save(r1);
+//        ridesService.save(r2);
+//        ridesService.save(r3);
+//        ridesService.save(r4);
+
         passengerService.save(p);
         passengerService.save(p1);
         passengerService.save(p2);

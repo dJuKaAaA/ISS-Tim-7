@@ -26,4 +26,8 @@ public class RidesService {
     public List<Ride> findRideByPassengerId(Long id){
         return ridesRepository.findAll(id);
     }
+
+    public Ride findRideByDriverIdAndStatusEquals3(Long id){
+        return ridesRepository.findById(id).orElse(null);
+    }
 }

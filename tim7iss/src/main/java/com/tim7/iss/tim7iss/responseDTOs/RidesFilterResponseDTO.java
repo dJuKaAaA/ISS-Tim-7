@@ -4,6 +4,7 @@ import com.tim7.iss.tim7iss.models.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,11 +15,11 @@ public class RidesFilterResponseDTO {
     private int totalCost;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private LocalDateTime estimatedTimeInMinutes;
+    private Integer estimatedTimeInMinutes;
     private VehicleType vehicleType;
     private boolean babyTransport;
     private boolean petTransport;
-    private Set<Location> locations;
+    private List<Location> locations;
     private RideUserDTO driver;
     private Set<RideUserDTO> passengers;
 
@@ -27,11 +28,11 @@ public class RidesFilterResponseDTO {
         this.totalCost = ride.getPrice();
         this.startTime = ride.getStartDate();
         this.endTime = ride.getEndDate();
-        this.estimatedTimeInMinutes = ride.getEstimatedTime();
+        this.estimatedTimeInMinutes = ride.getEstimatedTimeInMinutes();
         this.vehicleType = ride.getVehicleType();
         this.babyTransport = ride.isBabyOnBoard();
         this.petTransport = ride.isPetOnBoard();
-        this.locations = new HashSet<>();
+        this.locations = new ArrayList<>();
         getLocations(ride.getRoute());
         this.driver = new RideUserDTO(ride.getDriver(), "DRIVER");
         this.passengers = new HashSet<>();

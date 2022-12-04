@@ -13,4 +13,6 @@ public class DriverService {
     public void saveDriver(Driver driver){
         driverRepository.save(driver);
     }
+
+    public Driver findById(Long id){ return driverRepository.findById(id).orElse(null); }
 }

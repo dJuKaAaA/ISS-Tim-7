@@ -1,16 +1,20 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.requestDTOs.LocationRequestDTO;
+import com.tim7.iss.tim7iss.requestDTOs.RideRequestDTO;
+import com.tim7.iss.tim7iss.responseDTOs.LocationResponseDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Ride {
@@ -22,7 +26,7 @@ public class Ride {
     private int price;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private LocalDateTime estimatedTime;
+    private Integer estimatedTimeInMinutes;
     private boolean babyOnBoard;
     private boolean petOnBoard;
     private boolean splitFare;
@@ -32,7 +36,7 @@ public class Ride {
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id")
     private VehicleType vehicleType;
 
@@ -42,13 +46,13 @@ public class Ride {
     @ManyToMany(mappedBy = "finishedRides")
     private Set<Passenger> passengers = new HashSet<>();
 
-    @OneToMany(mappedBy = "ride")
-    private Set<Refusal> refusals = new HashSet<>();
+    @OneToOne(mappedBy = "ride")
+    private Refusal refusal;
 
     @OneToMany(mappedBy = "ride")
     private Set<Review> reviews = new HashSet<>();
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "route_id", referencedColumnName = "id")
     private Route route;
 
@@ -56,4 +60,16 @@ public class Ride {
         this.passengers.add(passenger);
     }
 
+    public Ride(RideRequestDTO rideRequestDTO){
+        List<LocationResponseDTO>destinations = new ArrayList<>();
+        for(LocationRequestDTO locationDTO : rideRequestDTO.locations) {
+            destinations.add(locationDTO.destination);
+        }
+        this.route = new Route(rideRequestDTO.locations.get(0).departure,destinations);
+        this.vehicleType = new VehicleType();
+        this.vehicleType.setVehicleName(rideRequestDTO.vehicleType);
+        this.babyOnBoard = rideRequestDTO.babyTransport;
+        this.petOnBoard = rideRequestDTO.petTransport;
+    }
 }
+

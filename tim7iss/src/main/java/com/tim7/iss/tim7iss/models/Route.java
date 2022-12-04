@@ -1,16 +1,17 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.requestDTOs.LocationRequestDTO;
+import com.tim7.iss.tim7iss.responseDTOs.LocationResponseDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Route {
@@ -29,12 +30,18 @@ public class Route {
     @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "starting_point_id", referencedColumnName = "id")
     private Location startingPoint;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "end_point_id", referencedColumnName = "id")
-    private Set<Location> endPoints = new HashSet<>();
+    private List<Location> endPoints = new ArrayList<>();
 
+    public Route(LocationResponseDTO startingPoint, List<LocationResponseDTO> locations){
+        this.startingPoint = new Location(startingPoint);
+        for(LocationResponseDTO locationResponseDTO : locations) {
+            this.endPoints.add(new Location(locationResponseDTO));
+        }
+    }
 }

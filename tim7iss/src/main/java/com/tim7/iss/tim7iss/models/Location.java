@@ -1,15 +1,15 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.responseDTOs.LocationResponseDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Location {
@@ -26,5 +26,11 @@ public class Location {
         this.name = name;
         this.x = x;
         this.y = y;
+    }
+
+    public Location(LocationResponseDTO locationResponseDTO){
+        this.name = locationResponseDTO.getAddress();
+        this.y = locationResponseDTO.getLongitude();
+        this.x = locationResponseDTO.getLatitude();
     }
 }
