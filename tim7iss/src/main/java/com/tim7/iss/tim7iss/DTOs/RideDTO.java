@@ -1,9 +1,7 @@
 package com.tim7.iss.tim7iss.DTOs;
 
-import com.tim7.iss.tim7iss.models.Location;
 import com.tim7.iss.tim7iss.models.Refusal;
 import com.tim7.iss.tim7iss.models.Ride;
-import com.tim7.iss.tim7iss.models.Route;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +22,7 @@ public class RideDTO {
     private Refusal refusal;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private double totalCost;
+    private int totalCost;
     private DriverDTO driver;
     private Set<PassengerDTO> passengers = new HashSet<>();
     private int estimatedTimeInMinutes;
@@ -34,9 +32,15 @@ public class RideDTO {
 
     public RideDTO(Ride ride) {
         this.id = ride.getId();
-        for (Route route : ride.getRoutes()) {
-            this.locations.add(new LocationDTO(route.getEndPoint()));
-        }
+
+        // gets route from the ride, ride has a set of end points
+        // set doesn't have get method, so it is converted to a list (list has a get method)
+        // then using the size of the set the final endpoint is used for the location
+        if (ride.getRoute() != null)   // TODO: Delete later
+            this.locations.add(
+                    new LocationDTO(
+                            ride.getRoute().getEndPoints().stream().toList().get(ride.getRoute().getEndPoints().size() - 1))
+            );
         this.startTime = ride.getStartDate();
         this.endTime = ride.getEndDate();
         this.totalCost = ride.getPrice();

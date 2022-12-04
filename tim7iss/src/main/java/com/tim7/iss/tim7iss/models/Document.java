@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Document {
@@ -16,8 +17,12 @@ public class Document {
     private String name;
     private String picturePath;
 
+
     @ManyToOne
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
+//    @ManyToOne
+//    @JoinColumn(name = "driver_id", referencedColumnName = "id")
+//    private Driver driver;
 
 }

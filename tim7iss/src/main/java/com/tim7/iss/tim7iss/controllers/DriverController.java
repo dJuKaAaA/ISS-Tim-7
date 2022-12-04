@@ -2,16 +2,22 @@ package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.DTOs.*;
 import com.tim7.iss.tim7iss.models.*;
+import com.tim7.iss.tim7iss.responses.DriverWorkHoursResponse;
+import com.tim7.iss.tim7iss.responses.PaginatedDriversResponse;
 import com.tim7.iss.tim7iss.services.DocumentService;
 import com.tim7.iss.tim7iss.services.DriverService;
 import com.tim7.iss.tim7iss.services.VehicleService;
 import com.tim7.iss.tim7iss.services.WorkHourService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,16 +38,16 @@ public class DriverController {
     @Autowired
     private WorkHourService workHourService;
 
-    @GetMapping("")
-    public ResponseEntity<Collection<DriverDTO>> getAll() {
-        Collection<Driver> allDrivers = driverService.getAll();
+    @GetMapping
+    public ResponseEntity<PaginatedDriversResponse> getAll(Pageable pageable) {
+        Page<Driver> allDrivers = driverService.getAll(pageable);
         Collection<DriverDTO> driverDTOs = new ArrayList<>();
         allDrivers.forEach(driver -> driverDTOs.add(new DriverDTO(driver)));
-        return new ResponseEntity<>(driverDTOs, HttpStatus.OK);
+        return new ResponseEntity<>(new PaginatedDriversResponse(driverService.countAll(), driverDTOs), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DriverDTO> getById(@PathVariable Long id) throws RuntimeException {
+    public ResponseEntity<DriverDTO> getById(@PathVariable Long id) {
         Driver driver = driverService.getById(id);
         if (driver == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -52,10 +58,14 @@ public class DriverController {
         );
     }
 
-    @PostMapping("")
-    public ResponseEntity<DriverDTO> save(@RequestBody Driver driver) {
-        driverService.save(driver);
-        return new ResponseEntity<>(new DriverDTO(driver), HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<DriverDTO> save(@RequestBody Driver newDriver) {
+        Driver driver = driverService.getByEmailAddress(newDriver.getEmailAddress());
+        if (driver != null) {
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        }
+        driverService.save(newDriver);
+        return new ResponseEntity<>(new DriverDTO(newDriver), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -75,8 +85,8 @@ public class DriverController {
         if (driver == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-//        Collection<Document> driverDocuments = documentService.getAllByDriverId(id);
         Collection<Document> driverDocuments = driver.getDocuments();
+//        Collection<Document> driverDocuments = documentService.getAllByDriverId(id);  // alternative way
         List<DocumentDTO> documentDTOs = new ArrayList<>();
         driverDocuments.forEach(document -> documentDTOs.add(new DocumentDTO(document)));
         return new ResponseEntity<>(documentDTOs, HttpStatus.OK);
@@ -110,15 +120,24 @@ public class DriverController {
         if (driver == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-        Vehicle vehicle = vehicleService.getByDriverId(id);
+        Vehicle vehicle = driver.getVehicle();
+//        Vehicle vehicle = vehicleService.getByDriverId(id);  // alternative way
+        if (vehicle == null) {
+            return new ResponseEntity<>(new VehicleDTO(), HttpStatus.OK);
+        }
         return new ResponseEntity<>(new VehicleDTO(vehicle), HttpStatus.OK);
     }
 
     @PostMapping("{id}/vehicle")
     public ResponseEntity<VehicleDTO> addVehicle(@PathVariable Long id, @RequestBody Vehicle vehicle) {
+        System.err.println(id);
         Driver driver = driverService.getById(id);
         if (driver == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        if (driver.getVehicle() != null) {
+            driver.getVehicle().setDriver(null);
+            driverService.save(driver);
         }
         vehicle.setDriver(driver);
         vehicleService.save(vehicle);
@@ -138,7 +157,7 @@ public class DriverController {
     }
 
     @GetMapping("{id}/working-hours")
-    public ResponseEntity<Collection<WorkHourDTO>> getWorkHours(@PathVariable Long id) {
+    public ResponseEntity<DriverWorkHoursResponse> getWorkHours(@PathVariable Long id) {
         Driver driver = driverService.getById(id);
         if (driver == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -146,7 +165,7 @@ public class DriverController {
         Collection<WorkHour> workHours = driver.getWorkHours();
         List<WorkHourDTO> workHoursDTOs = new ArrayList<>();
         workHours.forEach(workHour -> workHoursDTOs.add(new WorkHourDTO(workHour)));
-        return new ResponseEntity<>(workHoursDTOs, HttpStatus.OK);
+        return new ResponseEntity<>(new DriverWorkHoursResponse(workHoursDTOs.size(), workHoursDTOs), HttpStatus.OK);
     }
 
 

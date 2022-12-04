@@ -1,25 +1,15 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Admin {
-
-    @Id
-    private Long id;
+public class Admin extends User {
 
     private String username;
-    private String password;
-    private String name;
-    private String profilePicture;
 
 }

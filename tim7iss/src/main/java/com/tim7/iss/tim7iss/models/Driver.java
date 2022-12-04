@@ -17,7 +17,7 @@ public class Driver extends User {
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
     private Set<Document> documents;
 
-    @OneToOne(mappedBy = "driver")
+    @OneToOne(mappedBy = "driver", fetch = FetchType.LAZY)
     private Vehicle vehicle;
 
     @ManyToMany(mappedBy = "drivers", fetch = FetchType.LAZY)

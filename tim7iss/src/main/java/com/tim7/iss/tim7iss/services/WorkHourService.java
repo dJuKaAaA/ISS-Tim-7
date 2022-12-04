@@ -15,5 +15,4 @@ public class WorkHourService {
         workHourRepository.save(workHour);
     }
 
-
 }

@@ -1,14 +1,15 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Route {
@@ -23,7 +24,7 @@ public class Route {
     private LocalDateTime endDate;
     private LocalDateTime estimatedTime;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 
@@ -31,8 +32,8 @@ public class Route {
     @JoinColumn(name = "starting_point_id", referencedColumnName = "id")
     private Location startingPoint;
 
-    @ManyToOne
+    @ManyToMany
     @JoinColumn(name = "end_point_id", referencedColumnName = "id")
-    private Location endPoint;
+    private Set<Location> endPoints = new HashSet<>();
 
 }

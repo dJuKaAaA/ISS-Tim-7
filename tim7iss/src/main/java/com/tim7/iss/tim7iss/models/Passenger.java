@@ -20,16 +20,16 @@ public class Passenger extends User {
     @ManyToMany
     @JoinTable(
             name = "finished_rides",
-            joinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id")
+            joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id")
     )
     private Set<Ride> finishedRides = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
             name = "favourite_routes",
-            joinColumns = @JoinColumn(name = "route_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id")
+            joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "route_id", referencedColumnName = "id")
     )
     private Set<Route> favouriteRoutes = new HashSet<>();
 
