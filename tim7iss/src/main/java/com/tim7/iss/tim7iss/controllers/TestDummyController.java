@@ -41,16 +41,22 @@ public class TestDummyController {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private VehicleTypeService vehicleTypeService;
     @GetMapping
     public void getDummyTestData() {
         Location location = new Location( "Neka tamo lokacija", 1.5, 1.5);
         locationService.save(location);
+
+        VehicleType vehicleType = new VehicleType(1L, 100,"Proba", Enums.VehicleName.STANDARD);
+        vehicleTypeService.save(vehicleType);
 
         vehicleService.save(new Vehicle( "Neki tamo model 1", "Redzistrejsn plejt 1", 1, false, true, null, location));
         vehicleService.save(new Vehicle( "Neki tamo model 2", "Redzistrejsn plejt 2", 2, false, true, null, location));
         vehicleService.save(new Vehicle( "Neki tamo model 3", "Redzistrejsn plejt 3", 3, false, true, null, location));
         vehicleService.save(new Vehicle( "Neki tamo model 4", "Redzistrejsn plejt 4", 4, false, true, null, location));
         vehicleService.save(new Vehicle( "Neki tamo model 5", "Redzistrejsn plejt 5", 5, false, true, null, location));
+
         Ride r1 = new Ride();
         Ride r2 = new Ride();
         Ride r3 = new Ride();
@@ -74,6 +80,7 @@ public class TestDummyController {
         passengerService.save(p1);
         passengerService.save(p2);
         passengerService.save(p3);
+
         driverService.saveDriver(new Driver());
         userActivationService.save(new UserActivation(1L, LocalDateTime.now(),LocalDateTime.of(2022, Month.DECEMBER,1,0,0,0),p));
     }

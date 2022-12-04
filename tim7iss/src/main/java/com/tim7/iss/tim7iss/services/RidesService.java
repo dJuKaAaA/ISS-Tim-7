@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.services;
 
+import com.tim7.iss.tim7iss.models.Enums;
 import com.tim7.iss.tim7iss.models.Ride;
 import com.tim7.iss.tim7iss.repositories.RidesRepository;
 import jakarta.transaction.Transactional;
@@ -27,7 +28,19 @@ public class RidesService {
         return ridesRepository.findAll(id);
     }
 
-    public Ride findRideByDriverIdAndStatusEquals3(Long id){
+    public Ride findByDriverIdAndStatus(Long id, Integer status){
+        return ridesRepository.findByDriverIdAndStatus(id, status);
+    }
+
+    public Ride findByPassengerIdAndStatus(Long id, Integer status){
+        return ridesRepository.findByPassengersIdAndStatus(id, status);
+    }
+
+    public Ride findByIdAndStatus(Long id, Integer status){
+        return ridesRepository.findByIdAndStatus(id, status);
+    }
+
+    public Ride findById(Long id){
         return ridesRepository.findById(id).orElse(null);
     }
 }

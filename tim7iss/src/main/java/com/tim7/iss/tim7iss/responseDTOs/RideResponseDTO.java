@@ -43,15 +43,24 @@ public class RideResponseDTO {
         this.endTime =  String.valueOf(ride.getEndDate());
         this.totalCost = ride.getPrice();
         this.estimatedTimeInMinutes = ride.getEstimatedTimeInMinutes();
-        this.vehicleType = ride.getVehicleType().getVehicleName();
+        if(ride.getVehicleType() == null)
+            this.vehicleType = null;
+        else
+            this.vehicleType = ride.getVehicleType().getVehicleName();
         this.babyTransport = ride.isBabyOnBoard();
         this.petTransport = ride.isPetOnBoard();
-        for(Location location : ride.getRoute().getEndPoints()){
-            this.locations.add(new LocationResponseDTO(location));
+        try {
+            for (Location location : ride.getRoute().getEndPoints()) {
+                this.locations.add(new LocationResponseDTO(location));
+            }
+        }catch (Exception ex){
         }
         this.status = ride.getStatus();
-        for(Passenger passenger : ride.getPassengers()){
-            this.passengers.add(new RideUserDTO(passenger, "PASSENGER"));
+        try {
+            for (Passenger passenger : ride.getPassengers()) {
+                this.passengers.add(new RideUserDTO(passenger, "PASSENGER"));
+            }
+        }catch (Exception ex){
         }
         this.driver = new RideUserDTO(ride.getDriver(), "DRIVER");
     }

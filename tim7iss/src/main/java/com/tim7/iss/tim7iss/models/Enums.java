@@ -21,6 +21,7 @@ public class Enums {
         REJECTED,
         ACTIVE,
         FINISHED,
+        CANCELED,
     }
 
     public enum VehicleName{
