@@ -2,18 +2,20 @@ package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.Ride;
-import com.tim7.iss.tim7iss.requestDTOs.PassengerRequestDTO;
-import com.tim7.iss.tim7iss.responseDTOs.PassengerResponseListDTO;
-import com.tim7.iss.tim7iss.responseDTOs.PassengerResponseDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerRequestDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerResponseListDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerResponseDTO;
 import com.tim7.iss.tim7iss.models.Passenger;
 import com.tim7.iss.tim7iss.models.UserActivation;
-import com.tim7.iss.tim7iss.responseDTOs.RidesFilterResponseDTO;
-import com.tim7.iss.tim7iss.responseDTOs.RidesFilterResponseListDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideResponseDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideResponseListDTO;
 import com.tim7.iss.tim7iss.services.PassengerService;
 import com.tim7.iss.tim7iss.services.RidesService;
 import com.tim7.iss.tim7iss.services.UserActivationService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,8 +43,8 @@ public class PassengerController{
     }
 
     @GetMapping
-    public ResponseEntity<PassengerResponseListDTO> load(){
-        List<Passenger> passengers = passengerService.findAll();
+    public ResponseEntity<PassengerResponseListDTO> load(Pageable page){
+        Page<Passenger> passengers = passengerService.findAll(page);
         PassengerResponseListDTO response = new PassengerResponseListDTO();
         for(Passenger passenger : passengers){
             response.results.add(new PassengerResponseDTO(passenger));
@@ -82,12 +84,12 @@ public class PassengerController{
     }
 
     @GetMapping("/{id}/ride")
-    public ResponseEntity<RidesFilterResponseListDTO> findRidesByPassengerId(@PathVariable Long id){
+    public ResponseEntity<RideResponseListDTO> findRidesByPassengerId(@PathVariable Long id, Pageable page){
 //        ridesService.findByFilter();
-        List<Ride> rides = ridesService.findRideByPassengerId(id);
-        RidesFilterResponseListDTO response = new RidesFilterResponseListDTO();
+        Page<Ride> rides = ridesService.findRideByPassengerId(id, page);
+        RideResponseListDTO response = new RideResponseListDTO();
         for(Ride ride : rides){
-            response.results.add(new RidesFilterResponseDTO(ride));
+            response.results.add(new RideResponseDTO(ride));
             response.totalCount += 1;
         }
         return new ResponseEntity<>(response, HttpStatus.OK);

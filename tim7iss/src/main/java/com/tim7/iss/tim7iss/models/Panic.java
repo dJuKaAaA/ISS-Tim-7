@@ -1,9 +1,8 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.requestDTOs.PanicReasonDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicReasonDTO;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 

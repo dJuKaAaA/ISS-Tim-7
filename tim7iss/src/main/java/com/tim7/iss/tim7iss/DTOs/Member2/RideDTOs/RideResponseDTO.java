@@ -1,8 +1,10 @@
-package com.tim7.iss.tim7iss.responseDTOs;
+package com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs;
 
+import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationResponseDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.RideUserDTO;
 import com.tim7.iss.tim7iss.models.*;
-import com.tim7.iss.tim7iss.requestDTOs.LocationRequestDTO;
-import com.tim7.iss.tim7iss.requestDTOs.RideRequestDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationRequestDTO;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,7 +12,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@NoArgsConstructor
 public class RideResponseDTO {
+
+    public Long id;
     public String startTime;
     public String endTime;
     public Integer totalCost;
@@ -21,7 +26,7 @@ public class RideResponseDTO {
     public Enums.VehicleName vehicleType;
     public Boolean babyTransport;
     public Boolean petTransport;
-    public List<LocationResponseDTO> locations = new ArrayList<>();
+    public List<LocationRequestDTO> locations = new ArrayList<>();
     public Enums.RideStatus status;
 
     public RideResponseDTO(RideRequestDTO ride){
@@ -32,13 +37,14 @@ public class RideResponseDTO {
         this.vehicleType = ride.vehicleType;
         this.babyTransport = ride.babyTransport;
         this.petTransport = ride.petTransport;
-        for(LocationRequestDTO locationDTO : ride.locations) {
-            this.locations.add(locationDTO.destination);
-        }
+        this.locations = ride.locations;
         this.status = Enums.RideStatus.PENDING;
+        this.passengers = ride.passengers;
+        this.driver = ride.driver;
     }
 
     public RideResponseDTO(Ride ride){
+        this.id = id;
         this.startTime = String.valueOf(ride.getStartDate());
         this.endTime =  String.valueOf(ride.getEndDate());
         this.totalCost = ride.getPrice();
@@ -50,24 +56,24 @@ public class RideResponseDTO {
         this.babyTransport = ride.isBabyOnBoard();
         this.petTransport = ride.isPetOnBoard();
         try {
-            for (Location location : ride.getRoute().getEndPoints()) {
-                this.locations.add(new LocationResponseDTO(location));
+            for (Route route : ride.getRoutes()) {
+                this.locations.add(new LocationRequestDTO(new LocationResponseDTO(route.getStartingPoint()),new LocationResponseDTO(route.getEndPoint())));
             }
         }catch (Exception ex){
         }
         this.status = ride.getStatus();
         try {
             for (Passenger passenger : ride.getPassengers()) {
-                this.passengers.add(new RideUserDTO(passenger, "PASSENGER"));
+                this.passengers.add(new RideUserDTO(passenger));
             }
         }catch (Exception ex){
         }
-        this.driver = new RideUserDTO(ride.getDriver(), "DRIVER");
+        this.driver = new RideUserDTO(ride.getDriver());
     }
 
     public void addPassengers(Set<Passenger>passengers){
         for(Passenger passenger : passengers){
-            this.passengers.add(new RideUserDTO(passenger,"PASSENGER"));
+            this.passengers.add(new RideUserDTO(passenger));
         }
     }
 }

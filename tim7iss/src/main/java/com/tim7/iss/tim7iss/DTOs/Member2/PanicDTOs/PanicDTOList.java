@@ -1,4 +1,4 @@
-package com.tim7.iss.tim7iss.responseDTOs;
+package com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs;
 
 import com.tim7.iss.tim7iss.models.Panic;
 
@@ -7,7 +7,7 @@ import java.util.List;
 
 public class PanicDTOList {
     public Integer totalCount;
-    public List<PanicDTOComplex> results;
+    public List<PanicDTO> results;
 
     public PanicDTOList(){
         totalCount = 0;
@@ -15,7 +15,7 @@ public class PanicDTOList {
     }
 
     public void addPanic(Panic panic) {
-        this.results.add(new PanicDTOComplex(panic));
+        this.results.add(new PanicDTO(panic));
         this.totalCount += 1;
     }
 }

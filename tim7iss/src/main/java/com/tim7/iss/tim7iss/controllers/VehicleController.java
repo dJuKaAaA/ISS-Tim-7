@@ -2,12 +2,11 @@ package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.models.Location;
 import com.tim7.iss.tim7iss.models.Vehicle;
-import com.tim7.iss.tim7iss.responseDTOs.LocationResponseDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationResponseDTO;
 import com.tim7.iss.tim7iss.services.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

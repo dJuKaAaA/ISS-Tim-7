@@ -1,13 +1,9 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.requestDTOs.LocationRequestDTO;
-import com.tim7.iss.tim7iss.responseDTOs.LocationResponseDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -34,14 +30,13 @@ public class Route {
     @JoinColumn(name = "starting_point_id", referencedColumnName = "id")
     private Location startingPoint;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "end_point_id", referencedColumnName = "id")
-    private List<Location> endPoints = new ArrayList<>();
+    private Location endPoint;
 
-    public Route(LocationResponseDTO startingPoint, List<LocationResponseDTO> locations){
-        this.startingPoint = new Location(startingPoint);
-        for(LocationResponseDTO locationResponseDTO : locations) {
-            this.endPoints.add(new Location(locationResponseDTO));
-        }
+
+    public Route(Location startingPoint, Location endPoint){
+        this.startingPoint = startingPoint;
+        this.endPoint = endPoint;
     }
 }

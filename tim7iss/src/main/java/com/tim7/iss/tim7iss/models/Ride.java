@@ -1,17 +1,12 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.requestDTOs.LocationRequestDTO;
-import com.tim7.iss.tim7iss.requestDTOs.RideRequestDTO;
-import com.tim7.iss.tim7iss.responseDTOs.LocationResponseDTO;
-import com.tim7.iss.tim7iss.services.VehicleTypeService;
+import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationRequestDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -54,20 +49,18 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Review> reviews = new HashSet<>();
 
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "route_id", referencedColumnName = "id")
-    private Route route;
+    private Set<Route> routes = new HashSet<>();
 
     public Ride(Passenger passenger){
         this.passengers.add(passenger);
     }
 
     public Ride(RideRequestDTO rideRequestDTO){
-        List<LocationResponseDTO>destinations = new ArrayList<>();
-        for(LocationRequestDTO locationDTO : rideRequestDTO.locations) {
-            destinations.add(locationDTO.destination);
+        for(LocationRequestDTO location : rideRequestDTO.locations){
+            this.routes.add(new Route(new Location(location.departure), new Location(location.destination)));
         }
-        this.route = new Route(rideRequestDTO.locations.get(0).departure,destinations);
 //        this.vehicleType = new VehicleType();
 //        this.vehicleType.setVehicleName(rideRequestDTO.vehicleType);
         this.babyOnBoard = rideRequestDTO.babyTransport;

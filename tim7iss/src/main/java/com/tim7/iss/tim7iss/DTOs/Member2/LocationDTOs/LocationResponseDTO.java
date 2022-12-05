@@ -1,4 +1,4 @@
-package com.tim7.iss.tim7iss.responseDTOs;
+package com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs;
 
 import com.tim7.iss.tim7iss.models.Location;
 import lombok.AllArgsConstructor;

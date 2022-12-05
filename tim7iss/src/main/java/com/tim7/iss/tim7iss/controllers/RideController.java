@@ -1,16 +1,14 @@
 package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.models.*;
-import com.tim7.iss.tim7iss.repositories.VehicleTypeRepository;
-import com.tim7.iss.tim7iss.requestDTOs.PanicReasonDTO;
-import com.tim7.iss.tim7iss.requestDTOs.RideRequestDTO;
-import com.tim7.iss.tim7iss.responseDTOs.ErrorDTO;
-import com.tim7.iss.tim7iss.responseDTOs.PanicDTO;
-import com.tim7.iss.tim7iss.responseDTOs.RideResponseDTO;
-import com.tim7.iss.tim7iss.responseDTOs.RideUserDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicReasonDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.ErrorDTO.ErrorDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideResponseDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.RideUserDTO;
 import com.tim7.iss.tim7iss.services.*;
 import jakarta.transaction.Transactional;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +36,8 @@ public class RideController {
     @PostMapping
     public ResponseEntity<RideResponseDTO>save(@RequestBody RideRequestDTO rideRequestDTO){
         RideResponseDTO response = new RideResponseDTO(rideRequestDTO);
-        savePassengersAndDrivers(rideRequestDTO, response);
+        Long id = savePassengersAndDrivers(rideRequestDTO, response);
+        response.id = id;
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -69,13 +68,17 @@ public class RideController {
         return new ResponseEntity<>(new RideResponseDTO(ride), HttpStatus.OK);
     }
 
+    //Voznja moze da se prekine samo ukoliko je stanje voznje pending ili accepted,
+    //Radi testiranja validacija stanja je zakomentarisana
     @PutMapping(value = "/{id}")
     public ResponseEntity<String>cancelRideById(@PathVariable Long id){
-        Ride ride = ridesService.findByIdAndStatus(id, Enums.RideStatus.PENDING.ordinal());
+        Ride ride = ridesService.findById(id);
+//        Ride ride = ridesService.findByIdAndStatus(id, Enums.RideStatus.PENDING.ordinal());
         if (ride == null){
-            ride = ridesService.findByIdAndStatus(id, Enums.RideStatus.ACCEPTED.ordinal());
-            if(ride == null)
-                return new ResponseEntity<>("Ride does not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Ride does not exist", HttpStatus.NOT_FOUND);
+//            ride = ridesService.findByIdAndStatus(id, Enums.RideStatus.ACCEPTED.ordinal());
+//            if(ride == null)
+//                return new ResponseEntity<>("Ride does not exist", HttpStatus.NOT_FOUND);
         }
         ride.setStatus(Enums.RideStatus.CANCELED);
         ridesService.save(ride);
@@ -119,33 +122,27 @@ public class RideController {
         if(ride == null){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-        ride.setStatus(Enums.RideStatus.CANCELED);
+        ride.setStatus(Enums.RideStatus.REJECTED);
         ridesService.save(ride);
         return new ResponseEntity<>(new RideResponseDTO(ride), HttpStatus.OK);
     }
 
-    public void savePassengersAndDrivers(RideRequestDTO rideRequestDTO, RideResponseDTO response){
+    public Long savePassengersAndDrivers(RideRequestDTO rideRequestDTO, RideResponseDTO response){
         Ride ride = new Ride(rideRequestDTO);
         ride.setVehicleType(vehicleTypeService.findById(1L));
-        Driver driver = null;
-        for(RideUserDTO rideUserDTO : rideRequestDTO.passengers){
-            if(rideUserDTO.getType().equals("PASSENGER")){
-                Passenger passenger = passengerService.findById(rideUserDTO.getId());
+        for(RideUserDTO passengerDTO : rideRequestDTO.passengers){
+                Passenger passenger = passengerService.findById(passengerDTO.getId());
                 if(passenger == null) {
                     continue;
                 }
                 passenger.getFinishedRides().add(ride);
-                response.passengers.add(new RideUserDTO(passenger, "PASSENGER"));
-            }
-            else{
-                driver = driverService.findById(rideUserDTO.getId());
-            }
         }
+        Driver driver = driverService.findById(rideRequestDTO.driver.getId());
         if(driver != null) {
             ride.setDriver(driver);
-            response.passengers.add(new RideUserDTO(driver, "DRIVER"));
         }
         ridesService.save(ride);
+        return ride.getId();
     }
 
 }

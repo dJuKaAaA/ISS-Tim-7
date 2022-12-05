@@ -1,8 +1,7 @@
 package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.models.Panic;
-import com.tim7.iss.tim7iss.responseDTOs.PanicDTOComplex;
-import com.tim7.iss.tim7iss.responseDTOs.PanicDTOList;
+import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicDTOList;
 import com.tim7.iss.tim7iss.services.PanicService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

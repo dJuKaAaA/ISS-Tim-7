@@ -28,6 +28,10 @@ public class RidesService {
         return ridesRepository.findAll(id);
     }
 
+    public Page<Ride> findRideByPassengerId(Long id, Pageable page){
+        return ridesRepository.findRideByPassengersId(id, page);
+    }
+
     public Ride findByDriverIdAndStatus(Long id, Integer status){
         return ridesRepository.findByDriverIdAndStatus(id, status);
     }

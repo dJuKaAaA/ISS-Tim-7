@@ -1,4 +1,4 @@
-package com.tim7.iss.tim7iss.responseDTOs;
+package com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs;
 
 import com.tim7.iss.tim7iss.models.Passenger;
 import lombok.Data;

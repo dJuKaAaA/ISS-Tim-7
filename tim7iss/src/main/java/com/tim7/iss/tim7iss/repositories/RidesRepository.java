@@ -22,4 +22,6 @@ public interface RidesRepository extends JpaRepository<Ride, Long> {
 
     @Query(value = "select * from ride where id = ?1 and status = ?2", nativeQuery = true)
     Ride findByIdAndStatus(Long id, Integer status);
+
+    Page<Ride> findRideByPassengersId(Long id, Pageable page);
 }

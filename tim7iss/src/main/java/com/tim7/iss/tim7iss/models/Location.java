@@ -1,6 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.responseDTOs.LocationResponseDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationResponseDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

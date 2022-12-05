@@ -6,8 +6,9 @@ import com.tim7.iss.tim7iss.models.Passenger;
 import com.tim7.iss.tim7iss.models.Vehicle;
 import com.tim7.iss.tim7iss.repositories.PassengerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -19,6 +20,9 @@ public class PassengerService {
         passengerRepository.save(passenger);
     }
 
+    public Page<Passenger> findAll(Pageable page) {
+        return passengerRepository.findAll(page);
+    }
     public List<Passenger> findAll() {
         return passengerRepository.findAll();
     }
