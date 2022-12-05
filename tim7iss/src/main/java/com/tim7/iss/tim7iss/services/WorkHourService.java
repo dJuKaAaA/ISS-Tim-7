@@ -16,7 +16,7 @@ public class WorkHourService {
     }
 
     public WorkHour getById(Long id) {
-        return workHourRepository.findById(id);
+        return workHourRepository.findById(id).orElse(null);
     }
 
 }

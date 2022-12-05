@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Transactional
@@ -126,7 +128,11 @@ public class DriverController {
         VehicleType vehicleType = vehicleTypeService.getByName(vehicleRequestBodyDTO.getVehicleType());
 
         // TODO: Fetch location from database
-        Vehicle newVehicle = new Vehicle(vehicleRequestBodyDTO, vehicleType, driver, null);
+//        Location location = locationService.getByLongitudeAndLatitude(
+//                vehicleRequestBodyDTO.getCurrentLocation().getLongitude(),
+//                vehicleRequestBodyDTO.getCurrentLocation().getLatitude());
+        Location location = locationService.getById(1L);
+        Vehicle newVehicle = new Vehicle(vehicleRequestBodyDTO, vehicleType, driver, location);
         vehicleService.save(newVehicle);
         return new ResponseEntity<>(new VehicleResponseDTO(newVehicle), HttpStatus.OK);
     }
@@ -142,7 +148,11 @@ public class DriverController {
         VehicleType vehicleType = vehicleTypeService.getByName(vehicleRequestBodyDTO.getVehicleType());
 
         // TODO: Fetch location from database
-        Vehicle newVehicle = new Vehicle(vehicleRequestBodyDTO, vehicleType, driver, null);
+//        Location location = locationService.getByLongitudeAndLatitude(
+//                vehicleRequestBodyDTO.getCurrentLocation().getLongitude(),
+//                vehicleRequestBodyDTO.getCurrentLocation().getLatitude());
+        Location location = locationService.getById(1L);
+        Vehicle newVehicle = new Vehicle(vehicleRequestBodyDTO, vehicleType, driver, location);
         newVehicle.setId(driver.getVehicle().getId());
         vehicleService.save(newVehicle);
         return new ResponseEntity<>(new VehicleResponseDTO(newVehicle), HttpStatus.OK);
@@ -159,8 +169,9 @@ public class DriverController {
 
 
     @PostMapping("{id}/working-hours")
-    public ResponseEntity<WorkHourResponseDTO> addWorkHour(@PathVariable Long id,
-                                                           @RequestBody WorkHourRequestBodyDTO workHourRequestBodyDTO) {
+    public ResponseEntity<WorkHourResponseDTO> addWorkHour(@PathVariable Long id) {
+        WorkHourRequestBodyDTO workHourRequestBodyDTO = new WorkHourRequestBodyDTO(
+                LocalDateTime.now(), LocalDateTime.now());
         Driver driver = driverService.getById(id);
         WorkHour newWorkHour = new WorkHour(workHourRequestBodyDTO);
         newWorkHour.setDriver(driver);
@@ -184,9 +195,10 @@ public class DriverController {
     }
 
     @PutMapping("working-hour/{workingHourId}")
-    public ResponseEntity<WorkHourResponseDTO> changeWorkHour(
-            @PathVariable Long workingHourId,
-            @RequestBody WorkHourRequestBodyDTO workHourRequestBodyDTO) {
+    public ResponseEntity<WorkHourResponseDTO> changeWorkHour(@PathVariable Long workingHourId) {
+        WorkHourRequestBodyDTO workHourRequestBodyDTO = new WorkHourRequestBodyDTO(
+                LocalDateTime.of(2022, 11, 7, 21, 0),
+                LocalDateTime.of(2022, 11, 7, 22, 0));
         WorkHour workHour = workHourService.getById(workingHourId);
         WorkHour newWorkHour = new WorkHour(workHourRequestBodyDTO);
         newWorkHour.setId(workHour.getId());

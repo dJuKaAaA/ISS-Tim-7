@@ -47,9 +47,7 @@ public class TestDummyController {
         documentService.save(new Document(2L, "vozacka", "", driverWithId1));
         documentService.save(new Document(3L, "licna", "", driverWithId1));
 
-        Set<Driver> drivers = new HashSet<>();
-        drivers.add(driverWithId1);
-        workHoursService.save(new WorkHour(1L, drivers, LocalDateTime.now(), LocalDateTime.now(), Enums.Day.MON));
+        workHoursService.save(new WorkHour(1L, driverWithId1, LocalDateTime.now(), LocalDateTime.now()));
 
         Ride ride = new Ride();
         ride.setDriver(driverWithId1);
