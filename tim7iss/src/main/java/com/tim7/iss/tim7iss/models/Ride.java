@@ -47,7 +47,7 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Review> reviews = new HashSet<>();
 
-    @OneToOne(mappedBy = "ride")
-    private Route route;
+    @OneToMany(mappedBy = "ride")
+    private Set<Route> routes;
 
 }

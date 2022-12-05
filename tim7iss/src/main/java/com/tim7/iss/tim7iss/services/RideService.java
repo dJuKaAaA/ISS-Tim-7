@@ -15,4 +15,8 @@ public class RideService {
         rideRepository.save(ride);
     }
 
+    public long countAll() {
+        return rideRepository.count();
+    }
+
 }

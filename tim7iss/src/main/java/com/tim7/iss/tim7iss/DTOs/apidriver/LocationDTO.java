@@ -1,4 +1,4 @@
-package com.tim7.iss.tim7iss.DTOs;
+package com.tim7.iss.tim7iss.DTOs.apidriver;
 
 import com.tim7.iss.tim7iss.models.Location;
 import lombok.AllArgsConstructor;

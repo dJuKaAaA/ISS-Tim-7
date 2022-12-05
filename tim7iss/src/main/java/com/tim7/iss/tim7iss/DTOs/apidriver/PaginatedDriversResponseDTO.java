@@ -1,9 +1,7 @@
-package com.tim7.iss.tim7iss.responses;
+package com.tim7.iss.tim7iss.DTOs.apidriver;
 
-import com.tim7.iss.tim7iss.DTOs.DriverDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
@@ -11,9 +9,9 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaginatedDriversResponse {
+public class PaginatedDriversResponseDTO {
 
     private long totalCount;
-    private Collection<DriverDTO> results;
+    private Collection<DriverResponseDTO> results;
 
 }

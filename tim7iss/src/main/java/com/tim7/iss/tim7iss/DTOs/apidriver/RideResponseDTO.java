@@ -1,5 +1,6 @@
-package com.tim7.iss.tim7iss.DTOs;
+package com.tim7.iss.tim7iss.DTOs.apidriver;
 
+import com.tim7.iss.tim7iss.DTOs.PassengerDTO;
 import com.tim7.iss.tim7iss.models.Refusal;
 import com.tim7.iss.tim7iss.models.Ride;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RideDTO {
+public class RideResponseDTO {
 
     private Long id;
     private List<LocationDTO> locations = new ArrayList<>();
@@ -23,14 +24,14 @@ public class RideDTO {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private int totalCost;
-    private DriverDTO driver;
+    private DriverResponseDTO driver;
     private Set<PassengerDTO> passengers = new HashSet<>();
     private int estimatedTimeInMinutes;
     private String vehicleType;
     private boolean babyTransport;
     private boolean petTransport;
 
-    public RideDTO(Ride ride) {
+    public RideResponseDTO(Ride ride) {
         this.id = ride.getId();
 
         // gets route from the ride, ride has a set of end points
@@ -44,7 +45,7 @@ public class RideDTO {
         this.startTime = ride.getStartDate();
         this.endTime = ride.getEndDate();
         this.totalCost = ride.getPrice();
-        this.driver = new DriverDTO(ride.getDriver());
+        this.driver = new DriverResponseDTO(ride.getDriver());
         ride.getPassengers().forEach(passenger -> this.passengers.add(new PassengerDTO(passenger)));
         this.estimatedTimeInMinutes = ride.getEstimatedTimeInMinutes();
         this.vehicleType = (ride.getVehicleType() == null) ? "I J*** TE BMW" : ride.getVehicleType().getName();

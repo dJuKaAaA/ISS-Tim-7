@@ -15,4 +15,8 @@ public class WorkHourService {
         workHourRepository.save(workHour);
     }
 
+    public WorkHour getById(Long id) {
+        return workHourRepository.findById(id);
+    }
+
 }

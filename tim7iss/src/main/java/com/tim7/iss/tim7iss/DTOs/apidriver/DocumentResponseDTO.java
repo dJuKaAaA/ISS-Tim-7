@@ -1,4 +1,4 @@
-package com.tim7.iss.tim7iss.DTOs;
+package com.tim7.iss.tim7iss.DTOs.apidriver;
 
 import com.tim7.iss.tim7iss.models.Document;
 import lombok.AllArgsConstructor;
@@ -8,14 +8,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DocumentDTO {
+public class DocumentResponseDTO {
 
     private Long id;
     private String name;
     private String documentImage;
     private Long driverId;
 
-    public DocumentDTO(Document document) {
+    public DocumentResponseDTO(Document document) {
         this.id = document.getId();
         this.name = document.getName();
         this.documentImage = document.getPicturePath();

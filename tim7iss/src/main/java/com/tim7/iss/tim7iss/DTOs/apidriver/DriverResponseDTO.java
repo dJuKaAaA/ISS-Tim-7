@@ -1,7 +1,6 @@
-package com.tim7.iss.tim7iss.DTOs;
+package com.tim7.iss.tim7iss.DTOs.apidriver;
 
 import com.tim7.iss.tim7iss.models.Driver;
-import com.tim7.iss.tim7iss.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DriverDTO {
+public class DriverResponseDTO {
 
     private Long id;
     private String name;
@@ -19,10 +18,9 @@ public class DriverDTO {
     private String profilePicture;
     private String telephoneNumber;
     private String email;
-
     private String address;
 
-    public DriverDTO(Driver driver) {
+    public DriverResponseDTO(Driver driver) {
         this.id = driver.getId();
         this.name = driver.getFirstName();
         this.surname = driver.getLastName();
@@ -30,6 +28,15 @@ public class DriverDTO {
         this.telephoneNumber = driver.getPhoneNumber();
         this.email = driver.getEmailAddress();
         this.address = driver.getAddress();
+    }
+
+    public DriverResponseDTO(String name, String surname, String profilePicture, String telephoneNumber, String email, String address) {
+        this.name = name;
+        this.surname = surname;
+        this.profilePicture = profilePicture;
+        this.telephoneNumber = telephoneNumber;
+        this.email = email;
+        this.address = address;
     }
 
 

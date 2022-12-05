@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.DTOs.apidriver.WorkHourRequestBodyDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,15 +19,14 @@ public class WorkHour {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "driver_work_hours",
-            joinColumns = @JoinColumn(name = "driver_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "work_hour_id", referencedColumnName = "id")
-    )
-    private Set<Driver> drivers = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "driver_id", referencedColumnName = "id")
+    private Driver driver;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private Enums.Day weekDay;
 
+    public WorkHour(WorkHourRequestBodyDTO workHourRequestBodyDTO) {
+        this.startDate = workHourRequestBodyDTO.getStart();
+        this.endDate = workHourRequestBodyDTO.getEnd();
+    }
 }

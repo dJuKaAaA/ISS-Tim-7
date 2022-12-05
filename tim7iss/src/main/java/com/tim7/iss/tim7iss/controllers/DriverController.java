@@ -1,13 +1,10 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.tim7.iss.tim7iss.DTOs.*;
+import com.tim7.iss.tim7iss.DTOs.apidriver.*;
 import com.tim7.iss.tim7iss.models.*;
-import com.tim7.iss.tim7iss.responses.DriverWorkHoursResponse;
-import com.tim7.iss.tim7iss.responses.PaginatedDriversResponse;
-import com.tim7.iss.tim7iss.services.DocumentService;
-import com.tim7.iss.tim7iss.services.DriverService;
-import com.tim7.iss.tim7iss.services.VehicleService;
-import com.tim7.iss.tim7iss.services.WorkHourService;
+import com.tim7.iss.tim7iss.DTOs.apidriver.DriverAllWorkHoursResponseDTO;
+import com.tim7.iss.tim7iss.DTOs.apidriver.PaginatedDriversResponseDTO;
+import com.tim7.iss.tim7iss.services.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,10 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Transactional
 @RestController
@@ -38,195 +32,167 @@ public class DriverController {
     @Autowired
     private WorkHourService workHourService;
 
+    @Autowired
+    private VehicleTypeService vehicleTypeService;
+
+    @Autowired
+    private LocationService locationService;
+
+    @Autowired
+    private RideService rideService;
+
     @GetMapping
-    public ResponseEntity<PaginatedDriversResponse> getAll(Pageable pageable) {
+    public ResponseEntity<PaginatedDriversResponseDTO> getAll(Pageable pageable) {
         Page<Driver> allDrivers = driverService.getAll(pageable);
-        Collection<DriverDTO> driverDTOs = new ArrayList<>();
-        allDrivers.forEach(driver -> driverDTOs.add(new DriverDTO(driver)));
-        return new ResponseEntity<>(new PaginatedDriversResponse(driverService.countAll(), driverDTOs), HttpStatus.OK);
+        Collection<DriverResponseDTO> driverDTOs = new ArrayList<>();
+        allDrivers.forEach(driver -> driverDTOs.add(new DriverResponseDTO(driver)));
+        return new ResponseEntity<>(new PaginatedDriversResponseDTO(driverService.countAll(), driverDTOs), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DriverDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<DriverResponseDTO> getById(@PathVariable Long id) {
         Driver driver = driverService.getById(id);
-        if (driver == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(
-                new DriverDTO(driver),
+                new DriverResponseDTO(driver),
                 HttpStatus.OK
         );
     }
 
     @PostMapping
-    public ResponseEntity<DriverDTO> save(@RequestBody Driver newDriver) {
-        Driver driver = driverService.getByEmailAddress(newDriver.getEmailAddress());
-        if (driver != null) {
-            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-        }
+    public ResponseEntity<DriverResponseDTO> save(@RequestBody DriverRequestBodyDTO driverRequestBodyDTO) {
+        Driver driver = driverService.getByEmailAddress(driverRequestBodyDTO.getEmail());
+        Driver newDriver = new Driver(driverRequestBodyDTO);
         driverService.save(newDriver);
-        return new ResponseEntity<>(new DriverDTO(newDriver), HttpStatus.OK);
+        return new ResponseEntity<>(new DriverResponseDTO(newDriver), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DriverDTO> save(@PathVariable Long id, @RequestBody Driver driver) {
+    public ResponseEntity<DriverResponseDTO> save(@PathVariable Long id,
+                                                  @RequestBody DriverRequestBodyDTO driverRequestBodyDTO) {
         Driver oldDriver = driverService.getById(id);
-        if (oldDriver == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        driver.setId(id);
-        driverService.save(driver);
-        return new ResponseEntity<>(new DriverDTO(driver), HttpStatus.OK);
+        Driver updatedDriver = new Driver(driverRequestBodyDTO);
+        updatedDriver.setId(id);
+        driverService.save(updatedDriver);
+        return new ResponseEntity<>(new DriverResponseDTO(updatedDriver), HttpStatus.OK);
     }
 
     @GetMapping("/{id}/documents")
-    public ResponseEntity<Collection<DocumentDTO>> getDocuments(@PathVariable Long id) {
+    public ResponseEntity<Collection<DocumentResponseDTO>> getDocuments(@PathVariable Long id) {
         Driver driver = driverService.getById(id);
-        if (driver == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
         Collection<Document> driverDocuments = driver.getDocuments();
 //        Collection<Document> driverDocuments = documentService.getAllByDriverId(id);  // alternative way
-        List<DocumentDTO> documentDTOs = new ArrayList<>();
-        driverDocuments.forEach(document -> documentDTOs.add(new DocumentDTO(document)));
+        List<DocumentResponseDTO> documentDTOs = new ArrayList<>();
+        driverDocuments.forEach(document -> documentDTOs.add(new DocumentResponseDTO(document)));
         return new ResponseEntity<>(documentDTOs, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}/documents")
     public ResponseEntity<Boolean> deleteDocuments(@PathVariable Long id) {
         Driver driver = driverService.getById(id);
-        if (driver == null) {
-            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
-        }
         Collection<Document> driverDocuments = documentService.getAllByDriverId(id);
         driverDocuments.forEach(document -> documentService.delete(document));
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @PostMapping("/{id}/documents")
-    public ResponseEntity<DocumentDTO> addDocument(@PathVariable Long id, @RequestBody Document document) {
+    public ResponseEntity<DocumentResponseDTO> addDocument(@PathVariable Long id,
+                                                           @RequestBody DocumentRequestBodyDTO documentRequestBodyDTO) {
         Driver driver = driverService.getById(id);
-        if (driver == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        document.setDriver(driver);
-        documentService.save(document);
-        return new ResponseEntity<>(new DocumentDTO(document), HttpStatus.OK);
+        Document newDocument = new Document(documentRequestBodyDTO);
+        newDocument.setDriver(driver);
+        documentService.save(newDocument);
+        return new ResponseEntity<>(new DocumentResponseDTO(newDocument), HttpStatus.OK);
     }
 
     @GetMapping("{id}/vehicle")
-    public ResponseEntity<VehicleDTO> getVehicle(@PathVariable Long id) {
+    public ResponseEntity<VehicleResponseDTO> getVehicle(@PathVariable Long id) {
         Driver driver = driverService.getById(id);
-        if (driver == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
         Vehicle vehicle = driver.getVehicle();
 //        Vehicle vehicle = vehicleService.getByDriverId(id);  // alternative way
         if (vehicle == null) {
-            return new ResponseEntity<>(new VehicleDTO(), HttpStatus.OK);
+            return new ResponseEntity<>(new VehicleResponseDTO(), HttpStatus.OK);
         }
-        return new ResponseEntity<>(new VehicleDTO(vehicle), HttpStatus.OK);
+        return new ResponseEntity<>(new VehicleResponseDTO(vehicle), HttpStatus.OK);
     }
 
     @PostMapping("{id}/vehicle")
-    public ResponseEntity<VehicleDTO> addVehicle(@PathVariable Long id, @RequestBody Vehicle vehicle) {
-        System.err.println(id);
+    public ResponseEntity<VehicleResponseDTO> addVehicle(@PathVariable Long id,
+                                                         @RequestBody VehicleRequestBodyDTO vehicleRequestBodyDTO) {
         Driver driver = driverService.getById(id);
-        if (driver == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
         if (driver.getVehicle() != null) {
             driver.getVehicle().setDriver(null);
             driverService.save(driver);
         }
-        vehicle.setDriver(driver);
-        vehicleService.save(vehicle);
-        return new ResponseEntity<>(new VehicleDTO(vehicle), HttpStatus.OK);
+        VehicleType vehicleType = vehicleTypeService.getByName(vehicleRequestBodyDTO.getVehicleType());
+
+        // TODO: Fetch location from database
+        Vehicle newVehicle = new Vehicle(vehicleRequestBodyDTO, vehicleType, driver, null);
+        vehicleService.save(newVehicle);
+        return new ResponseEntity<>(new VehicleResponseDTO(newVehicle), HttpStatus.OK);
     }
 
     @PutMapping("{id}/vehicle")
-    public ResponseEntity<VehicleDTO> changeVehicle(@PathVariable Long id, @RequestBody Vehicle vehicle) {
+    public ResponseEntity<VehicleResponseDTO> changeVehicle(@PathVariable Long id,
+                                                            @RequestBody VehicleRequestBodyDTO vehicleRequestBodyDTO) {
         Driver driver = driverService.getById(id);
-        if (driver == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        if (driver.getVehicle() != null) {
+            driver.getVehicle().setDriver(null);
+            driverService.save(driver);
         }
-        vehicle.setId(driver.getVehicle().getId());
-        vehicle.setDriver(driver);
-        vehicleService.save(vehicle);
-        return new ResponseEntity<>(new VehicleDTO(vehicle), HttpStatus.OK);
+        VehicleType vehicleType = vehicleTypeService.getByName(vehicleRequestBodyDTO.getVehicleType());
+
+        // TODO: Fetch location from database
+        Vehicle newVehicle = new Vehicle(vehicleRequestBodyDTO, vehicleType, driver, null);
+        newVehicle.setId(driver.getVehicle().getId());
+        vehicleService.save(newVehicle);
+        return new ResponseEntity<>(new VehicleResponseDTO(newVehicle), HttpStatus.OK);
     }
 
     @GetMapping("{id}/working-hours")
-    public ResponseEntity<DriverWorkHoursResponse> getWorkHours(@PathVariable Long id) {
+    public ResponseEntity<DriverAllWorkHoursResponseDTO> getWorkHours(@PathVariable Long id) {
         Driver driver = driverService.getById(id);
-        if (driver == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
         Collection<WorkHour> workHours = driver.getWorkHours();
-        List<WorkHourDTO> workHoursDTOs = new ArrayList<>();
-        workHours.forEach(workHour -> workHoursDTOs.add(new WorkHourDTO(workHour)));
-        return new ResponseEntity<>(new DriverWorkHoursResponse(workHoursDTOs.size(), workHoursDTOs), HttpStatus.OK);
+        List<WorkHourResponseDTO> workHoursDTOs = new ArrayList<>();
+        workHours.forEach(workHour -> workHoursDTOs.add(new WorkHourResponseDTO(workHour)));
+        return new ResponseEntity<>(new DriverAllWorkHoursResponseDTO(workHoursDTOs.size(), workHoursDTOs), HttpStatus.OK);
     }
 
 
     @PostMapping("{id}/working-hours")
-    public ResponseEntity<WorkHourDTO> addWorkHour(@PathVariable Long id, @RequestBody WorkHour workHour) {
+    public ResponseEntity<WorkHourResponseDTO> addWorkHour(@PathVariable Long id,
+                                                           @RequestBody WorkHourRequestBodyDTO workHourRequestBodyDTO) {
         Driver driver = driverService.getById(id);
-        if (driver == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        workHour.getDrivers().add(driver);
-        workHourService.save(workHour);
-        return new ResponseEntity<>(new WorkHourDTO(workHour), HttpStatus.OK);
+        WorkHour newWorkHour = new WorkHour(workHourRequestBodyDTO);
+        newWorkHour.setDriver(driver);
+        workHourService.save(newWorkHour);
+        return new ResponseEntity<>(new WorkHourResponseDTO(newWorkHour), HttpStatus.OK);
     }
 
     @GetMapping("{id}/ride")
-    public ResponseEntity<Collection<RideDTO>> getRides(@PathVariable Long id) {
+    public ResponseEntity<DriverRidesResponseDTO> getRides(@PathVariable Long id) {
         Driver driver = driverService.getById(id);
-        if (driver == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
         Collection<Ride> rides = driver.getRides();
-        List<RideDTO> rideDTOs = new ArrayList<>();
-        rides.forEach(ride -> rideDTOs.add(new RideDTO(ride)));
-        return new ResponseEntity<>(rideDTOs, HttpStatus.OK);
+        List<RideResponseDTO> rideDTOs = new ArrayList<>();
+        rides.forEach(ride -> rideDTOs.add(new RideResponseDTO(ride)));
+        return new ResponseEntity<>(new DriverRidesResponseDTO(rideService.countAll(), rideDTOs), HttpStatus.OK);
     }
 
-    @GetMapping("{id}/working-hour/{workingHourId}")
-    public ResponseEntity<WorkHourDTO> getWorkHourDetails(@PathVariable Long id, @PathVariable Long workingHourId) {
-        Driver driver = driverService.getById(id);
-        if (driver == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        Collection<WorkHour> workHours = driver.getWorkHours();
-        List<WorkHour> filteredWorkHours = workHours.stream()
-                .filter(workHour -> workHour.getId().equals(workingHourId))
-                .toList();
-        if (filteredWorkHours.isEmpty()) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(new WorkHourDTO(filteredWorkHours.get(0)), HttpStatus.OK);
+    @GetMapping("/working-hour/{workingHourId}")
+    public ResponseEntity<WorkHourResponseDTO> getWorkHourDetails(@PathVariable Long workingHourId) {
+        WorkHour workHour = workHourService.getById(workingHourId);
+        return new ResponseEntity<>(new WorkHourResponseDTO(workHour), HttpStatus.OK);
     }
 
-    @PutMapping("{id}/working-hour/{workingHourId}")
-    public ResponseEntity<WorkHourDTO> changeWorkHour(@PathVariable Long id, @PathVariable Long workingHourId,
-                                                      @RequestBody WorkHour newWorkHour) {
-        Driver driver = driverService.getById(id);
-        if (driver == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        Collection<WorkHour> workHours = driver.getWorkHours();
-        List<WorkHour> filteredWorkHours = workHours.stream()
-                .filter(workHour -> workHour.getId().equals(workingHourId))
-                .toList();
-        if (filteredWorkHours.isEmpty()) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        WorkHour workHour = filteredWorkHours.get(0);
-        workHour.setStartDate(newWorkHour.getStartDate());
-        workHour.setEndDate(newWorkHour.getEndDate());
-        workHourService.save(workHour);
-        return new ResponseEntity<>(new WorkHourDTO(workHour), HttpStatus.OK);
+    @PutMapping("working-hour/{workingHourId}")
+    public ResponseEntity<WorkHourResponseDTO> changeWorkHour(
+            @PathVariable Long workingHourId,
+            @RequestBody WorkHourRequestBodyDTO workHourRequestBodyDTO) {
+        WorkHour workHour = workHourService.getById(workingHourId);
+        WorkHour newWorkHour = new WorkHour(workHourRequestBodyDTO);
+        newWorkHour.setId(workHour.getId());
+        newWorkHour.setDriver(workHour.getDriver());
+        workHourService.save(newWorkHour);
+        return new ResponseEntity<>(new WorkHourResponseDTO(newWorkHour), HttpStatus.OK);
     }
 
 }

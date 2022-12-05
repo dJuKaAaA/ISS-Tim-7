@@ -1,4 +1,4 @@
-package com.tim7.iss.tim7iss.DTOs;
+package com.tim7.iss.tim7iss.DTOs.apidriver;
 
 import com.tim7.iss.tim7iss.models.WorkHour;
 import lombok.AllArgsConstructor;
@@ -9,13 +9,13 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class WorkHourDTO {
+public class WorkHourResponseDTO {
 
     private Long id;
     private LocalDateTime start;
     private LocalDateTime end;
 
-    public WorkHourDTO(WorkHour workHours) {
+    public WorkHourResponseDTO(WorkHour workHours) {
         this.id = workHours.getId();
         this.start = workHours.getStartDate();
         this.end = workHours.getEndDate();

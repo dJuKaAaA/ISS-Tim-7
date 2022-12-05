@@ -1,4 +1,4 @@
-package com.tim7.iss.tim7iss.DTOs;
+package com.tim7.iss.tim7iss.DTOs.apidriver;
 
 import com.tim7.iss.tim7iss.models.Location;
 import com.tim7.iss.tim7iss.models.Vehicle;
@@ -9,23 +9,23 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class VehicleDTO {
+public class VehicleResponseDTO {
 
     private Long id;
     private Long driverId;
     private String model;
-    private String licenceNumber;
-    private Location currentLocation;
+    private String licenseNumber;
+    private LocationDTO currentLocation;
     private int passengerSeats;
     private boolean babyTransport;
     private boolean petTransport;
 
-    public VehicleDTO(Vehicle vehicle) {
+    public VehicleResponseDTO(Vehicle vehicle) {
         this.id = vehicle.getId();
         this.driverId = vehicle.getDriver().getId();
         this.model = vehicle.getModel();
-        this.licenceNumber = vehicle.getRegistrationPlate();
-        this.currentLocation = vehicle.getLocation();
+        this.licenseNumber = vehicle.getRegistrationPlate();
+        this.currentLocation = new LocationDTO(vehicle.getLocation());
         this.passengerSeats = vehicle.getSeatNumber();
         this.babyTransport = vehicle.isBabyAllowed();
         this.petTransport = vehicle.isPetsAllowed();

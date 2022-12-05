@@ -1,7 +1,7 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.DTOs.apidriver.DriverRequestBodyDTO;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.*;
 
 import java.util.HashSet;
@@ -20,10 +20,19 @@ public class Driver extends User {
     @OneToOne(mappedBy = "driver", fetch = FetchType.LAZY)
     private Vehicle vehicle;
 
-    @ManyToMany(mappedBy = "drivers", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
     private Set<WorkHour> workHours = new HashSet<>();
 
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
     private Set<Ride> rides = new HashSet<>();
 
+    public Driver(DriverRequestBodyDTO driverRequestBodyDTO) {
+        this.setFirstName(driverRequestBodyDTO.getName());
+        this.setLastName(driverRequestBodyDTO.getSurname());
+        this.setProfilePicture(driverRequestBodyDTO.getProfilePicture());
+        this.setPhoneNumber(driverRequestBodyDTO.getTelephoneNumber());
+        this.setEmailAddress(driverRequestBodyDTO.getEmail());
+        this.setAddress(driverRequestBodyDTO.getAddress());
+        this.setPassword(driverRequestBodyDTO.getPassword());
+    }
 }
