@@ -50,8 +50,7 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Review> reviews = new HashSet<>();
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "route_id", referencedColumnName = "id")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "ride")
     private Set<Route> routes = new HashSet<>();
 
     public Ride(Passenger passenger){
