@@ -1,5 +1,7 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerRequestDTO;
+import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -17,8 +19,7 @@ import java.util.Set;
 @Builder
 public class Passenger extends User {
 
-
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "finished_rides",
             joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
@@ -33,6 +34,26 @@ public class Passenger extends User {
             inverseJoinColumns = @JoinColumn(name = "route_id", referencedColumnName = "id")
     )
     private Set<Route> favouriteRoutes = new HashSet<>();
+
+    public Passenger(PassengerRequestDTO passengerRequestDTO) {
+        this.setFirstName(passengerRequestDTO.name);
+        this.setLastName(passengerRequestDTO.surname);
+        this.setProfilePicture(passengerRequestDTO.profilePicture);
+        this.setPhoneNumber(passengerRequestDTO.telephoneNumber);
+        this.setEmailAddress(passengerRequestDTO.email);
+        this.setAddress(passengerRequestDTO.address);
+        this.setPassword(passengerRequestDTO.password);
+    }
+
+    public void setParameters(PassengerRequestDTO passengerRequestDTO){
+        this.setFirstName(passengerRequestDTO.name);
+        this.setLastName(passengerRequestDTO.surname);
+        this.setProfilePicture(passengerRequestDTO.profilePicture);
+        this.setPhoneNumber(passengerRequestDTO.telephoneNumber);
+        this.setEmailAddress(passengerRequestDTO.email);
+        this.setAddress(passengerRequestDTO.address);
+        this.setPassword(passengerRequestDTO.password);
+    }
 
     @Override
     public String toString() {

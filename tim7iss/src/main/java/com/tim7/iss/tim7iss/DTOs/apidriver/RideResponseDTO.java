@@ -1,6 +1,6 @@
 package com.tim7.iss.tim7iss.DTOs.apidriver;
 
-import com.tim7.iss.tim7iss.DTOs.PassengerDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerResponseDTO;
 import com.tim7.iss.tim7iss.models.Refusal;
 import com.tim7.iss.tim7iss.models.Ride;
 import com.tim7.iss.tim7iss.models.Route;
@@ -26,7 +26,7 @@ public class RideResponseDTO {
     private LocalDateTime endTime;
     private int totalCost;
     private DriverResponseDTO driver;
-    private Set<PassengerDTO> passengers = new HashSet<>();
+    private Set<PassengerResponseDTO> passengers = new HashSet<>();
     private int estimatedTimeInMinutes;
     private String vehicleType;
     private boolean babyTransport;
@@ -48,7 +48,7 @@ public class RideResponseDTO {
         this.endTime = ride.getEndDate();
         this.totalCost = ride.getPrice();
         this.driver = new DriverResponseDTO(ride.getDriver());
-        ride.getPassengers().forEach(passenger -> this.passengers.add(new PassengerDTO(passenger)));
+        ride.getPassengers().forEach(passenger -> this.passengers.add(new PassengerResponseDTO(passenger)));
         this.estimatedTimeInMinutes = ride.getEstimatedTimeInMinutes();
         this.vehicleType = (ride.getVehicleType() == null) ? "I J*** TE BMW" : ride.getVehicleType().getName();
         this.babyTransport = ride.isBabyOnBoard();

@@ -2,6 +2,7 @@ package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.DTOs.apidriver.VehicleRequestBodyDTO;
 import jakarta.persistence.*;
+import lombok.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +35,7 @@ public class Vehicle {
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 
@@ -51,6 +52,15 @@ public class Vehicle {
         this.petsAllowed = vehicleRequestBodyDTO.isPetTransport();
         this.vehicleType = vehicleType;
         this.driver = driver;
+        this.location = location;
+    }
+
+    public Vehicle(String model, String registrationPlate, int seatNumber, boolean babyAllowed, boolean petsAllowed, Location location) {
+        this.model = model;
+        this.registrationPlate = registrationPlate;
+        this.seatNumber = seatNumber;
+        this.babyAllowed = babyAllowed;
+        this.petsAllowed = petsAllowed;
         this.location = location;
     }
 }

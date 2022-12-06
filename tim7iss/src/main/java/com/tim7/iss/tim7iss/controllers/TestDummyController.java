@@ -3,17 +3,23 @@ package com.tim7.iss.tim7iss.controllers;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
 import com.tim7.iss.tim7iss.services.*;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 @RestController
 @RequestMapping("test/dummy/data")
+@Transactional
 public class TestDummyController {
 
     @Autowired
@@ -29,7 +35,16 @@ public class TestDummyController {
     private DriverService driverService;
 
     @Autowired
-    RideRepository rideRepository;
+    private UserActivationService userActivationService;
+
+    @Autowired
+    private RidesRepository rideRepository;
+
+    @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
+    private VehicleTypeService vehicleTypeService;
 
     @Autowired
     MessageRepository messageRepository;
@@ -58,8 +73,51 @@ public class TestDummyController {
     @Autowired
     private RideService rideService;
 
-    @PostMapping
+    @GetMapping
     public void getDummyTestData() {
+        Location location = new Location("Neka tamo lokacija", 1.5, 1.5);
+        locationService.save(location);
+
+        VehicleType vehicleType = new VehicleType(1L, 100, "Proba");
+        vehicleTypeService.save(vehicleType);
+
+        Driver driverWithId1 = getDriver();
+        driverService.save(driverWithId1);
+        driverWithId1 = driverService.getById(1L);
+
+        vehicleService.save(new Vehicle("Neki tamo model 1", "Redzistrejsn plejt 1", 1, false, true, location));
+        vehicleService.save(new Vehicle("Neki tamo model 2", "Redzistrejsn plejt 2", 2, false, true, location));
+        vehicleService.save(new Vehicle("Neki tamo model 3", "Redzistrejsn plejt 3", 3, false, true, location));
+        vehicleService.save(new Vehicle("Neki tamo model 4", "Redzistrejsn plejt 4", 4, false, true, location));
+        vehicleService.save(new Vehicle("Neki tamo model 5", "Redzistrejsn plejt 5", 5, false, true, location));
+
+        Ride r1 = new Ride();
+        Ride r2 = new Ride();
+        Ride r3 = new Ride();
+        Ride r4 = new Ride();
+        Passenger p = new Passenger();
+        Passenger p1 = new Passenger();
+        Passenger p2 = new Passenger();
+        Passenger p3 = new Passenger();
+
+        p.setFinishedRides(new HashSet<>(Arrays.asList(r1, r2, r3, r4)));
+        p1.setFinishedRides(new HashSet<>(Arrays.asList(r3, r4)));
+        p2.setFinishedRides(new HashSet<>(Arrays.asList(r1, r2, r3)));
+        p3.setFinishedRides(new HashSet<>(Arrays.asList(r2, r3, r4)));
+
+//        ridesService.save(r1);
+//        ridesService.save(r2);
+//        ridesService.save(r3);
+//        ridesService.save(r4);
+
+        passengerService.save(p);
+        passengerService.save(p1);
+        passengerService.save(p2);
+        passengerService.save(p3);
+
+        driverService.save(new Driver());
+        userActivationService.save(new UserActivation(1L, LocalDateTime.now(), LocalDateTime.of(2022, Month.DECEMBER, 1, 0, 0, 0), p));
+
 //        Location location = new Location( "Neka tamo lokacija", 1.5, 1.5);
 //        locationService.save(location);
 //
@@ -74,15 +132,14 @@ public class TestDummyController {
 //        TestUserControllerGetRides();
 //        TestUserControllerGetMessages();
 //        TestUserControllerGetNotes();
-
-
-        Driver driverWithId1 = driverService.getById(1L);
-        documentService.save(new Document(1L, "saobracajna", "", driverWithId1));
-        documentService.save(new Document(2L, "vozacka", "", driverWithId1));
-        documentService.save(new Document(3L, "licna", "", driverWithId1));
-
+//
+//
+        documentService.save(new Document(1L, driverWithId1,"saobracajna", ""));
+        documentService.save(new Document(2L, driverWithId1,"vozacka", ""));
+        documentService.save(new Document(3L, driverWithId1,"licna", ""));
+//
         workHoursService.save(new WorkHour(1L, driverWithId1, LocalDateTime.now(), LocalDateTime.now()));
-
+//
         Ride ride = new Ride();
         ride.setDriver(driverWithId1);
         rideService.save(ride);

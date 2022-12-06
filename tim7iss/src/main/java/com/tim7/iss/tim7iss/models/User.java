@@ -10,10 +10,10 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Entity
 @Getter
 @Setter
-@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name = "app_users")
 public abstract class User {
 
@@ -24,8 +24,6 @@ public abstract class User {
     private String lastName;
     private String profilePicture;
     private String phoneNumber;
-
-
 //    @Email
     private String emailAddress;
     private String address;
@@ -35,7 +33,6 @@ public abstract class User {
 
     @OneToMany(mappedBy = "sender")
     private Set<Message> sentMessages = new HashSet<>();
-
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.PERSIST)
     private Set<Message> receivedMessages = new HashSet<>();

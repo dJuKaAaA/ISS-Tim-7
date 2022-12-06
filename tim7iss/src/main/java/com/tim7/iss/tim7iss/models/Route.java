@@ -18,6 +18,7 @@ public class Route {
     private Long id;
     private int distance;
 
+
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
@@ -30,4 +31,9 @@ public class Route {
     @JoinColumn(name = "end_point_id", referencedColumnName = "id")
     private Location endPoint;
 
+
+    public Route(Location startingPoint, Location endPoint) {
+        this.startingPoint = startingPoint;
+        this.endPoint = endPoint;
+    }
 }

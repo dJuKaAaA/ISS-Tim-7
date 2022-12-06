@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
+import jakarta.persistence.*;
 import com.tim7.iss.tim7iss.DTOs.apidriver.DriverRequestBodyDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

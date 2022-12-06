@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicReasonDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,4 +28,10 @@ public class Panic {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    public Panic(PanicReasonDTO reason, Ride ride, User user) {
+        this.reason = reason.reason;
+        this.ride = ride;
+        this.user = user;
+        this.time = LocalDateTime.now();
+    }
 }
