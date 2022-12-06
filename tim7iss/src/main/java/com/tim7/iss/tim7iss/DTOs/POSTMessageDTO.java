@@ -21,7 +21,7 @@ public class POSTMessageDTO {
     public Message getMessage(){
         return Message.builder().
                 sentDate(LocalDateTime.now()).
-                type(Enums.MessageType.RIDE). // TODO promeniti
+                type("RIDE"). // TODO promeniti
                 content(this.message).build();
     }
 }

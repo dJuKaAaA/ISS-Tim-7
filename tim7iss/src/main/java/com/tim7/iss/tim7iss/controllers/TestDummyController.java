@@ -65,7 +65,7 @@ public class TestDummyController {
 //        vehicleService.save(new Vehicle( "Neki tamo model 5", "Redzistrejsn plejt 5", 5, false, true, null, location));
 //        passengerService.save(new Passenger());
 
-        TestReviewController();
+//        TestReviewController();
 //        TestUserControllerGetRides();
 //        TestUserControllerGetMessages();
 //        TestUserControllerGetNotes();
@@ -89,11 +89,11 @@ public class TestDummyController {
 
         Route route = getRoute();
         route.setStartingPoint(getLocation());
-        HashSet<Location> locations = new HashSet<>();
-        locations.add(getLocation());
-        route.setEndPoints(locations);
+        route.setEndPoint(getLocation());
         route.setRide(ride);
-        ride.setRoute(route);
+
+        Set<Route> routes = new HashSet<>();
+        ride.setRoutes(routes);
 
 
         passenger.setFinishedRides(Set.of(ride));
@@ -134,12 +134,11 @@ public class TestDummyController {
 
         Route route = getRoute();
         route.setStartingPoint(getLocation());
-        HashSet<Location> locations = new HashSet<>();
-        locations.add(getLocation());
-        route.setEndPoints(locations);
+        route.setEndPoint(getLocation());
         route.setRide(ride);
-        ride.setRoute(route);
 
+        Set<Route> routes = new HashSet<>();
+        ride.setRoutes(routes);
 
         passenger.setFinishedRides(Set.of(ride));
         rideRepository.save(ride);
@@ -176,12 +175,11 @@ public class TestDummyController {
 
         Route route = getRoute();
         route.setStartingPoint(getLocation());
-        HashSet<Location> locations = new HashSet<>();
-        locations.add(getLocation());
-        route.setEndPoints(locations);
+        route.setEndPoint(getLocation());
         route.setRide(ride);
-        ride.setRoute(route);
 
+        Set<Route> routes = new HashSet<>();
+        ride.setRoutes(routes);
 
         passenger.setFinishedRides(Set.of(ride));
         rideRepository.save(ride);
@@ -305,13 +303,13 @@ public class TestDummyController {
         ride.setPassengers(new HashSet<>());
         ride.setRefusal(null);
         ride.setReviews(new HashSet<>());
-        ride.setRoute(null);
+        ride.setRoutes(null);
         return ride;
     }
 
     private Message getMessage() {
         Message message = new Message();
-        message.setType(Enums.MessageType.RIDE);
+        message.setType("STANDARD");
         message.setContent("Message");
         message.setSentDate(LocalDateTime.now());
         return message;

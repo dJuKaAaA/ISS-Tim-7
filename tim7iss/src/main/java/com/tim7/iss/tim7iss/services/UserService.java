@@ -31,8 +31,11 @@ public class UserService {
     @Autowired
     AdminRepository adminRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     public RidesDTO getRides(Long id) throws Exception {
-        User user = getUser(id);
+        User user = userRepository.findById(id).get();
 
         if (user instanceof Driver driver) {
             List<Ride> rides = rideRepository.findRidesByDriverId(driver.getId());
@@ -47,47 +50,106 @@ public class UserService {
 
     }
 
+    public RidesDTO getRidesK1() {
+
+        RidesDTO retVal = new RidesDTO();
+        retVal.setTotalCount(1);
+
+        RideDTO ride = new RideDTO();
+        ride.setId(1L);
+
+        LocationDTO location = new LocationDTO("adresa", 45.2121, 43.416546);
+
+        HashSet<RouteDTO> route = new HashSet<>();
+        RouteDTO routeDTO = new RouteDTO(location, location);
+        route.add(routeDTO);
+
+        ride.setLocations(route);
+        ride.setStartTime(LocalDateTime.now().toString());
+        ride.setEndTime(LocalDateTime.now().toString());
+        ride.setTotalCost(123);
+        ride.setDriver(new SimpleDriverDTO(1L, "email"));
+        Set<SimplePassengerDTO> passengers = new HashSet<>();
+        SimplePassengerDTO passenger = new SimplePassengerDTO(1L, "ivan");
+        passengers.add(passenger);
+        ride.setPassengers(passengers);
+        ride.setEstimatedTimeInMinutes(5);
+        ride.setVehicleType("STANDARD");
+        ride.setBabyTransport(true);
+        ride.setPetTransport(false);
+        RejectionDTO rejectionDTO = new RejectionDTO("reason", LocalDateTime.now().toString());
+        ride.setRejection(rejectionDTO);
+
+        Set<RideDTO> rides = new HashSet<>();
+        rides.add(ride);
+        retVal.setResults(rides);
+        return retVal;
+    }
+
     public UsersDTO getUsersDetails() {
-        Set<User> passengers = new HashSet<>(passengerRepository.findAll());
-        Set<User> drivers = new HashSet<>(driverRepository.findAll());
-        Set<User> admins = new HashSet<>(adminRepository.findAll());
-        Set<User> users = new HashSet<>();
-        users.addAll(passengers);
-        users.addAll(drivers);
-        users.addAll(admins);
+        Set<User> users = new HashSet<>(userRepository.findAll());
         return new UsersDTO(users);
     }
 
-    public void login(LoginDTO loginDTO) {
+    public UsersDTO getUsersDetailsK1() {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(1L);
+        userDTO.setName("Pera");
+        userDTO.setSurname("Peric");
+        userDTO.setProfilePicture("Profile picture");
+        userDTO.setTelephoneNumber("0604672999");
+        userDTO.setEmail("email");
+        userDTO.setAddress("address");
 
+        Set<UserDTO> userDTOS = new HashSet<>();
+        userDTOS.add(userDTO);
+
+        UsersDTO usersDTO = new UsersDTO();
+        usersDTO.setTotalCount(1);
+        usersDTO.setResults(userDTOS);
+        return usersDTO;
+    }
+
+    public POSTLoginDTO login(LoginDTO loginDTO) {
+        return null;
+    }
+
+    public POSTLoginDTO loginK1() {
+        POSTLoginDTO postLoginDTO = new POSTLoginDTO();
+        postLoginDTO.setAccessToken("access token");
+        postLoginDTO.setRefreshToken("refresh token");
+        return postLoginDTO;
     }
 
     public MessagesDTO getMessages(Long id) throws Exception {
-        User user = getUser(id);
 
+        User user = userRepository.findById(id).get();
+        Set<Message> messages = new HashSet<>(getAllMessages(user));
+        return new MessagesDTO(messages);
 
-        if (user instanceof Driver driver) {
-            Set<Message> messages = new HashSet<>(getAllMessages(driver));
-            return new MessagesDTO(messages);
-        }
-        else if (user instanceof Passenger passenger) {
-            Set<Message> messages = new HashSet<>(getAllMessages(passenger));
-            return new MessagesDTO(messages);
-        }
-        else if (user instanceof Admin admin){
-            Set<Message> messages = new HashSet<>(getAllMessages(admin));
-            return  new MessagesDTO(messages);
-        }
-        return null;
+    }
 
+    public MessagesDTO getMessagesK1() {
+        Set<MessageDTO> messageDTOS = new HashSet<>();
+        MessageDTO messageDTO = new MessageDTO();
+        messageDTO.setId(1L);
+        messageDTO.setTimeOfSending(LocalDateTime.now().toString());
+        messageDTO.setSenderId(1L);
+        messageDTO.setReceiverId(2L);
+        messageDTO.setMessage("message");
+        messageDTO.setType("RIDE");
+        messageDTO.setRideId(1L);
+        messageDTOS.add(messageDTO);
+        MessagesDTO messagesDTO = new MessagesDTO(1, messageDTOS);
+        return messagesDTO;
     }
 
 
     public MessageDTO sendMessage(Long id, POSTMessageDTO messageDTO) throws Exception {
 
         Ride ride = rideRepository.findById(messageDTO.getRideId()).get();
-        User receiver = getUser(messageDTO.getReceiverId());
-        User sender = getUser(id);
+        User receiver = userRepository.findById(messageDTO.getReceiverId()).get();
+        User sender = userRepository.findById(id).get();
 
         Message message = messageDTO.getMessage();
         message.setRide(ride);
@@ -98,31 +160,68 @@ public class UserService {
 
     }
 
-    public String block(Long id) throws Exception {
-        User user = getUser(id);
+    public MessageDTO sendMessageK1() {
+        MessageDTO messageDTO = new MessageDTO();
+        messageDTO.setId(1L);
+        messageDTO.setTimeOfSending(LocalDateTime.now().toString());
+        messageDTO.setSenderId(1L);
+        messageDTO.setReceiverId(1L);
+        messageDTO.setMessage("message");
+        messageDTO.setType("RIDE");
+        messageDTO.setRideId(1L);
+        return messageDTO;
+    }
+
+    public SimpleMessageDTO block(Long id) throws Exception {
+        User user = userRepository.findById(id).get();
         changeUserBlockedState(user, true);
-        return "User is successfully blocked";
+        return new SimpleMessageDTO("User is successfully blocked");
     }
 
-    public String unblock(Long id) throws Exception {
-        User user = getUser(id);
+    public SimpleMessageDTO blockK1() {
+        return new SimpleMessageDTO("User is successfully blocked");
+    }
+
+    public SimpleMessageDTO unblock(Long id) throws Exception {
+        User user = userRepository.findById(id).get();
         changeUserBlockedState(user, false);
-        return "User is successfully unblocked";
+        return new SimpleMessageDTO("User is successfully unblocked");
+
+    }
+
+    public SimpleMessageDTO unblockK1() {
+        return new SimpleMessageDTO("User is successfully unblocked");
+
     }
 
 
-    public NoteDTO addNote(Long userId, POSTNoteDTO postNoteDTO) throws Exception {
-        User user = getUser(userId);
+    public NoteDTO addNote(Long userId, SimpleMessageDTO postNoteDTO) throws Exception {
+        User user = userRepository.findById(userId).get();
         Note note = Note.builder().date(LocalDateTime.now()).user(user).message(postNoteDTO.getMessage()).build();
         noteRepository.save(note);
         return new NoteDTO(note);
 
     }
 
+    public NoteDTO addNoteK1() {
+        NoteDTO noteDTO = new NoteDTO(1L, LocalDateTime.now().toString(), "message");
+        return noteDTO;
+    }
+
     public NotesDTO getNotes(Long userId) throws Exception {
-        User user = getUser(userId);
         List<Note> notes = noteRepository.findAllByUserId(userId);
         return new NotesDTO(new HashSet<>(notes));
+    }
+
+    public NotesDTO getNotesK1() {
+        NoteDTO noteDTO = new NoteDTO(1L, LocalDateTime.now().toString(), "message");
+        Set<NoteDTO> noteDTOS = new HashSet<>();
+        noteDTOS.add(noteDTO);
+
+        NotesDTO notesDTO = new NotesDTO();
+        notesDTO.setTotalCount(1);
+        notesDTO.setResults(noteDTOS);
+        return notesDTO;
     }
 
     private List<Message> getAllMessages(User user) {

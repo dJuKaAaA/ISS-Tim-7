@@ -8,14 +8,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PassengerRidesDTO {
+public class SimplePassengerDTO {
     Long id;
     String email;
-    String type; // Always passenger???
 
-    public PassengerRidesDTO(Passenger passenger){
+    public SimplePassengerDTO(Passenger passenger){
         this.id = passenger.getId();
         this.email = passenger.getEmailAddress();
-        this.type = "passenger";
     }
 }

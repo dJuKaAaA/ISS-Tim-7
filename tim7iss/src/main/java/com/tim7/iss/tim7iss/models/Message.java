@@ -18,7 +18,7 @@ public class Message {
     private Long id;
 
     private LocalDateTime sentDate;
-    private Enums.MessageType type;
+    private String type;
     private String content;
 
     @ManyToOne

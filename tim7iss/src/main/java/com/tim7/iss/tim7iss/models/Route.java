@@ -27,8 +27,8 @@ public class Route {
     @JoinColumn(name = "starting_point_id", referencedColumnName = "id")
     private Location startingPoint;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "end_point_id", referencedColumnName = "id")
-    private Set<Location> endPoints = new HashSet<>();
+    private Location endPoint;
 
 }

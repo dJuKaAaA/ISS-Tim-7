@@ -50,9 +50,9 @@ public class Ride {
     private Set<Review> reviews = new HashSet<>();
 
     // TODO izmeniti eager
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "route_id", referencedColumnName = "id")
-    private Route route;
+    private Set<Route> routes = new HashSet<>();
 
     @Override
     public String toString() {

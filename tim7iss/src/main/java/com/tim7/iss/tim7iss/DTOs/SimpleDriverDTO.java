@@ -8,14 +8,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class DriverRidesDTO {
+public class SimpleDriverDTO {
     private Long id;
     private String email;
-    private String type; // Always driver???
 
-    public DriverRidesDTO(Driver driver){
+    public SimpleDriverDTO(Driver driver){
         this.id = driver.getId();
         this.email = driver.getEmailAddress();
-        this.type = "Driver";
     }
 }

@@ -14,39 +14,43 @@ import java.util.Set;
 public class RideDTO {
 
     private Long id;
-    private Set<LocationDTO> locations = new HashSet<>();
-    private String startDate;
-    private String endDate;
+    private Set<RouteDTO> locations = new HashSet<>();
+    private String startTime;
+    private String endTime;
     private double totalCost;
-    DriverRidesDTO driver;
-    Set<PassengerRidesDTO> passengers = new HashSet<>();
+    SimpleDriverDTO driver;
+    Set<SimplePassengerDTO> passengers = new HashSet<>();
     private int estimatedTimeInMinutes;
-    private Enums.RideStatus status;
+
+    private String vehicleType;
     private boolean babyTransport;
     private boolean petTransport;
+
+    private RejectionDTO rejection;
 
     public RideDTO(Ride ride) {
         this.id = ride.getId();
 
-        Route routes = ride.getRoute();
-        for(Location location: routes.getEndPoints()){
-            LocationDTO locationDTO = new LocationDTO(location);
-            this.locations.add(locationDTO);
+        Set<Route> routes = ride.getRoutes();
+        for(Route route: routes){
+            RouteDTO routeDTO = new RouteDTO(route);
+            this.locations.add(routeDTO);
         }
-        this.startDate = ride.getStartDate().toString();
-        this.endDate = ride.getEndDate().toString();
+        this.startTime = ride.getStartDate().toString();
+        this.endTime = ride.getEndDate().toString();
         this.totalCost = ride.getPrice();
-        this.driver = new DriverRidesDTO(ride.getDriver());
+        this.driver = new SimpleDriverDTO(ride.getDriver());
 
         for(Passenger passenger : ride.getPassengers()){
-            PassengerRidesDTO passengerRidesDTO = new PassengerRidesDTO(passenger);
+            SimplePassengerDTO passengerRidesDTO = new SimplePassengerDTO(passenger);
             this.passengers.add(passengerRidesDTO);
         }
 
         this.estimatedTimeInMinutes = ride.getEstimatedTimeInMinutes(); // TODO promeniti
-        this.status = ride.getStatus();
+        this.vehicleType = ride.getVehicleType().getName();
         this.babyTransport = ride.isBabyOnBoard();
         this.petTransport = ride.isPetOnBoard();
+        this.rejection = new RejectionDTO(ride.getRefusal());
     }
 
 

@@ -17,7 +17,7 @@ public class MessageDTO {
     private Long senderId;
     private Long receiverId;
     private String message;
-    private Enums.MessageType type;
+    private String type;
     private Long rideId;
 
     public MessageDTO(Message message){

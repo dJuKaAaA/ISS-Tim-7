@@ -12,8 +12,8 @@ import java.util.Set;
 @NoArgsConstructor
 public class OrderRideDTO {
 
-    private Set<LocationDTO> locations;
-    private Enums.VehicleName vehicleType;
+    private Set<RouteDTO> locations;
+    private String vehicleType;
     private boolean babyTransport;
     private boolean petTransport;
 
