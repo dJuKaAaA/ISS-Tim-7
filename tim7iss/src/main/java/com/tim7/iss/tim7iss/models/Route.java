@@ -18,8 +18,7 @@ public class Route {
     private Long id;
     private int distance;
 
-
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 
