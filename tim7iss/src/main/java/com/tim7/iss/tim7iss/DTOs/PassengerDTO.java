@@ -6,12 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PassengerDTO {
-    Long id;
-    String name,surname,profilePicture,telephoneNumber,email,address;
+    private Long id;
+    private String name;
+    private String surname;
+    private String profilePicture;
+    private String telephoneNumber;
+    private String email;
+    private String address;
 
     public PassengerDTO(Passenger passenger) {
         this.id = passenger.getId();

@@ -25,16 +25,15 @@ public class Message {
     @JoinColumn(name = "sender_id", referencedColumnName = "id")
     private User sender;
 
-    @ManyToOne()
-    @JoinColumn(
-            name = "receiver_id",
-            referencedColumnName = "id"
-    )
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id", referencedColumnName = "id")
     private User receiver;
 
     @ManyToOne
     @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
+
 
     @Override
     public String toString() {
@@ -57,4 +56,5 @@ public class Message {
         return string;
 
     }
+
 }

@@ -39,7 +39,7 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Message> messages = new HashSet<>();
 
-    // TODO izmeniti eager
+
     @ManyToMany(mappedBy = "finishedRides")
     private Set<Passenger> passengers = new HashSet<>();
 
@@ -49,10 +49,10 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Review> reviews = new HashSet<>();
 
-    // TODO izmeniti eager
     @OneToMany(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "route_id", referencedColumnName = "id")
     private Set<Route> routes = new HashSet<>();
+
 
     @Override
     public String toString() {

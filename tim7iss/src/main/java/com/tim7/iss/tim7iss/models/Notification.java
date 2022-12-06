@@ -23,4 +23,6 @@ public class Notification {
     @OneToOne
     @JoinColumn(name = "message_id", referencedColumnName = "id")
     private Message message;
+
+
 }

@@ -1,8 +1,11 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import jakarta.validation.constraints.Email;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +24,8 @@ public abstract class User {
     private String lastName;
     private String profilePicture;
     private String phoneNumber;
+
+
 //    @Email
     private String emailAddress;
     private String address;
@@ -28,11 +33,10 @@ public abstract class User {
     private boolean isBlocked;
     private boolean isActive;
 
-    // TODO vrati eager
     @OneToMany(mappedBy = "sender")
     private Set<Message> sentMessages = new HashSet<>();
 
-    // TODO staviti
+
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.PERSIST)
     private Set<Message> receivedMessages = new HashSet<>();
 

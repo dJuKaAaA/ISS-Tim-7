@@ -1,6 +1,10 @@
 package com.tim7.iss.tim7iss.models;
 
-import jakarta.persistence.*;
+import com.tim7.iss.tim7iss.DTOs.apidriver.DriverRequestBodyDTO;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.*;
 
 import java.util.HashSet;
@@ -18,17 +22,25 @@ public class Driver extends User {
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
     private Set<Document> documents;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "vehicle_id", referencedColumnName = "id")
+
+    @OneToOne(mappedBy = "driver", fetch = FetchType.LAZY)
     private Vehicle vehicle;
 
-    @ManyToMany(mappedBy = "drivers", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
     private Set<WorkHour> workHours = new HashSet<>();
 
-    // cascade perzist, cascade refresh
-    @OneToMany(mappedBy = "driver")
+    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
     private Set<Ride> rides = new HashSet<>();
 
+    public Driver(DriverRequestBodyDTO driverRequestBodyDTO) {
+        this.setFirstName(driverRequestBodyDTO.getName());
+        this.setLastName(driverRequestBodyDTO.getSurname());
+        this.setProfilePicture(driverRequestBodyDTO.getProfilePicture());
+        this.setPhoneNumber(driverRequestBodyDTO.getTelephoneNumber());
+        this.setEmailAddress(driverRequestBodyDTO.getEmail());
+        this.setAddress(driverRequestBodyDTO.getAddress());
+        this.setPassword(driverRequestBodyDTO.getPassword());
+    }
 
     @Override
     public String toString() {
@@ -46,5 +58,4 @@ public class Driver extends User {
 
         return string;
     }
-
 }

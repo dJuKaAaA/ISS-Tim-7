@@ -13,16 +13,20 @@ public class VehicleService {
     @Autowired
     private VehicleRepository vehicleRepository;
 
-    public Vehicle findById(Long id) {
+    public Vehicle getById(Long id) {
         return vehicleRepository.findById(id).orElse(null);
     }
 
-    public List<Vehicle> findAll() {
+    public List<Vehicle> getAll() {
         return vehicleRepository.findAll();
     }
 
     public void save(Vehicle vehicle) {
         vehicleRepository.save(vehicle);
+    }
+
+    public Vehicle getByDriverId(Long driverId) {
+        return vehicleRepository.findByDriverId(driverId).orElse(null);
     }
 
 }

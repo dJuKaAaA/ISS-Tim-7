@@ -1,14 +1,15 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 @Setter
 @Entity
-@Table(name = "app_reviews")
-public abstract class Review {
+@Table(name = "reviews")
+public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
@@ -23,5 +24,5 @@ public abstract class Review {
 
     @ManyToOne
     @JoinColumn(name = "passenger_id", referencedColumnName = "id")
-    private User passenger;
+    private User passenger; // TODO promeniti u passenger klasu
 }

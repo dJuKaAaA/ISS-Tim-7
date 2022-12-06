@@ -2,18 +2,13 @@ package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
-import com.tim7.iss.tim7iss.services.DriverService;
-import com.tim7.iss.tim7iss.services.LocationService;
-import com.tim7.iss.tim7iss.services.PassengerService;
-import com.tim7.iss.tim7iss.services.VehicleService;
+import com.tim7.iss.tim7iss.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,7 +48,17 @@ public class TestDummyController {
 
     @Autowired
     VehicleReviewRepository vehicleReviewRepository;
-    @GetMapping
+
+    @Autowired
+    private DocumentService documentService;
+
+    @Autowired
+    private WorkHourService workHoursService;
+
+    @Autowired
+    private RideService rideService;
+
+    @PostMapping
     public void getDummyTestData() {
 //        Location location = new Location( "Neka tamo lokacija", 1.5, 1.5);
 //        locationService.save(location);
@@ -71,6 +76,16 @@ public class TestDummyController {
 //        TestUserControllerGetNotes();
 
 
+        Driver driverWithId1 = driverService.getById(1L);
+        documentService.save(new Document(1L, "saobracajna", "", driverWithId1));
+        documentService.save(new Document(2L, "vozacka", "", driverWithId1));
+        documentService.save(new Document(3L, "licna", "", driverWithId1));
+
+        workHoursService.save(new WorkHour(1L, driverWithId1, LocalDateTime.now(), LocalDateTime.now()));
+
+        Ride ride = new Ride();
+        ride.setDriver(driverWithId1);
+        rideService.save(ride);
     }
 
     private void TestUserControllerGetMessages() {
@@ -80,7 +95,7 @@ public class TestDummyController {
         Vehicle vehicle = getVehicle();
         vehicle.setDriver(driver);
         driver.setVehicle(vehicle);
-        driverService.saveDriver(driver);
+        driverService.save(driver);
 
         Passenger passenger = getPassenger();
 
@@ -125,7 +140,7 @@ public class TestDummyController {
         Vehicle vehicle = getVehicle();
         vehicle.setDriver(driver);
         driver.setVehicle(vehicle);
-        driverService.saveDriver(driver);
+        driverService.save(driver);
 
         Passenger passenger = getPassenger();
 
@@ -145,7 +160,6 @@ public class TestDummyController {
         passengerService.save(passenger);
 
 
-
     }
 
     private void TestUserControllerGetNotes() {
@@ -154,19 +168,19 @@ public class TestDummyController {
         Note note = getNote();
 
         passengerService.save(passenger);
-        driverService.saveDriver(driver);
+        driverService.save(driver);
 
         note.setUser(driver);
         noteRepository.save(note);
 
     }
 
-    private void TestReviewController(){
+    private void TestReviewController() {
         Driver driver = getDriver();
         Vehicle vehicle = getVehicle();
         vehicle.setDriver(driver);
         driver.setVehicle(vehicle);
-        driverService.saveDriver(driver);
+        driverService.save(driver);
 
         Passenger passenger = getPassenger();
 
@@ -203,18 +217,20 @@ public class TestDummyController {
 
     }
 
-    private Document getDocument(){
+    private Document getDocument() {
         Document document = new Document();
         document.setName("Ivan");
         document.setPicturePath("image/img1.png");
         return document;
     }
-    private Note getNote(){
+
+    private Note getNote() {
         Note note = new Note();
         note.setDate(LocalDateTime.now());
         note.setMessage("Note");
         return note;
     }
+
     private Location getLocation() {
         Location location = new Location();
         location.setName("Location");
@@ -315,13 +331,14 @@ public class TestDummyController {
         return message;
     }
 
-    private VehicleReview getVehicleReview(){
+    private VehicleReview getVehicleReview() {
         VehicleReview review = new VehicleReview();
         review.setRating(1);
         review.setComment("Vehicle review");
         return review;
     }
-    private DriverReview getDriverReview(){
+
+    private DriverReview getDriverReview() {
         DriverReview review = new DriverReview();
         review.setRating(1);
         review.setComment("Driver review");

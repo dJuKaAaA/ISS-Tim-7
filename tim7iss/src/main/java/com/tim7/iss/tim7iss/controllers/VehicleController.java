@@ -19,7 +19,7 @@ public class VehicleController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<Vehicle> getById(@PathVariable Long id) {
 
-        Vehicle vehicle = vehicleService.findById(id);
+        Vehicle vehicle = vehicleService.getById(id);
 
         // course must exist
         if (vehicle == null) {
@@ -31,7 +31,7 @@ public class VehicleController {
 
     @GetMapping
     public ResponseEntity<List<Vehicle>> getAll() {
-        List<Vehicle> vehicles = vehicleService.findAll();
+        List<Vehicle> vehicles = vehicleService.getAll();
         return new ResponseEntity<>(vehicles, HttpStatus.OK);
     }
 }
