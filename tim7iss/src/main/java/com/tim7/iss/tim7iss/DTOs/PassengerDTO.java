@@ -1,10 +1,21 @@
 package com.tim7.iss.tim7iss.DTOs;
 
 import com.tim7.iss.tim7iss.models.Passenger;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PassengerDTO {
-    Long id;
-    String name,surname,profilePicture,telephoneNumber,email,adress;
+    private Long id;
+    private String name;
+    private String surname;
+    private String profilePicture;
+    private String telephoneNumber;
+    private String email;
+    private String address;
 
     public PassengerDTO(Passenger passenger) {
         this.id = passenger.getId();
@@ -13,7 +24,7 @@ public class PassengerDTO {
         this.profilePicture = passenger.getProfilePicture();
         this.telephoneNumber = passenger.getPhoneNumber();
         this.email = passenger.getEmailAddress();
-        this.adress = passenger.getAddress();
+        this.address = passenger.getAddress();
     }
 
 }

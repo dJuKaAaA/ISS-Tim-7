@@ -1,16 +1,15 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Ride {
@@ -22,7 +21,7 @@ public class Ride {
     private int price;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private LocalDateTime estimatedTime;
+    private int estimatedTimeInMinutes;
     private boolean babyOnBoard;
     private boolean petOnBoard;
     private boolean splitFare;
@@ -39,16 +38,16 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Message> messages = new HashSet<>();
 
-    @ManyToMany(mappedBy = "ongoingRide")
+    @ManyToMany(mappedBy = "finishedRides")
     private Set<Passenger> passengers = new HashSet<>();
 
-    @OneToMany(mappedBy = "ride")
-    private Set<Refusal> refusals = new HashSet<>();
+    @OneToOne(mappedBy = "ride")
+    private Refusal refusal;
 
     @OneToMany(mappedBy = "ride")
     private Set<Review> reviews = new HashSet<>();
 
     @OneToMany(mappedBy = "ride")
-    private Set<Route> routes = new HashSet<>();
+    private Set<Route> routes;
 
 }

@@ -1,16 +1,17 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Email;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Data
+@Getter
+@Setter
 public abstract class User {
 
     @Id
@@ -20,6 +21,8 @@ public abstract class User {
     private String lastName;
     private String profilePicture;
     private String phoneNumber;
+
+    @Email
     private String emailAddress;
     private String address;
     private String password;
@@ -29,18 +32,14 @@ public abstract class User {
     @OneToMany(mappedBy = "sender")
     private Set<Message> sentMessages = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "receivers",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "message_id", referencedColumnName = "id")
-    )
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.PERSIST)
     private Set<Message> receivedMessages = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private Set<Refusal> refusals = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private Set<Review> reviews = new HashSet<>();
+
 
 }

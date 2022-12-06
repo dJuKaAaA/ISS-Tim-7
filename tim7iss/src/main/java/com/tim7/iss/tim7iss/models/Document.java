@@ -1,15 +1,12 @@
 package com.tim7.iss.tim7iss.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.tim7.iss.tim7iss.DTOs.apidriver.DocumentRequestBodyDTO;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Document {
@@ -20,5 +17,19 @@ public class Document {
 
     private String name;
     private String picturePath;
+
+    @ManyToOne
+    @JoinColumn(name = "driver_id", referencedColumnName = "id")
+    private Driver driver;
+
+//    @ManyToOne
+//    @JoinColumn(name = "driver_id", referencedColumnName = "id")
+//    private Driver driver;
+
+    public Document(DocumentRequestBodyDTO documentRequestBodyDTO, Driver driver) {
+        this.setName(documentRequestBodyDTO.getName());
+        this.setPicturePath(documentRequestBodyDTO.getDocumentImage());
+        this.driver = driver;
+    }
 
 }
