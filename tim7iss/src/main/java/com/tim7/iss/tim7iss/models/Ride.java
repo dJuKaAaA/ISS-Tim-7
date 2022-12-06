@@ -14,6 +14,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Ride {
 
     @Id
@@ -57,8 +58,8 @@ public class Ride {
         this.passengers.add(passenger);
     }
 
-    public Ride(RideRequestDTO rideRequestDTO){
-        for(LocationRequestDTO location : rideRequestDTO.locations){
+    public Ride(RideRequestDTO rideRequestDTO) {
+        for (LocationRequestDTO location : rideRequestDTO.locations) {
             this.routes.add(new Route(new Location(location.departure), new Location(location.destination)));
         }
 //        this.vehicleType = new VehicleType();
@@ -66,6 +67,19 @@ public class Ride {
         this.babyOnBoard = rideRequestDTO.babyTransport;
         this.petOnBoard = rideRequestDTO.petTransport;
         this.status = Enums.RideStatus.PENDING;
+    }
+    @Override
+    public String toString() {
+        return "Ride{" +
+                "id=" + id +
+                ", price=" + price +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", estimatedTime=" + estimatedTimeInMinutes +
+                ", babyOnBoard=" + babyOnBoard +
+                ", petOnBoard=" + petOnBoard +
+                ", status=" + status +
+                '}';
     }
 }
 

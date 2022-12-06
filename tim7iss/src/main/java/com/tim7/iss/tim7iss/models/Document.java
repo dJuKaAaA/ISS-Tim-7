@@ -1,7 +1,11 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.DTOs.apidriver.DocumentRequestBodyDTO;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -20,5 +24,14 @@ public class Document {
 
     private String name;
     private String picturePath;
+
+
+    public Document(DocumentRequestBodyDTO documentRequestBodyDTO, Driver driver) {
+        this.setName(documentRequestBodyDTO.getName());
+        this.setPicturePath(documentRequestBodyDTO.getDocumentImage());
+        this.driver = driver;
+    }
+
+
 
 }

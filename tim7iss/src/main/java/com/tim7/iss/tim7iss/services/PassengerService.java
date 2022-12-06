@@ -1,7 +1,5 @@
 package com.tim7.iss.tim7iss.services;
 
-import com.tim7.iss.tim7iss.models.Driver;
-import com.tim7.iss.tim7iss.models.Location;
 import com.tim7.iss.tim7iss.models.Passenger;
 import com.tim7.iss.tim7iss.models.Vehicle;
 import com.tim7.iss.tim7iss.repositories.PassengerRepository;

@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class RideRequestDTO {
     public Set<RideUserDTO> passengers;
-    public Enums.VehicleName vehicleType;
+    public String vehicleType;
     public Boolean babyTransport;
     public Boolean petTransport;
     public List<LocationRequestDTO> locations;

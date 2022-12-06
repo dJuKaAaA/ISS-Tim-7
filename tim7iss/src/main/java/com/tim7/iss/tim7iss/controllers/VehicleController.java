@@ -22,7 +22,7 @@ public class VehicleController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<Vehicle> getById(@PathVariable Long id) {
 
-        Vehicle vehicle = vehicleService.findById(id);
+        Vehicle vehicle = vehicleService.getById(id);
 
         // course must exist
         if (vehicle == null) {
@@ -34,13 +34,13 @@ public class VehicleController {
 
     @GetMapping
     public ResponseEntity<List<Vehicle>> getAll() {
-        List<Vehicle> vehicles = vehicleService.findAll();
+        List<Vehicle> vehicles = vehicleService.getAll();
         return new ResponseEntity<>(vehicles, HttpStatus.OK);
     }
 
     @PutMapping("/{id}/location")
     public ResponseEntity<String>changeLocation(@PathVariable Long id, @RequestBody LocationResponseDTO location){
-        Vehicle vehicle = vehicleService.findById(id);
+        Vehicle vehicle = vehicleService.getById(id);
         if(vehicle == null){
             return new ResponseEntity<>("Vehicle does not exist", HttpStatus.NOT_FOUND);
         }

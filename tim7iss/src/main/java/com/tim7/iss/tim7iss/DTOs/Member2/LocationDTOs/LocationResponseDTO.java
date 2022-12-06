@@ -14,7 +14,7 @@ public class LocationResponseDTO {
     Double longitude;
     public LocationResponseDTO(Location location){
         this.address = location.getName();
-        this.longitude = location.getX();
-        this.latitude = location.getY();
+        this.longitude = location.getLongitude();
+        this.latitude = location.getLatitude();
     }
 }

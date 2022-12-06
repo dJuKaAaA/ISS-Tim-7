@@ -24,7 +24,7 @@ public class RideResponseDTO {
     public RideUserDTO driver;
     public Set<RideUserDTO> passengers = new HashSet<>();
     public Integer estimatedTimeInMinutes;
-    public Enums.VehicleName vehicleType;
+    public String vehicleType;
     public Boolean babyTransport;
     public Boolean petTransport;
     public List<LocationRequestDTO> locations = new ArrayList<>();
@@ -55,7 +55,7 @@ public class RideResponseDTO {
         if(ride.getVehicleType() == null)
             this.vehicleType = null;
         else
-            this.vehicleType = ride.getVehicleType().getVehicleName();
+            this.vehicleType = ride.getVehicleType().getName();
         this.babyTransport = ride.isBabyOnBoard();
         this.petTransport = ride.isPetOnBoard();
         try {

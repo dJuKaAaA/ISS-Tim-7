@@ -2,6 +2,10 @@ package com.tim7.iss.tim7iss.models;
 
 public class Enums {
 
+    public enum ReviewType{
+        VEHICLE,
+        DRIVER,
+    }
     public enum MessageType{
         SUPPORT,
         RIDE,
@@ -22,12 +26,6 @@ public class Enums {
         ACTIVE,
         FINISHED,
         CANCELED,
-    }
-
-    public enum VehicleName{
-        STANDARD,
-        LUXURIOUS,
-        VAN,
     }
 
     public enum Day{

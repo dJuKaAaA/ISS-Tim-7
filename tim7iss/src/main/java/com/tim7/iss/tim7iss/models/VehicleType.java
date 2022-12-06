@@ -18,7 +18,6 @@ public class VehicleType {
     private Long id;
 
     private int pricePerKm;
-    private String name;
-    private Enums.VehicleName vehicleName;
+    private String name; // standard
 
 }

@@ -5,7 +5,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -19,18 +22,19 @@ public class Location {
     private Long id;
 
     private String name;
-    private double x;
-    private double y;
+    private double longitude;
+    private double latitude;
 
-    public Location(String name, double x, double y) {
+
+    public Location(String name, double longitude, double latitude) {
         this.name = name;
-        this.x = x;
-        this.y = y;
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 
-    public Location(LocationResponseDTO locationResponseDTO){
+    public Location(LocationResponseDTO locationResponseDTO) {
         this.name = locationResponseDTO.getAddress();
-        this.y = locationResponseDTO.getLongitude();
-        this.x = locationResponseDTO.getLatitude();
+        this.longitude = locationResponseDTO.getLongitude();
+        this.latitude = locationResponseDTO.getLatitude();
     }
 }

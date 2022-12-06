@@ -15,4 +15,12 @@ public class LocationService {
         locationRepository.save(location);
     }
 
+    public Location getById(Long id) {
+        return locationRepository.findById(id).orElse(null);
+    }
+
+    public Location getByLongitudeAndLatitude(double longitude, double latitude) {
+        return locationRepository.findByLongitudeAndLatitude(longitude, latitude).orElse(null);
+    }
+
 }

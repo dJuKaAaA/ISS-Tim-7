@@ -1,6 +1,9 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 
@@ -21,7 +24,7 @@ public abstract class User {
     private String lastName;
     private String profilePicture;
     private String phoneNumber;
-    @Email
+//    @Email
     private String emailAddress;
     private String address;
     private String password;
@@ -31,13 +34,14 @@ public abstract class User {
     @OneToMany(mappedBy = "sender")
     private Set<Message> sentMessages = new HashSet<>();
 
-    @OneToMany(mappedBy = "receiver")
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.PERSIST)
     private Set<Message> receivedMessages = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private Set<Refusal> refusals = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "passenger", cascade = CascadeType.PERSIST)
     private Set<Review> reviews = new HashSet<>();
+
 
 }

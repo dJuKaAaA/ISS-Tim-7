@@ -16,4 +16,9 @@ public class VehicleTypeService {
     public VehicleType findById(Long id){
         return vehicleTypeRepository.findById(id).orElse(null);
     }
+
+    public VehicleType getByName(String name) {
+        return vehicleTypeRepository.findByName(name).orElse(null);
+    }
+
 }
