@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class RideUserDTO {
     Long id;
     String email;
@@ -17,5 +16,10 @@ public class RideUserDTO {
             return;
         this.id = user.getId();
         this.email = user.getEmailAddress();
+    }
+
+    public RideUserDTO(){
+        this.id = -1L;
+        this.email = "";
     }
 }

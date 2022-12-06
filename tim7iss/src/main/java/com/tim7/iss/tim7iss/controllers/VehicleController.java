@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.controllers;
 
+import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.Location;
 import com.tim7.iss.tim7iss.models.Vehicle;
 import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationResponseDTO;
@@ -48,4 +49,10 @@ public class VehicleController {
         vehicleService.save(vehicle);
         return new ResponseEntity<>("Cordinates successfully updated", HttpStatus.OK);
     }
+
+//    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+//    @ExceptionHandler(Exception.class)
+//    public String badRequestException(){
+//        return "Invalid data";
+//    }
 }

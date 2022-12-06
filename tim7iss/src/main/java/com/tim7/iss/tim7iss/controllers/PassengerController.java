@@ -53,7 +53,7 @@ public class PassengerController{
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{activationId}")
+    @GetMapping(value = "/activate/{activationId}")
     public ResponseEntity<String> activateUser(@PathVariable Long activationId){
         UserActivation activation = userActivationService.findById(activationId);
         if(activation == null){

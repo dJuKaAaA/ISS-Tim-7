@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.controllers;
 
+import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicReasonDTO;
 import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
@@ -70,7 +71,7 @@ public class RideController {
 
     //Voznja moze da se prekine samo ukoliko je stanje voznje pending ili accepted,
     //Radi testiranja validacija stanja je zakomentarisana
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/withdraw")
     public ResponseEntity<String>cancelRideById(@PathVariable Long id){
         Ride ride = ridesService.findById(id);
 //        Ride ride = ridesService.findByIdAndStatus(id, Enums.RideStatus.PENDING.ordinal());
@@ -137,12 +138,19 @@ public class RideController {
                 }
                 passenger.getFinishedRides().add(ride);
         }
-        Driver driver = driverService.findById(rideRequestDTO.driver.getId());
+        Driver driver = driverService.findById(5L);
         if(driver != null) {
             ride.setDriver(driver);
         }
         ridesService.save(ride);
         return ride.getId();
     }
+
+//    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+//    @ExceptionHandler(Exception.class)
+//    public String badRequestException(){
+//        return "Invalid data";
+//    }
+
 
 }

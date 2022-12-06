@@ -2,6 +2,7 @@ package com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs;
 
 import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationResponseDTO;
 import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.RideUserDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.RefusalDTOs.RefusalDTO;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationRequestDTO;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,8 @@ public class RideResponseDTO {
     public List<LocationRequestDTO> locations = new ArrayList<>();
     public Enums.RideStatus status;
 
+    public RefusalDTO rejection = new RefusalDTO();
+
     public RideResponseDTO(RideRequestDTO ride){
         this.startTime = String.valueOf(LocalDateTime.now());
         this.endTime = String.valueOf(LocalDateTime.now());
@@ -40,7 +43,7 @@ public class RideResponseDTO {
         this.locations = ride.locations;
         this.status = Enums.RideStatus.PENDING;
         this.passengers = ride.passengers;
-        this.driver = ride.driver;
+        this.driver = new RideUserDTO();
     }
 
     public RideResponseDTO(Ride ride){

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 public class RideRequestDTO {
-    public RideUserDTO driver;
     public Set<RideUserDTO> passengers;
     public Enums.VehicleName vehicleType;
     public Boolean babyTransport;
