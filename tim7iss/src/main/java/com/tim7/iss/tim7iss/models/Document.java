@@ -26,9 +26,10 @@ public class Document {
 //    @JoinColumn(name = "driver_id", referencedColumnName = "id")
 //    private Driver driver;
 
-    public Document(DocumentRequestBodyDTO documentRequestBodyDTO) {
+    public Document(DocumentRequestBodyDTO documentRequestBodyDTO, Driver driver) {
         this.setName(documentRequestBodyDTO.getName());
         this.setPicturePath(documentRequestBodyDTO.getDocumentImage());
+        this.driver = driver;
     }
 
 }

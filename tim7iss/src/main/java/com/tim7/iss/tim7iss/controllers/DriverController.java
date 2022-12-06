@@ -70,7 +70,6 @@ public class DriverController {
     @PutMapping("/{id}")
     public ResponseEntity<DriverResponseDTO> save(@PathVariable Long id,
                                                   @RequestBody DriverRequestBodyDTO driverRequestBodyDTO) {
-        Driver oldDriver = driverService.getById(id);
         Driver updatedDriver = new Driver(driverRequestBodyDTO);
         updatedDriver.setId(id);
         driverService.save(updatedDriver);
@@ -99,8 +98,7 @@ public class DriverController {
     public ResponseEntity<DocumentResponseDTO> addDocument(@PathVariable Long id,
                                                            @RequestBody DocumentRequestBodyDTO documentRequestBodyDTO) {
         Driver driver = driverService.getById(id);
-        Document newDocument = new Document(documentRequestBodyDTO);
-        newDocument.setDriver(driver);
+        Document newDocument = new Document(documentRequestBodyDTO, driver);
         documentService.save(newDocument);
         return new ResponseEntity<>(new DocumentResponseDTO(newDocument), HttpStatus.OK);
     }
@@ -110,9 +108,6 @@ public class DriverController {
         Driver driver = driverService.getById(id);
         Vehicle vehicle = driver.getVehicle();
 //        Vehicle vehicle = vehicleService.getByDriverId(id);  // alternative way
-        if (vehicle == null) {
-            return new ResponseEntity<>(new VehicleResponseDTO(), HttpStatus.OK);
-        }
         return new ResponseEntity<>(new VehicleResponseDTO(vehicle), HttpStatus.OK);
     }
 

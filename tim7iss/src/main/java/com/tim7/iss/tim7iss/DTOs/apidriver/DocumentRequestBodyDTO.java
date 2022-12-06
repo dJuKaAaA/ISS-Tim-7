@@ -11,6 +11,4 @@ public class DocumentRequestBodyDTO {
 
     private String name;
     private String documentImage;
-    private Long driverId;
-
 }
