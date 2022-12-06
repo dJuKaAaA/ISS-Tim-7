@@ -50,9 +50,9 @@ public class VehicleController {
         return new ResponseEntity<>("Cordinates successfully updated", HttpStatus.OK);
     }
 
-//    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-//    @ExceptionHandler(Exception.class)
-//    public String badRequestException(){
-//        return "Invalid data";
-//    }
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(Exception.class)
+    public String badRequestException(){
+        return "Invalid data";
+    }
 }

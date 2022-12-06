@@ -116,7 +116,7 @@ public class TestDummyController {
         passengerService.save(p3);
 
         driverService.save(new Driver());
-        userActivationService.save(new UserActivation(1L, LocalDateTime.now(), LocalDateTime.of(2022, Month.DECEMBER, 1, 0, 0, 0), p));
+        userActivationService.save(new UserActivation(1L, LocalDateTime.now(), LocalDateTime.of(2023, Month.DECEMBER, 1, 0, 0, 0), p));
 
 //        Location location = new Location( "Neka tamo lokacija", 1.5, 1.5);
 //        locationService.save(location);
