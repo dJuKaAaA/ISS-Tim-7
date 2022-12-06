@@ -18,6 +18,6 @@ public class VehicleType {
     private Long id;
 
     private int pricePerKm;
-    private String name;
+    private String name; // standard
 
 }

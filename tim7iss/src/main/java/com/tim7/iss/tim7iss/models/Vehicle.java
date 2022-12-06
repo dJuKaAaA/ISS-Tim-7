@@ -1,9 +1,13 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.DTOs.apidriver.VehicleRequestBodyDTO;
-import com.tim7.iss.tim7iss.repositories.VehicleTypeRepository;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.Set;
 
 @Entity
 @Getter
@@ -33,6 +37,10 @@ public class Vehicle {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
+
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
+    private Set<VehicleReview> reviews;
+
 
     public Vehicle(VehicleRequestBodyDTO vehicleRequestBodyDTO, VehicleType vehicleType, Driver driver,
                    Location location) {

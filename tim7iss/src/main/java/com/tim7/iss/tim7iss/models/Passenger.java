@@ -1,6 +1,9 @@
 package com.tim7.iss.tim7iss.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import lombok.*;
 
 import java.util.HashSet;
@@ -11,11 +14,9 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Passenger extends User {
 
-    @ManyToOne
-    @JoinColumn(name = "ongoing_ride_id", referencedColumnName = "id")
-    private Ride ongoingRide;
 
     @ManyToMany
     @JoinTable(
@@ -33,4 +34,20 @@ public class Passenger extends User {
     )
     private Set<Route> favouriteRoutes = new HashSet<>();
 
+    @Override
+    public String toString() {
+        String string = "Passenger:" +
+                "id=" + this.getId() +
+                ", firstName='" + this.getFirstName() + '\'' +
+                ", lastName='" + this.getLastName() + '\'' +
+                ", profilePicture='" + this.getProfilePicture() + '\'' +
+                ", phoneNumber='" + this.getPhoneNumber() + '\'' +
+                ", emailAddress='" + this.getAddress() + '\'' +
+                ", address='" + this.getAddress() + '\'' +
+                ", password='" + this.getPassword() + '\'' +
+                ", isBlocked=" + this.isBlocked() +
+                ", isActive=" + this.isActive();
+
+        return string;
+    }
 }

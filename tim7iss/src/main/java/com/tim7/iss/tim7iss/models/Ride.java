@@ -12,6 +12,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Ride {
 
     @Id
@@ -38,6 +39,7 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Message> messages = new HashSet<>();
 
+
     @ManyToMany(mappedBy = "finishedRides")
     private Set<Passenger> passengers = new HashSet<>();
 
@@ -47,7 +49,22 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Review> reviews = new HashSet<>();
 
-    @OneToMany(mappedBy = "ride")
-    private Set<Route> routes;
+    @OneToMany(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "route_id", referencedColumnName = "id")
+    private Set<Route> routes = new HashSet<>();
 
+
+    @Override
+    public String toString() {
+        return "Ride{" +
+                "id=" + id +
+                ", price=" + price +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", estimatedTime=" + estimatedTimeInMinutes +
+                ", babyOnBoard=" + babyOnBoard +
+                ", petOnBoard=" + petOnBoard +
+                ", status=" + status +
+                '}';
+    }
 }
