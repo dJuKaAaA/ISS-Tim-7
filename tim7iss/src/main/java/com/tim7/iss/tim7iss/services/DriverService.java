@@ -8,8 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class DriverService {
@@ -30,10 +28,6 @@ public class DriverService {
 
     public Driver getById(Long id) {
         return driverRepository.findById(id).orElse(null);
-    }
-
-    public Driver getByEmailAddress(String emailAddress) {
-        return driverRepository.findByEmailAddress(emailAddress).orElse(null);
     }
 
     public long countAll() {

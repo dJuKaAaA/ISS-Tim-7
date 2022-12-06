@@ -62,7 +62,6 @@ public class DriverController {
 
     @PostMapping
     public ResponseEntity<DriverResponseDTO> save(@RequestBody DriverRequestBodyDTO driverRequestBodyDTO) {
-        Driver driver = driverService.getByEmailAddress(driverRequestBodyDTO.getEmail());
         Driver newDriver = new Driver(driverRequestBodyDTO);
         driverService.save(newDriver);
         return new ResponseEntity<>(new DriverResponseDTO(newDriver), HttpStatus.OK);
