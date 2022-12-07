@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("api/passenger")
 @Transactional
+@CrossOrigin
 public class PassengerController {
     @Autowired
     PassengerService passengerService;
