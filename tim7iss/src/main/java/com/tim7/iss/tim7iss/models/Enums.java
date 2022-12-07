@@ -2,6 +2,11 @@ package com.tim7.iss.tim7iss.models;
 
 public class Enums {
 
+    public enum UserType {
+        DRIVER,
+        PASSENGER
+    }
+
     public enum ReviewType{
         VEHICLE,
         DRIVER,

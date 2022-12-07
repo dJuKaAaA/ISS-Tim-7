@@ -13,12 +13,12 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Table(name = "app_users")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Table(name = "ggcj_users")
 public abstract class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String firstName;
     private String lastName;
