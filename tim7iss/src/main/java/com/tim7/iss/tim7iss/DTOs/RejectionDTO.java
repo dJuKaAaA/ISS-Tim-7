@@ -9,11 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class RejectionDTO {
-    private String reason;
-    private String timeOfRejection;
+    private String reason = "";
+    private String timeOfRejection = "";
 
     public RejectionDTO(Refusal refusal){
-        this.reason = refusal.getReason();
-        this.reason = refusal.getTime().toString();
+        if (refusal != null) {
+            this.reason = refusal.getReason();
+            this.timeOfRejection = refusal.getTime().toString();
+        }
     }
 }

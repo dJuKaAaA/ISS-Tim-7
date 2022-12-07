@@ -34,6 +34,9 @@ public class ReviewService {
     @Autowired
     DriverReviewRepository driverReviewRepository;
 
+    @Autowired
+    PassengerRepository passengerRepository;
+
     public ReviewDTO addVehicleReview(Long vehicleId, Long rideId, POSTReviewDTO postReviewDTO) {
 
         VehicleReview review = new VehicleReview();
@@ -42,8 +45,9 @@ public class ReviewService {
         review.setComment(postReviewDTO.getComment());
         review.setRating(postReviewDTO.getRating());
         review.setRide(ride);
-        review.setPassenger(null);
+        review.setPassenger(passengerRepository.findById(4L).orElse(null));
         review.setVehicle(vehicle);
+        reviewRepository.save(review);
         return new ReviewDTO(review);
     }
 
@@ -89,8 +93,9 @@ public class ReviewService {
         review.setComment(postReviewDTO.getComment());
         review.setRating(postReviewDTO.getRating());
         review.setRide(ride);
-        review.setPassenger(null);
+        review.setPassenger(passengerRepository.findById(4L).orElse(null));
         review.setDriver(driver);
+        driverReviewRepository.save(review);
         return new ReviewDTO(review);
 
     }

@@ -115,3 +115,7 @@ INSERT INTO document (driver_id, name, picture_path)
 -- work hour creation
 INSERT INTO work_hour (driver_id, start_date, end_date)
     VALUES (1, '2022-12-21', '2022-12-21');
+
+INSERT INTO reviews (rating, comment, ride_id, passenger_id,
+                     vehicle_id, driver_id, dtype)
+    VALUES (5.0, '', 1, 1, 1, NULL, 'VehicleReview');

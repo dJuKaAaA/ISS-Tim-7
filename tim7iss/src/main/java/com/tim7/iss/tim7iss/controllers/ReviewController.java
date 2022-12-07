@@ -24,8 +24,8 @@ public class ReviewController {
     public ReviewDTO addVehicleReview(@PathVariable("rideId") Long rideId, @PathVariable("id") Long vehicleId,
                                       @RequestBody POSTReviewDTO postReviewDTO) {
         LOGGER.info("add vehicle review");
-//        return reviewService.addVehicleReview(vehicleId,rideId, postReviewDTO);
-        return reviewService.addVehicleReviewK1();
+        return reviewService.addVehicleReview(vehicleId, rideId, postReviewDTO);
+//        return reviewService.addVehicleReviewK1();
     }
 
     @GetMapping("/api/review/vehicle/{id}")
@@ -39,8 +39,8 @@ public class ReviewController {
     public ReviewDTO addDriverReview(@PathVariable("rideId") Long rideId, @PathVariable("id") Long driverId,
                                      @RequestBody POSTReviewDTO postReviewDTO) {
         LOGGER.info("add driver review");
-//        return reviewService.addDriverReview(driverId,rideId, postReviewDTO);
-        return reviewService.addDriverReviewK1();
+        return reviewService.addDriverReview(driverId,rideId, postReviewDTO);
+//        return reviewService.addDriverReviewK1();
     }
 
     //

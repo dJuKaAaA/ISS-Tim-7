@@ -43,5 +43,4 @@ public abstract class User {
     @OneToMany(mappedBy = "passenger", cascade = CascadeType.PERSIST)
     private Set<Review> reviews = new HashSet<>();
 
-
 }
