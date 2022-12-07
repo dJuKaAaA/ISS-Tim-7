@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+//@Builder
 public class Passenger extends User {
 
     @ManyToMany(cascade = CascadeType.PERSIST)

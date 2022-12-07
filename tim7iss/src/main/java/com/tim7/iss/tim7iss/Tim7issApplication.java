@@ -9,7 +9,6 @@ public class Tim7issApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Tim7issApplication.class, args);
-//		(new TestDummyController()).getDummyTestData();
 	}
 
 }

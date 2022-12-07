@@ -16,15 +16,13 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-
+//@Builder
 public class Driver extends User {
 
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
     private Set<Document> documents;
 
-
-    @OneToOne(mappedBy = "driver", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "driver", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Vehicle vehicle;
 
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
@@ -41,6 +39,8 @@ public class Driver extends User {
         this.setEmailAddress(driverRequestBodyDTO.getEmail());
         this.setAddress(driverRequestBodyDTO.getAddress());
         this.setPassword(driverRequestBodyDTO.getPassword());
+        this.setActive(false);
+        this.setBlocked(false);
     }
 
     @Override

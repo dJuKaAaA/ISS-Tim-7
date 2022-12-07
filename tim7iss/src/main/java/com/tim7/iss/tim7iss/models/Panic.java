@@ -17,7 +17,7 @@ public class Panic {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime time;
+    private LocalDateTime sentTime;
     private String reason;
 
     @ManyToOne
@@ -32,6 +32,6 @@ public class Panic {
         this.reason = reason.reason;
         this.ride = ride;
         this.user = user;
-        this.time = LocalDateTime.now();
+        this.sentTime = LocalDateTime.now();
     }
 }

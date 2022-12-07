@@ -16,7 +16,7 @@ public class PanicDTO {
         this.id = panic.getId();
         this.user = new PassengerResponseDTO((Passenger) panic.getUser());
         this.ride = new RideResponseDTO(panic.getRide());
-        this.time = String.valueOf(panic.getTime());
+        this.time = String.valueOf(panic.getSentTime());
         this.reason = panic.getReason();
     }
 }

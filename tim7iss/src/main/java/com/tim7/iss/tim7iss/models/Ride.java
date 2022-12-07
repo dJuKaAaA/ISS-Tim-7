@@ -50,7 +50,7 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Review> reviews = new HashSet<>();
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "ride")
+    @OneToMany(mappedBy = "ride")
     private Set<Route> routes = new HashSet<>();
 
     public Ride(Passenger passenger){
@@ -59,7 +59,9 @@ public class Ride {
 
     public Ride(RideRequestDTO rideRequestDTO) {
         for (LocationRequestDTO location : rideRequestDTO.locations) {
-            this.routes.add(new Route(new Location(location.departure), new Location(location.destination)));
+            Route r = new Route(new Location(location.departure), new Location(location.destination));
+            r.setRide(this);
+            this.routes.add(r);
         }
 //        this.vehicleType = new VehicleType();
 //        this.vehicleType.setVehicleName(rideRequestDTO.vehicleType);

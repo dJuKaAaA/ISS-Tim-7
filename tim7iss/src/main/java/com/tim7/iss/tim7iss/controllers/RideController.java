@@ -34,6 +34,9 @@ public class RideController {
     @Autowired
     VehicleTypeService vehicleTypeService;
 
+    @Autowired
+    RoutesService routesService;
+
     @PostMapping
     public ResponseEntity<RideResponseDTO>save(@RequestBody RideRequestDTO rideRequestDTO){
         RideResponseDTO response = new RideResponseDTO(rideRequestDTO);
@@ -143,6 +146,7 @@ public class RideController {
             ride.setDriver(driver);
         }
         ridesService.save(ride);
+        routesService.saveRoutes(ride.getRoutes());
         return ride.getId();
     }
 
