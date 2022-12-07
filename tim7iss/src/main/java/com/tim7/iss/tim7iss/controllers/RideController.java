@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/ride")
 @Transactional
+@CrossOrigin
 public class RideController {
     @Autowired
     RidesService ridesService;
