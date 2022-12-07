@@ -18,6 +18,7 @@ public class Route {
     private Long id;
     private int distance;
 
+
     @ManyToOne
     @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;

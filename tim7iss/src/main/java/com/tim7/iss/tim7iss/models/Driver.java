@@ -16,8 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-
+//@Builder
 public class Driver extends User {
 
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)

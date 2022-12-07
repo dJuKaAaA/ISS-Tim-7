@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import jakarta.validation.constraints.Email;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +20,8 @@ import java.util.Set;
 public abstract class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_generator")
+    @SequenceGenerator(name = "id_generator", sequenceName = "user_id_seq", initialValue = 6)
     private Long id;
     private String firstName;
     private String lastName;
