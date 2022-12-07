@@ -49,7 +49,7 @@ INSERT INTO ride (price, start_date, end_date, estimated_time_in_minutes,
                   baby_on_board, pet_on_board, split_fare, status, driver_id,
                   vehicle_type_id)
 VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
-        0, 1, 1);
+        3, 1, 1);
 INSERT INTO ride (price, start_date, end_date, estimated_time_in_minutes,
                   baby_on_board, pet_on_board, split_fare, status, driver_id,
                   vehicle_type_id)
@@ -127,12 +127,6 @@ INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_
                      vehicle_type_id, driver_id, location_id)
 VALUES ('Neki tamo model 1', 'Redzistrejsn plejt 1', 5, FALSE, TRUE,
         1, 2, 1);
-
--- user activation creation
-INSERT INTO user_activation (creation_date, expiration_date, user_id)
-VALUES ('2022-12-21', '2022-12-21', 3);
-INSERT INTO user_activation (creation_date, expiration_date, user_id)
-VALUES ('2022-12-21', '2022-12-21', 4);
 
 -- user activation creation
 INSERT INTO user_activation (creation_date, expiration_date, user_id)

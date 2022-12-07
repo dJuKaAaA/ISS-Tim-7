@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("api/passenger")
 @Transactional
+@CrossOrigin
 public class PassengerController {
     @Autowired
     PassengerService passengerService;
@@ -96,15 +97,15 @@ public class PassengerController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(Exception.class)
-    public String badRequestException(){
-        return "Invalid data";
-    }
-
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    @ExceptionHandler(UserNotFoundException.class)
-    public String userNotFoundException(){
-        return "User not found";
-    }
+//    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+//    @ExceptionHandler(Exception.class)
+//    public String badRequestException(){
+//        return "Invalid data";
+//    }
+//
+//    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+//    @ExceptionHandler(UserNotFoundException.class)
+//    public String userNotFoundException(){
+//        return "User not found";
+//    }
 }
