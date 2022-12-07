@@ -57,9 +57,6 @@ INSERT INTO ride (price, start_date, end_date, estimated_time_in_minutes,
     VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
             0, 1, 1);
 
--- passengers creation
-INSERT INTO passenger (id,first_name, last_name, profile_picture, phone_number,
-
 -- insert admin
 INSERT INTO admin (id, email_address, first_name, is_active, is_blocked, last_name, password, phone_number,
                    profile_picture, username)
@@ -152,13 +149,11 @@ INSERT INTO document (driver_id, name, picture_path)
 -- work hour creation
 INSERT INTO work_hour (driver_id, start_date, end_date)
 VALUES (1, '2022-12-21', '2022-12-21');
-
--- panic creation
-INSERT INTO panic (reason, sent_time, ride_id, user_id) values ('Reason','2022-12-21',3,2)
-
--- work hour creation
 INSERT INTO work_hour (driver_id, start_date, end_date)
 VALUES (2, '2022-12-21', '2022-12-21');
+
+-- panic creation
+INSERT INTO panic (reason, sent_time, ride_id, user_id) values ('Reason','2022-12-21',3,2);
 
 -- create messages
 INSERT INTO message(content, receiver_id, ride_id, sender_id, sent_date, type)
