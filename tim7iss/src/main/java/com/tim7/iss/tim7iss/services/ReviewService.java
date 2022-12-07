@@ -34,16 +34,21 @@ public class ReviewService {
     @Autowired
     DriverReviewRepository driverReviewRepository;
 
+    @Autowired
+    PassengerRepository passengerRepository;
+
     public ReviewDTO addVehicleReview(Long vehicleId, Long rideId, POSTReviewDTO postReviewDTO) {
 
         VehicleReview review = new VehicleReview();
         Ride ride = rideRepository.findById(rideId).get();
         Vehicle vehicle = vehicleRepository.findById(vehicleId).get();
+        Passenger passenger = passengerRepository.findById(3L).get(); // TODO promeniti
         review.setComment(postReviewDTO.getComment());
         review.setRating(postReviewDTO.getRating());
         review.setRide(ride);
-        review.setPassenger(null);
+        review.setPassenger(passenger); // TODO promeniti
         review.setVehicle(vehicle);
+        vehicleReviewRepository.save(review);
         return new ReviewDTO(review);
     }
 
@@ -85,12 +90,14 @@ public class ReviewService {
         DriverReview review = new DriverReview();
         Driver driver = driverRepository.findById(driverId).get();
         Ride ride = rideRepository.findById(rideId).get();
+        Passenger passenger = passengerRepository.findById(3L).get(); // TODO promeniti
 
         review.setComment(postReviewDTO.getComment());
         review.setRating(postReviewDTO.getRating());
         review.setRide(ride);
-        review.setPassenger(null);
+        review.setPassenger(passenger); // TODO promeniti
         review.setDriver(driver);
+        driverReviewRepository.save(review);
         return new ReviewDTO(review);
 
     }
