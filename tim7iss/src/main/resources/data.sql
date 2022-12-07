@@ -1,121 +1,169 @@
 -- location creation
 INSERT INTO location (name, longitude, latitude)
-    VALUES ('Neka tamo lokacija', 1.5, 1.5);
+VALUES ('Neka tamo lokacija', 1.5, 1.5);
 
 -- vehicle type creation
 INSERT INTO vehicle_type (price_per_km, name)
-    VALUES (100, 'STANDARDNO');
+VALUES (100, 'STANDARDNO');
 
 -- driver creation
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
-                    email_address, address, password, is_blocked, is_active, dtype)
-    VALUES ('Mika', 'Mikic', 'saimse', '8149081249081', 'mika@mikic.rs',
-            'Mikina kuca', 'nekasifra', FALSE, FALSE, 'Driver');
+                        email_address, address, password, is_blocked, is_active, dtype)
+VALUES ('Mika', 'Mikic', 'saimse', '8149081249081', 'mika@mikic.rs',
+        'Mikina kuca', 'nekasifra', FALSE, FALSE, 'Driver');
 
 -- vehicles creation
 INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
                      vehicle_type_id, driver_id, location_id)
-    VALUES ('Neki tamo model 1', 'Redzistrejsn plejt 1', 5, FALSE, TRUE,
-            1, 1, 1);
+VALUES ('Neki tamo model 1', 'Redzistrejsn plejt 1', 5, FALSE, TRUE,
+        1, 1, 1);
 INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
                      vehicle_type_id, driver_id, location_id)
-    VALUES ('Neki tamo model 2', 'Redzistrejsn plejt 2', 5, FALSE, TRUE,
-            1, NULL, 1);
+VALUES ('Neki tamo model 2', 'Redzistrejsn plejt 2', 5, FALSE, TRUE,
+        1, NULL, 1);
 INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
                      vehicle_type_id, driver_id, location_id)
-    VALUES ('Neki tamo model 3', 'Redzistrejsn plejt 3', 5, FALSE, TRUE,
-            1, NULL, 1);
+VALUES ('Neki tamo model 3', 'Redzistrejsn plejt 3', 5, FALSE, TRUE,
+        1, NULL, 1);
 INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
                      vehicle_type_id, driver_id, location_id)
-    VALUES ('Neki tamo model 4', 'Redzistrejsn plejt 4', 5, FALSE, TRUE,
-            1, NULL, 1);
+VALUES ('Neki tamo model 4', 'Redzistrejsn plejt 4', 5, FALSE, TRUE,
+        1, NULL, 1);
 INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
                      vehicle_type_id, driver_id, location_id)
-    VALUES ('Neki tamo model 5', 'Redzistrejsn plejt 5', 5, FALSE, TRUE,
-            1, NULL, 1);
+VALUES ('Neki tamo model 5', 'Redzistrejsn plejt 5', 5, FALSE, TRUE,
+        1, NULL, 1);
 
 -- rides creation
 INSERT INTO ride (price, start_date, end_date, estimated_time_in_minutes,
                   baby_on_board, pet_on_board, split_fare, status, driver_id,
                   vehicle_type_id)
-    VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
-            0, 1, 1);
+VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
+        0, 1, 1);
 INSERT INTO ride (price, start_date, end_date, estimated_time_in_minutes,
                   baby_on_board, pet_on_board, split_fare, status, driver_id,
                   vehicle_type_id)
-    VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
-            0, 1, 1);
+VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
+        0, 1, 1);
 INSERT INTO ride (price, start_date, end_date, estimated_time_in_minutes,
                   baby_on_board, pet_on_board, split_fare, status, driver_id,
                   vehicle_type_id)
-    VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
-            0, 1, 1);
+VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
+        0, 1, 1);
 INSERT INTO ride (price, start_date, end_date, estimated_time_in_minutes,
                   baby_on_board, pet_on_board, split_fare, status, driver_id,
                   vehicle_type_id)
-    VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
-            0, 1, 1);
+VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
+        0, 1, 1);
 
 -- passengers creation
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
-                       email_address, address, password, is_blocked, is_active, dtype)
-    VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
-            'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
+                        email_address, address, password, is_blocked, is_active, dtype)
+VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
+        'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
-                       email_address, address, password, is_blocked, is_active, dtype)
-    VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
-            'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
+                        email_address, address, password, is_blocked, is_active, dtype)
+VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
+        'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
-                       email_address, address, password, is_blocked, is_active, dtype)
-    VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
-            'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
+                        email_address, address, password, is_blocked, is_active, dtype)
+VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
+        'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
-                       email_address, address, password, is_blocked, is_active, dtype)
-    VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
-            'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
+                        email_address, address, password, is_blocked, is_active, dtype)
+VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
+        'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
 
 -- rides and passengers finished rides creation
 INSERT INTO finished_rides (passenger_id, ride_id)
-    VALUES (2, 1);
+VALUES (2, 1);
 INSERT INTO finished_rides (passenger_id, ride_id)
-    VALUES (2, 2);
+VALUES (2, 2);
 INSERT INTO finished_rides (passenger_id, ride_id)
-    VALUES (2, 3);
+VALUES (2, 3);
 INSERT INTO finished_rides (passenger_id, ride_id)
-    VALUES (2, 4);
+VALUES (2, 4);
 INSERT INTO finished_rides (passenger_id, ride_id)
-    VALUES (3, 3);
+VALUES (3, 3);
 INSERT INTO finished_rides (passenger_id, ride_id)
-    VALUES (3, 4);
+VALUES (3, 4);
 INSERT INTO finished_rides (passenger_id, ride_id)
-    VALUES (4, 1);
+VALUES (4, 1);
 INSERT INTO finished_rides (passenger_id, ride_id)
-    VALUES (4, 2);
+VALUES (4, 2);
 INSERT INTO finished_rides (passenger_id, ride_id)
-    VALUES (4, 3);
+VALUES (4, 3);
 INSERT INTO finished_rides (passenger_id, ride_id)
-    VALUES (5, 2);
+VALUES (5, 2);
 INSERT INTO finished_rides (passenger_id, ride_id)
-    VALUES (5, 3);
+VALUES (5, 3);
 INSERT INTO finished_rides (passenger_id, ride_id)
-    VALUES (5, 4);
+VALUES (5, 4);
+
+-- insert admin
+INSERT INTO ggcj_users (email_address, first_name, is_active, is_blocked, last_name, password, phone_number,
+                        profile_picture, username, dtype)
+VALUES ('ivanmartic@gamil.com', 'Ivan', false, false, 'Martic', 'password', '0604672999', '', 'ivanmartic',
+        'Admin');
+
+-- insert document
+INSERT INTO document (driver_id, name, picture_path)
+VALUES (1, 'saobracajna', '');
+INSERT INTO document (driver_id, name, picture_path)
+VALUES (1, 'vozacka', '');
+INSERT INTO document (driver_id, name, picture_path)
+VALUES (1, 'licna', '');
+
+-- insert vehicle type
+INSERT INTO vehicle_type (price_per_km, name)
+VALUES (100, 'STANDARDNO');
+
+-- insert location
+INSERT INTO location (name, longitude, latitude)
+VALUES ('Neka tamo lokacija', 1.5, 1.5);
+
+-- inset vehicle
+INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
+                     vehicle_type_id, driver_id, location_id)
+VALUES ('Neki tamo model 1', 'Redzistrejsn plejt 1', 5, FALSE, TRUE,
+        1, 2, 1);
 
 -- user activation creation
 INSERT INTO user_activation (creation_date, expiration_date, user_id)
-    VALUES ('2022-12-21', '2022-12-21', 2);
+VALUES ('2022-12-21', '2022-12-21', 3);
+INSERT INTO user_activation (creation_date, expiration_date, user_id)
+VALUES ('2022-12-21', '2022-12-21', 4);
+
+-- user activation creation
+INSERT INTO user_activation (creation_date, expiration_date, user_id)
+VALUES ('2022-12-21', '2022-12-21', 2);
+INSERT INTO user_activation (creation_date, expiration_date, user_id)
+VALUES ('2022-12-21', '2023-12-21', 3);
+INSERT INTO user_activation (creation_date, expiration_date, user_id)
+VALUES ('2022-12-21', '2023-12-21', 4);
+INSERT INTO user_activation (creation_date, expiration_date, user_id)
+VALUES ('2022-12-21', '2023-12-21', 5);
 
 -- documents creation
 INSERT INTO document (driver_id, name, picture_path)
-    VALUES (1, 'saobracajna', '');
+VALUES (1, 'saobracajna', '');
 INSERT INTO document (driver_id, name, picture_path)
-    VALUES (1, 'vozacka', '');
+VALUES (1, 'vozacka', '');
 INSERT INTO document (driver_id, name, picture_path)
-    VALUES (1, 'licna', '');
+VALUES (1, 'licna', '');
 
 -- work hour creation
 INSERT INTO work_hour (driver_id, start_date, end_date)
-    VALUES (1, '2022-12-21', '2022-12-21');
+VALUES (1, '2022-12-21', '2022-12-21');
+INSERT INTO work_hour (driver_id, start_date, end_date)
+VALUES (2, '2022-12-21', '2022-12-21');
 
-INSERT INTO reviews (rating, comment, ride_id, passenger_id,
-                     vehicle_id, driver_id, dtype)
-    VALUES (5.0, '', 1, 1, 1, NULL, 'VehicleReview');
+-- panic creation
+INSERT INTO panic (reason, sent_time, ride_id, user_id)
+values ('Reason', '2022-12-21', 3, 2);
+
+-- create messages
+INSERT INTO message(content, receiver_id, ride_id, sender_id, sent_date, type)
+VALUES ('message1', 2, 1, 3, '2022-12-21', 'STANDARD');
+INSERT INTO message(content, receiver_id, ride_id, sender_id, sent_date, type)
+VALUES ('message2', 3, 1, 2, '2022-12-21', 'STANDARD');

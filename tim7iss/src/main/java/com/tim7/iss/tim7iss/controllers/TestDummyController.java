@@ -116,6 +116,49 @@ public class TestDummyController {
 //        passengerService.save(p3);
 //
 //        driverService.save(new Driver());
+//        userActivationService.save(new UserActivation(1L, LocalDateTime.now(), LocalDateTime.of(2023, Month.DECEMBER, 1, 0, 0, 0), p));
+
+//        Location location = new Location( "Neka tamo lokacija", 1.5, 1.5);
+//        locationService.save(location);
+//
+//        VehicleType vehicleType = new VehicleType(1L, 100, "Proba");
+//        vehicleTypeService.save(vehicleType);
+//
+//        Driver driverWithId1 = getDriver();
+//        driverService.save(driverWithId1);
+//        driverWithId1 = driverService.getById(1L);
+//
+//        vehicleService.save(new Vehicle("Neki tamo model 1", "Redzistrejsn plejt 1", 1, false, true, location));
+//        vehicleService.save(new Vehicle("Neki tamo model 2", "Redzistrejsn plejt 2", 2, false, true, location));
+//        vehicleService.save(new Vehicle("Neki tamo model 3", "Redzistrejsn plejt 3", 3, false, true, location));
+//        vehicleService.save(new Vehicle("Neki tamo model 4", "Redzistrejsn plejt 4", 4, false, true, location));
+//        vehicleService.save(new Vehicle("Neki tamo model 5", "Redzistrejsn plejt 5", 5, false, true, location));
+//
+//        Ride r1 = new Ride();
+//        Ride r2 = new Ride();
+//        Ride r3 = new Ride();
+//        Ride r4 = new Ride();
+//        Passenger p = new Passenger();
+//        Passenger p1 = new Passenger();
+//        Passenger p2 = new Passenger();
+//        Passenger p3 = new Passenger();
+//
+//        p.setFinishedRides(new HashSet<>(Arrays.asList(r1, r2, r3, r4)));
+//        p1.setFinishedRides(new HashSet<>(Arrays.asList(r3, r4)));
+//        p2.setFinishedRides(new HashSet<>(Arrays.asList(r1, r2, r3)));
+//        p3.setFinishedRides(new HashSet<>(Arrays.asList(r2, r3, r4)));
+//
+////        ridesService.save(r1);
+////        ridesService.save(r2);
+////        ridesService.save(r3);
+////        ridesService.save(r4);
+//
+//        passengerService.save(p);
+//        passengerService.save(p1);
+//        passengerService.save(p2);
+//        passengerService.save(p3);
+//
+//        driverService.save(new Driver());
 //        userActivationService.save(new UserActivation(1L, LocalDateTime.now(), LocalDateTime.of(2022, Month.DECEMBER, 1, 0, 0, 0), p));
 //
 ////        Location location = new Location( "Neka tamo lokacija", 1.5, 1.5);

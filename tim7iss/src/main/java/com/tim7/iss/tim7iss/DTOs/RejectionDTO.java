@@ -12,7 +12,7 @@ public class RejectionDTO {
     private String reason = "";
     private String timeOfRejection = "";
 
-    public RejectionDTO(Refusal refusal){
+    public RejectionDTO(Refusal refusal) {
         if (refusal != null) {
             this.reason = refusal.getReason();
             this.timeOfRejection = refusal.getTime().toString();

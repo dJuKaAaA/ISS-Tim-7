@@ -33,6 +33,8 @@ public class RideResponseDTO {
     public RefusalDTO rejection = new RefusalDTO();
 
     public RideResponseDTO(RideRequestDTO ride){
+        if(ride == null)
+            return;
         this.startTime = String.valueOf(LocalDateTime.now());
         this.endTime = String.valueOf(LocalDateTime.now());
         this.totalCost = 1000;
@@ -47,6 +49,8 @@ public class RideResponseDTO {
     }
 
     public RideResponseDTO(Ride ride){
+        if(ride == null)
+            return;
         this.id = id;
         this.startTime = String.valueOf(ride.getStartDate());
         this.endTime =  String.valueOf(ride.getEndDate());

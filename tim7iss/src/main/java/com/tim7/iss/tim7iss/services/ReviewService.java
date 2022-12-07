@@ -42,6 +42,7 @@ public class ReviewService {
         VehicleReview review = new VehicleReview();
         Ride ride = rideRepository.findById(rideId).get();
         Vehicle vehicle = vehicleRepository.findById(vehicleId).get();
+        Passenger passenger = passengerRepository.findById(3L).get(); // TODO promeniti
         review.setComment(postReviewDTO.getComment());
         review.setRating(postReviewDTO.getRating());
         review.setRide(ride);
@@ -89,6 +90,7 @@ public class ReviewService {
         DriverReview review = new DriverReview();
         Driver driver = driverRepository.findById(driverId).get();
         Ride ride = rideRepository.findById(rideId).get();
+        Passenger passenger = passengerRepository.findById(3L).get(); // TODO promeniti
 
         review.setComment(postReviewDTO.getComment());
         review.setRating(postReviewDTO.getRating());
