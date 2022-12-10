@@ -3,7 +3,11 @@ package com.tim7.iss.tim7iss.services;
 import com.tim7.iss.tim7iss.models.WorkHour;
 import com.tim7.iss.tim7iss.repositories.WorkHourRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+
+import java.util.Collection;
 
 @Service
 public class WorkHourService {
@@ -17,6 +21,14 @@ public class WorkHourService {
 
     public WorkHour getById(Long id) {
         return workHourRepository.findById(id).orElse(null);
+    }
+
+    public Collection<WorkHour> getByDriverId(long driverId, Pageable page) {
+        return workHourRepository.findByDriverId(driverId, page);
+    }
+
+    public Long countAll() {
+        return workHourRepository.count();
     }
 
 }

@@ -2,7 +2,7 @@ package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.DTOs.apidriver.*;
 import com.tim7.iss.tim7iss.models.*;
-import com.tim7.iss.tim7iss.DTOs.apidriver.DriverAllWorkHoursResponseDTO;
+import com.tim7.iss.tim7iss.DTOs.apidriver.PaginatedDriverWorkHoursResponseDTO;
 import com.tim7.iss.tim7iss.DTOs.apidriver.PaginatedDriversResponseDTO;
 import com.tim7.iss.tim7iss.services.*;
 import jakarta.transaction.Transactional;
@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -153,12 +152,13 @@ public class DriverController {
     }
 
     @GetMapping("{id}/working-hours")
-    public ResponseEntity<DriverAllWorkHoursResponseDTO> getWorkHours(@PathVariable Long id) {
+    public ResponseEntity<PaginatedDriverWorkHoursResponseDTO> getWorkHours(@PathVariable Long id, Pageable page) {
         Driver driver = driverService.getById(id);
-        Collection<WorkHour> workHours = driver.getWorkHours();
+        Collection<WorkHour> workHours = workHourService.getByDriverId(id, page);
         List<WorkHourResponseDTO> workHoursDTOs = new ArrayList<>();
         workHours.forEach(workHour -> workHoursDTOs.add(new WorkHourResponseDTO(workHour)));
-        return new ResponseEntity<>(new DriverAllWorkHoursResponseDTO(workHoursDTOs.size(), workHoursDTOs), HttpStatus.OK);
+        return new ResponseEntity<>(new PaginatedDriverWorkHoursResponseDTO(workHourService.countAll(),
+                workHoursDTOs), HttpStatus.OK);
     }
 
 
@@ -174,12 +174,12 @@ public class DriverController {
     }
 
     @GetMapping("{id}/ride")
-    public ResponseEntity<DriverRidesResponseDTO> getRides(@PathVariable Long id) {
+    public ResponseEntity<PaginatedDriverRidesResponseDTO> getRides(@PathVariable Long id, Pageable page) {
         Driver driver = driverService.getById(id);
-        Collection<Ride> rides = driver.getRides();
+        Collection<Ride> rides = rideService.getByDriverId(id, page);
         List<RideResponseDTO> rideDTOs = new ArrayList<>();
         rides.forEach(ride -> rideDTOs.add(new RideResponseDTO(ride)));
-        return new ResponseEntity<>(new DriverRidesResponseDTO(rideService.countAll(), rideDTOs), HttpStatus.OK);
+        return new ResponseEntity<>(new PaginatedDriverRidesResponseDTO(rideService.countAll(), rideDTOs), HttpStatus.OK);
     }
 
     @GetMapping("/working-hour/{workingHourId}")
