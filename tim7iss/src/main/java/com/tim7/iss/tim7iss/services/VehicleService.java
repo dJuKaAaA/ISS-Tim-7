@@ -29,4 +29,7 @@ public class VehicleService {
         return vehicleRepository.findByDriverId(driverId).orElse(null);
     }
 
+    public void update(Long location_id, Long id){
+        vehicleRepository.updateLocation(location_id, id);
+    }
 }
