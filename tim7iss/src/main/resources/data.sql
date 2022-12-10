@@ -114,15 +114,11 @@ VALUES (1, 'vozacka', '');
 INSERT INTO document (driver_id, name, picture_path)
 VALUES (1, 'licna', '');
 
--- insert vehicle type
-INSERT INTO vehicle_type (price_per_km, name)
-VALUES (100, 'STANDARDNO');
-
 -- insert location
 INSERT INTO location (name, longitude, latitude)
 VALUES ('Neka tamo lokacija', 1.5, 1.5);
 
--- inset vehicle
+-- insert vehicle
 INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
                      vehicle_type_id, driver_id, location_id)
 VALUES ('Neki tamo model 1', 'Redzistrejsn plejt 1', 5, FALSE, TRUE,

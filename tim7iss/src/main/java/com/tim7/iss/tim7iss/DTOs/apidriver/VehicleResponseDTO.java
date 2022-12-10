@@ -13,6 +13,7 @@ public class VehicleResponseDTO {
 
     private Long id;
     private Long driverId;
+    private String vehicleType;
     private String model;
     private String licenseNumber;
     private LocationDTO currentLocation;
@@ -23,6 +24,7 @@ public class VehicleResponseDTO {
     public VehicleResponseDTO(Vehicle vehicle) {
         this.id = vehicle.getId();
         this.driverId = vehicle.getDriver().getId();
+        this.vehicleType = (vehicle.getVehicleType() == null) ? "STANDARDNO" : vehicle.getVehicleType().getName();
         this.model = vehicle.getModel();
         this.licenseNumber = vehicle.getRegistrationPlate();
         this.currentLocation = new LocationDTO(vehicle.getLocation());

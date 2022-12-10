@@ -85,12 +85,10 @@ public class DriverController {
         return new ResponseEntity<>(documentDTOs, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}/documents")
-    public ResponseEntity<Boolean> deleteDocuments(@PathVariable Long id) {
-        Driver driver = driverService.getById(id);
-        Collection<Document> driverDocuments = documentService.getAllByDriverId(id);
-        driverDocuments.forEach(document -> documentService.delete(document));
-        return new ResponseEntity<>(true, HttpStatus.OK);
+    @DeleteMapping("/document/{documentId}")
+    public ResponseEntity<Boolean> deleteDocuments(@PathVariable Long documentId) {
+        documentService.deleteById(documentId);
+        return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/{id}/documents")
@@ -151,7 +149,7 @@ public class DriverController {
         return new ResponseEntity<>(new VehicleResponseDTO(newVehicle), HttpStatus.OK);
     }
 
-    @GetMapping("{id}/working-hours")
+    @GetMapping("{id}/working-hour")
     public ResponseEntity<PaginatedDriverWorkHoursResponseDTO> getWorkHours(@PathVariable Long id, Pageable page) {
         Driver driver = driverService.getById(id);
         Collection<WorkHour> workHours = workHourService.getByDriverId(id, page);
@@ -162,7 +160,7 @@ public class DriverController {
     }
 
 
-    @PostMapping("{id}/working-hours")
+    @PostMapping("{id}/working-hour")
     public ResponseEntity<WorkHourResponseDTO> addWorkHour(@PathVariable Long id) {
         WorkHourRequestBodyDTO workHourRequestBodyDTO = new WorkHourRequestBodyDTO(
                 LocalDateTime.now(), LocalDateTime.now());
@@ -175,7 +173,6 @@ public class DriverController {
 
     @GetMapping("{id}/ride")
     public ResponseEntity<PaginatedDriverRidesResponseDTO> getRides(@PathVariable Long id, Pageable page) {
-        Driver driver = driverService.getById(id);
         Collection<Ride> rides = rideService.getByDriverId(id, page);
         List<RideResponseDTO> rideDTOs = new ArrayList<>();
         rides.forEach(ride -> rideDTOs.add(new RideResponseDTO(ride)));
