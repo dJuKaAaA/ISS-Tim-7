@@ -25,5 +25,9 @@ public class DocumentService {
         documentRepository.delete(document);
     }
 
+    public void deleteById(Long id) {
+        documentRepository.deleteById(id);
+    }
+
 
 }

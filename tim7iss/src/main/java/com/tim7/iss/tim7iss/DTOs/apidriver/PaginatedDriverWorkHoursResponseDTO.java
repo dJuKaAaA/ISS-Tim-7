@@ -9,7 +9,7 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DriverAllWorkHoursResponseDTO {
+public class PaginatedDriverWorkHoursResponseDTO {
 
     private long totalCount;
     private Collection<WorkHourResponseDTO> results;
