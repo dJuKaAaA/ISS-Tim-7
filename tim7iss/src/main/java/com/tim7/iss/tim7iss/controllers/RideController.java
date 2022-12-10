@@ -54,8 +54,10 @@ public class RideController {
         }
         return new ResponseEntity<>(new RideResponseDTO(ride), HttpStatus.OK);
     }
+    //Delete fixed id
     @GetMapping(value = "/passenger/{passengerId}/active")
     public ResponseEntity<RideResponseDTO> getPassengersActiveRide(@PathVariable Long passengerId){
+        passengerId = 2L;
         Ride ride = ridesService.findByPassengerIdAndStatus(passengerId, Enums.RideStatus.ACTIVE.ordinal());
         if(ride == null){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
