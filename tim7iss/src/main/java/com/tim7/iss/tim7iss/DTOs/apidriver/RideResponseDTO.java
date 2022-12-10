@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.DTOs.apidriver;
 
 import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerResponseDTO;
+import com.tim7.iss.tim7iss.DTOs.RejectionDTO;
 import com.tim7.iss.tim7iss.models.Refusal;
 import com.tim7.iss.tim7iss.models.Ride;
 import com.tim7.iss.tim7iss.models.Route;
@@ -20,8 +21,6 @@ import java.util.Set;
 public class RideResponseDTO {
 
     private Long id;
-    private List<LocationDTO> locations = new ArrayList<>();
-    private Refusal refusal;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private int totalCost;
@@ -31,6 +30,8 @@ public class RideResponseDTO {
     private String vehicleType;
     private boolean babyTransport;
     private boolean petTransport;
+    private RejectionDTO rejection;
+    private List<LocationDTO> locations = new ArrayList<>();
 
     public RideResponseDTO(Ride ride) {
         this.id = ride.getId();
@@ -50,9 +51,10 @@ public class RideResponseDTO {
         this.driver = new DriverResponseDTO(ride.getDriver());
         ride.getPassengers().forEach(passenger -> this.passengers.add(new PassengerResponseDTO(passenger)));
         this.estimatedTimeInMinutes = ride.getEstimatedTimeInMinutes();
-        this.vehicleType = (ride.getVehicleType() == null) ? "I J*** TE BMW" : ride.getVehicleType().getName();
+        this.vehicleType = (ride.getVehicleType() == null) ? "" : ride.getVehicleType().getName();
         this.babyTransport = ride.isBabyOnBoard();
         this.petTransport = ride.isPetOnBoard();
+        this.rejection = null;
     }
 
 }
