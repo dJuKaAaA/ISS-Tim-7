@@ -8,6 +8,8 @@ import com.tim7.iss.tim7iss.services.ReviewService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,41 +23,43 @@ public class ReviewController {
     ReviewService reviewService;
 
     @PostMapping("/api/review/{rideId}/vehicle/{id}")
-    public ReviewDTO addVehicleReview(@PathVariable("rideId") Long rideId, @PathVariable("id") Long vehicleId,
-                                      @RequestBody POSTReviewDTO postReviewDTO) {
+    public ResponseEntity<ReviewDTO> addVehicleReview(@PathVariable("rideId") Long rideId,
+                                                      @PathVariable("id") Long vehicleId,
+                                                      @RequestBody POSTReviewDTO postReviewDTO) {
         LOGGER.info("add vehicle review");
 //        return reviewService.addVehicleReview(vehicleId, rideId, postReviewDTO);
-        return reviewService.addVehicleReviewK1();
+        return new ResponseEntity<>(reviewService.addVehicleReviewK1(), HttpStatus.OK);
     }
 
     @GetMapping("/api/review/vehicle/{id}")
-    public ReviewsDTO getVehicleReviews(@PathVariable("id") Long vehicleId) {
+    public ResponseEntity<ReviewsDTO> getVehicleReviews(@PathVariable("id") Long vehicleId) {
         LOGGER.info("get vehicle reviews");
 //        return reviewService.getVehicleReviews(vehicleId);
-        return reviewService.getVehicleReviewsK1();
+        return new ResponseEntity<>(reviewService.getVehicleReviewsK1(), HttpStatus.OK);
     }
 
     @PostMapping("/api/review/{rideId}/driver/{id}")
-    public ReviewDTO addDriverReview(@PathVariable("rideId") Long rideId, @PathVariable("id") Long driverId,
-                                     @RequestBody POSTReviewDTO postReviewDTO) {
+    public ResponseEntity<ReviewDTO> addDriverReview(@PathVariable("rideId") Long rideId,
+                                                     @PathVariable("id") Long driverId,
+                                                     @RequestBody POSTReviewDTO postReviewDTO) {
         LOGGER.info("add driver review");
 //        return reviewService.addDriverReview(driverId,rideId, postReviewDTO);
-        return reviewService.addDriverReviewK1();
+        return new ResponseEntity<>(reviewService.addDriverReviewK1(), HttpStatus.OK);
     }
 
     //
     @GetMapping("/api/review/driver/{id}")
-    public ReviewsDTO getDriverReviews(@PathVariable("id") Long driveId) {
+    public ResponseEntity<ReviewsDTO> getDriverReviews(@PathVariable("id") Long driveId) {
         LOGGER.info("get driver reviews");
 //        return reviewService.getDriverReviews(driveId);
-        return reviewService.getDriverReviewsK1();
+        return new ResponseEntity<>(reviewService.getDriverReviewsK1(), HttpStatus.OK);
     }
 
     @GetMapping("/api/review/{rideId}")
-    public RideReviewDTO getRideReviews(@PathVariable("rideId") Long rideId) {
+    public ResponseEntity<RideReviewDTO> getRideReviews(@PathVariable("rideId") Long rideId) {
         LOGGER.info("get ride reviews");
 //        return reviewService.getRideReviews(rideId);
-        return reviewService.getRideReviewsK1();
+        return new ResponseEntity<>(reviewService.getRideReviewsK1(), HttpStatus.OK);
     }
 
 }
