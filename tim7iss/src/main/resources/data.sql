@@ -35,22 +35,22 @@ VALUES ('Neki tamo model 5', 'Redzistrejsn plejt 5', 5, FALSE, TRUE,
         1, NULL, 1);
 
 -- rides creation
-INSERT INTO ride (price, start_date, end_date, estimated_time_in_minutes,
+INSERT INTO ride (price, start_time, end_time, estimated_time_in_minutes,
                   baby_on_board, pet_on_board, split_fare, status, driver_id,
                   vehicle_type_id)
 VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
         0, 1, 1);
-INSERT INTO ride (price, start_date, end_date, estimated_time_in_minutes,
+INSERT INTO ride (price, start_time, end_time, estimated_time_in_minutes,
                   baby_on_board, pet_on_board, split_fare, status, driver_id,
                   vehicle_type_id)
 VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
         0, 1, 1);
-INSERT INTO ride (price, start_date, end_date, estimated_time_in_minutes,
+INSERT INTO ride (price, start_time, end_time, estimated_time_in_minutes,
                   baby_on_board, pet_on_board, split_fare, status, driver_id,
                   vehicle_type_id)
 VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
         3, 1, 1);
-INSERT INTO ride (price, start_date, end_date, estimated_time_in_minutes,
+INSERT INTO ride (price, start_time, end_time, estimated_time_in_minutes,
                   baby_on_board, pet_on_board, split_fare, status, driver_id,
                   vehicle_type_id)
 VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,

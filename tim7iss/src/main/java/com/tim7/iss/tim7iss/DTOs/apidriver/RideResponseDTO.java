@@ -2,7 +2,6 @@ package com.tim7.iss.tim7iss.DTOs.apidriver;
 
 import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerResponseDTO;
 import com.tim7.iss.tim7iss.DTOs.RejectionDTO;
-import com.tim7.iss.tim7iss.models.Refusal;
 import com.tim7.iss.tim7iss.models.Ride;
 import com.tim7.iss.tim7iss.models.Route;
 import lombok.AllArgsConstructor;
@@ -45,8 +44,8 @@ public class RideResponseDTO {
                 this.locations.add(new LocationDTO(route.getEndPoint()));
             }
         }
-        this.startTime = ride.getStartDate();
-        this.endTime = ride.getEndDate();
+        this.startTime = ride.getStartTime();
+        this.endTime = ride.getEndTime();
         this.totalCost = ride.getPrice();
         this.driver = new DriverResponseDTO(ride.getDriver());
         ride.getPassengers().forEach(passenger -> this.passengers.add(new PassengerResponseDTO(passenger)));

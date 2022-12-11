@@ -22,8 +22,8 @@ public class Ride {
     private Long id;
 
     private int price;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private Integer estimatedTimeInMinutes;
     private boolean babyOnBoard;
     private boolean petOnBoard;
@@ -74,8 +74,8 @@ public class Ride {
         return "Ride{" +
                 "id=" + id +
                 ", price=" + price +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
+                ", startDate=" + startTime +
+                ", endDate=" + endTime +
                 ", estimatedTime=" + estimatedTimeInMinutes +
                 ", babyOnBoard=" + babyOnBoard +
                 ", petOnBoard=" + petOnBoard +
