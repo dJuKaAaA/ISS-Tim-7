@@ -17,12 +17,13 @@ public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String picturePath;
 
     @ManyToOne
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
+
+    private String name;
+    private String picturePath;
 
 
     public Document(DocumentRequestBodyDTO documentRequestBodyDTO, Driver driver) {
@@ -30,5 +31,7 @@ public class Document {
         this.setPicturePath(documentRequestBodyDTO.getDocumentImage());
         this.driver = driver;
     }
+
+
 
 }

@@ -7,9 +7,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class VehicleTypeService {
-
     @Autowired
-    private VehicleTypeRepository vehicleTypeRepository;
+    VehicleTypeRepository vehicleTypeRepository;
+    public void save(VehicleType vehicleType){
+        vehicleTypeRepository.save(vehicleType);
+    }
+
+    public VehicleType findById(Long id){
+        return vehicleTypeRepository.findById(id).orElse(null);
+    }
 
     public VehicleType getByName(String name) {
         return vehicleTypeRepository.findByName(name).orElse(null);

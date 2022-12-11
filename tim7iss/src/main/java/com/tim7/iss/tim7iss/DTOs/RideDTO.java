@@ -14,7 +14,7 @@ import java.util.Set;
 public class RideDTO {
 
     private Long id;
-    private Set<RouteDTO> locations = new HashSet<>();
+
     private String startTime;
     private String endTime;
     private double totalCost;
@@ -28,6 +28,8 @@ public class RideDTO {
 
     private RejectionDTO rejection;
 
+    private Set<RouteDTO> locations = new HashSet<>();
+
     public RideDTO(Ride ride) {
         this.id = ride.getId();
 
@@ -36,8 +38,8 @@ public class RideDTO {
             RouteDTO routeDTO = new RouteDTO(route);
             this.locations.add(routeDTO);
         }
-        this.startTime = ride.getStartDate().toString();
-        this.endTime = ride.getEndDate().toString();
+        this.startTime = ride.getStartDate().format(Constants.customDateTimeFormat);
+        this.endTime = ride.getEndDate().format(Constants.customDateTimeFormat);
         this.totalCost = ride.getPrice();
         this.driver = new SimpleDriverDTO(ride.getDriver());
 

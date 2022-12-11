@@ -6,26 +6,26 @@ import lombok.Getter;
 import lombok.Setter;
 import jakarta.validation.constraints.Email;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Entity
 @Getter
 @Setter
-@Entity
-@Table(name = "app_users")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Table(name = "ggcj_users")
 public abstract class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String firstName;
     private String lastName;
     private String profilePicture;
     private String phoneNumber;
-
-
 //    @Email
     private String emailAddress;
     private String address;
@@ -36,7 +36,6 @@ public abstract class User {
     @OneToMany(mappedBy = "sender")
     private Set<Message> sentMessages = new HashSet<>();
 
-
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.PERSIST)
     private Set<Message> receivedMessages = new HashSet<>();
 
@@ -45,6 +44,5 @@ public abstract class User {
 
     @OneToMany(mappedBy = "passenger", cascade = CascadeType.PERSIST)
     private Set<Review> reviews = new HashSet<>();
-
 
 }

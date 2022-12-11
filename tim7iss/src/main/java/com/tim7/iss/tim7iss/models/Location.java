@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationResponseDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,5 +30,11 @@ public class Location {
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
+    }
+
+    public Location(LocationResponseDTO locationResponseDTO) {
+        this.name = locationResponseDTO.getAddress();
+        this.longitude = locationResponseDTO.getLongitude();
+        this.latitude = locationResponseDTO.getLatitude();
     }
 }

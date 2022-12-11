@@ -4,6 +4,8 @@ import com.tim7.iss.tim7iss.DTOs.*;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,16 +36,16 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public RidesDTO getRides(Long id) throws Exception {
+    public ResponseEntity<RidesDTO> getRides(Long id) throws Exception {
         User user = userRepository.findById(id).get();
 
         if (user instanceof Driver driver) {
             List<Ride> rides = rideRepository.findRidesByDriverId(driver.getId());
-            return new RidesDTO(new HashSet<>(rides));
+            return new ResponseEntity<>(new RidesDTO(new HashSet<>(rides)), HttpStatus.OK);
 
         } else if (user instanceof Passenger passenger) {
             List<Ride> rides = rideRepository.findRidesByPassengersId(passenger.getId());
-            return new RidesDTO(new HashSet<>(rides));
+            return new ResponseEntity<>(new RidesDTO(new HashSet<>(rides)), HttpStatus.OK);
 
         }
         return null;
@@ -53,7 +55,7 @@ public class UserService {
     public RidesDTO getRidesK1() {
 
         RidesDTO retVal = new RidesDTO();
-        retVal.setTotalCount(1);
+        retVal.setTotalCount(2);
 
         RideDTO ride = new RideDTO();
         ride.setId(1L);
@@ -65,8 +67,8 @@ public class UserService {
         route.add(routeDTO);
 
         ride.setLocations(route);
-        ride.setStartTime(LocalDateTime.now().toString());
-        ride.setEndTime(LocalDateTime.now().toString());
+        ride.setStartTime(LocalDateTime.now().format(Constants.customDateTimeFormat));
+        ride.setEndTime(LocalDateTime.now().format(Constants.customDateTimeFormat));
         ride.setTotalCost(123);
         ride.setDriver(new SimpleDriverDTO(1L, "email"));
         Set<SimplePassengerDTO> passengers = new HashSet<>();
@@ -77,18 +79,51 @@ public class UserService {
         ride.setVehicleType("STANDARD");
         ride.setBabyTransport(true);
         ride.setPetTransport(false);
-        RejectionDTO rejectionDTO = new RejectionDTO("reason", LocalDateTime.now().toString());
+        RejectionDTO rejectionDTO = new RejectionDTO("reason", LocalDateTime.now().format(Constants.customDateTimeFormat));
         ride.setRejection(rejectionDTO);
 
+        RideDTO ride2 = getRide();
+        ride2.setStartTime("01.01.2022 16:40:30");
         Set<RideDTO> rides = new HashSet<>();
         rides.add(ride);
+        rides.add(ride2);
         retVal.setResults(rides);
         return retVal;
     }
 
-    public UsersDTO getUsersDetails() {
+    // DELETE
+    private RideDTO getRide() {
+
+        RideDTO ride = new RideDTO();
+        ride.setId(1L);
+
+        LocationDTO location = new LocationDTO("adresa", 45.2121, 43.416546);
+
+        HashSet<RouteDTO> route = new HashSet<>();
+        RouteDTO routeDTO = new RouteDTO(location, location);
+        route.add(routeDTO);
+
+        ride.setLocations(route);
+        ride.setStartTime(LocalDateTime.now().format(Constants.customDateTimeFormat));
+        ride.setEndTime(LocalDateTime.now().format(Constants.customDateTimeFormat));
+        ride.setTotalCost(123);
+        ride.setDriver(new SimpleDriverDTO(1L, "email"));
+        Set<SimplePassengerDTO> passengers = new HashSet<>();
+        SimplePassengerDTO passenger = new SimplePassengerDTO(1L, "ivan");
+        passengers.add(passenger);
+        ride.setPassengers(passengers);
+        ride.setEstimatedTimeInMinutes(5);
+        ride.setVehicleType("STANDARD");
+        ride.setBabyTransport(true);
+        ride.setPetTransport(false);
+        RejectionDTO rejectionDTO = new RejectionDTO("reason", LocalDateTime.now().format(Constants.customDateTimeFormat));
+        ride.setRejection(rejectionDTO);
+        return ride;
+    }
+
+    public ResponseEntity<UsersDTO> getUsersDetails() {
         Set<User> users = new HashSet<>(userRepository.findAll());
-        return new UsersDTO(users);
+        return new ResponseEntity<>(new UsersDTO(users),HttpStatus.OK);
     }
 
     public UsersDTO getUsersDetailsK1() {
@@ -110,8 +145,8 @@ public class UserService {
         return usersDTO;
     }
 
-    public POSTLoginDTO login(LoginDTO loginDTO) {
-        return null;
+    public ResponseEntity<POSTLoginDTO> login(LoginDTO loginDTO) {
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     public POSTLoginDTO loginK1() {
@@ -121,11 +156,11 @@ public class UserService {
         return postLoginDTO;
     }
 
-    public MessagesDTO getMessages(Long id) throws Exception {
+    public ResponseEntity<MessagesDTO> getMessages(Long id) throws Exception {
 
         User user = userRepository.findById(id).get();
         Set<Message> messages = new HashSet<>(getAllMessages(user));
-        return new MessagesDTO(messages);
+        return new ResponseEntity<>(new MessagesDTO(messages), HttpStatus.OK);
 
     }
 
@@ -133,7 +168,7 @@ public class UserService {
         Set<MessageDTO> messageDTOS = new HashSet<>();
         MessageDTO messageDTO = new MessageDTO();
         messageDTO.setId(1L);
-        messageDTO.setTimeOfSending(LocalDateTime.now().toString());
+        messageDTO.setTimeOfSending(LocalDateTime.now().format(Constants.customDateTimeFormat));
         messageDTO.setSenderId(1L);
         messageDTO.setReceiverId(2L);
         messageDTO.setMessage("message");
@@ -145,7 +180,7 @@ public class UserService {
     }
 
 
-    public MessageDTO sendMessage(Long id, POSTMessageDTO messageDTO) throws Exception {
+    public ResponseEntity<MessageDTO> sendMessage(Long id, POSTMessageDTO messageDTO) throws Exception {
 
         Ride ride = rideRepository.findById(messageDTO.getRideId()).get();
         User receiver = userRepository.findById(messageDTO.getReceiverId()).get();
@@ -156,14 +191,14 @@ public class UserService {
         message.setSender(sender);
         message.setReceiver(receiver);
         messageRepository.save(message);
-        return new MessageDTO(message);
+        return new ResponseEntity<>(new MessageDTO(message), HttpStatus.OK);
 
     }
 
     public MessageDTO sendMessageK1() {
         MessageDTO messageDTO = new MessageDTO();
         messageDTO.setId(1L);
-        messageDTO.setTimeOfSending(LocalDateTime.now().toString());
+        messageDTO.setTimeOfSending(LocalDateTime.now().format(Constants.customDateTimeFormat));
         messageDTO.setSenderId(1L);
         messageDTO.setReceiverId(1L);
         messageDTO.setMessage("message");
@@ -172,49 +207,49 @@ public class UserService {
         return messageDTO;
     }
 
-    public SimpleMessageDTO block(Long id) throws Exception {
+    public ResponseEntity block(Long id) throws Exception {
         User user = userRepository.findById(id).get();
         changeUserBlockedState(user, true);
-        return new SimpleMessageDTO("User is successfully blocked");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    public SimpleMessageDTO blockK1() {
-        return new SimpleMessageDTO("User is successfully blocked");
+    public ResponseEntity blockK1() {
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    public SimpleMessageDTO unblock(Long id) throws Exception {
+    public ResponseEntity unblock(Long id) throws Exception {
         User user = userRepository.findById(id).get();
         changeUserBlockedState(user, false);
-        return new SimpleMessageDTO("User is successfully unblocked");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
     }
 
-    public SimpleMessageDTO unblockK1() {
-        return new SimpleMessageDTO("User is successfully unblocked");
+    public ResponseEntity unblockK1() {
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
     }
 
 
-    public NoteDTO addNote(Long userId, SimpleMessageDTO postNoteDTO) throws Exception {
+    public ResponseEntity<NoteDTO> addNote(Long userId, SimpleMessageDTO postNoteDTO) throws Exception {
         User user = userRepository.findById(userId).get();
         Note note = Note.builder().date(LocalDateTime.now()).user(user).message(postNoteDTO.getMessage()).build();
         noteRepository.save(note);
-        return new NoteDTO(note);
+        return new ResponseEntity<>(new NoteDTO(note), HttpStatus.OK);
 
     }
 
     public NoteDTO addNoteK1() {
-        NoteDTO noteDTO = new NoteDTO(1L, LocalDateTime.now().toString(), "message");
+        NoteDTO noteDTO = new NoteDTO(1L, LocalDateTime.now().format(Constants.customDateTimeFormat), "message");
         return noteDTO;
     }
 
-    public NotesDTO getNotes(Long userId) throws Exception {
+    public ResponseEntity<NotesDTO> getNotes(Long userId) throws Exception {
         List<Note> notes = noteRepository.findAllByUserId(userId);
-        return new NotesDTO(new HashSet<>(notes));
+        return new ResponseEntity<>(new NotesDTO(new HashSet<>(notes)), HttpStatus.OK);
     }
 
     public NotesDTO getNotesK1() {
-        NoteDTO noteDTO = new NoteDTO(1L, LocalDateTime.now().toString(), "message");
+        NoteDTO noteDTO = new NoteDTO(1L, LocalDateTime.now().format(Constants.customDateTimeFormat), "message");
         Set<NoteDTO> noteDTOS = new HashSet<>();
         noteDTOS.add(noteDTO);
 

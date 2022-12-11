@@ -25,12 +25,7 @@ public class Enums {
         REJECTED,
         ACTIVE,
         FINISHED,
-    }
-
-    public enum VehicleName{
-        STANDARD,
-        LUXURIOUS,
-        VAN,
+        CANCELED,
     }
 
     public enum Day{

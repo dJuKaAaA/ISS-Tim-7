@@ -18,6 +18,7 @@ public class DriverService {
         driverRepository.save(driver);
     }
 
+    public Driver findById(Long id){ return driverRepository.findById(id).orElse(null); }
     public Collection<Driver> getAll() {
         return driverRepository.findAll();
     }

@@ -1,5 +1,7 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationRequestDTO;
+import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,7 +24,7 @@ public class Ride {
     private int price;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private int estimatedTimeInMinutes;
+    private Integer estimatedTimeInMinutes;
     private boolean babyOnBoard;
     private boolean petOnBoard;
     private boolean splitFare;
@@ -39,7 +41,6 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Message> messages = new HashSet<>();
 
-
     @ManyToMany(mappedBy = "finishedRides")
     private Set<Passenger> passengers = new HashSet<>();
 
@@ -49,11 +50,25 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Review> reviews = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "route_id", referencedColumnName = "id")
+    @OneToMany(mappedBy = "ride")
     private Set<Route> routes = new HashSet<>();
 
+    public Ride(Passenger passenger){
+        this.passengers.add(passenger);
+    }
 
+    public Ride(RideRequestDTO rideRequestDTO) {
+        for (LocationRequestDTO location : rideRequestDTO.locations) {
+            Route r = new Route(new Location(location.departure), new Location(location.destination));
+            r.setRide(this);
+            this.routes.add(r);
+        }
+//        this.vehicleType = new VehicleType();
+//        this.vehicleType.setVehicleName(rideRequestDTO.vehicleType);
+        this.babyOnBoard = rideRequestDTO.babyTransport;
+        this.petOnBoard = rideRequestDTO.petTransport;
+        this.status = Enums.RideStatus.PENDING;
+    }
     @Override
     public String toString() {
         return "Ride{" +
@@ -68,3 +83,4 @@ public class Ride {
                 '}';
     }
 }
+
