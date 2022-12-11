@@ -38,8 +38,8 @@ public class RideDTO {
             RouteDTO routeDTO = new RouteDTO(route);
             this.locations.add(routeDTO);
         }
-        this.startTime = ride.getStartDate().format(Constants.customDateTimeFormat);
-        this.endTime = ride.getEndDate().format(Constants.customDateTimeFormat);
+        this.startTime = ride.getStartTime().format(Constants.customDateTimeFormat);
+        this.endTime = ride.getEndTime().format(Constants.customDateTimeFormat);
         this.totalCost = ride.getPrice();
         this.driver = new SimpleDriverDTO(ride.getDriver());
 

@@ -7,13 +7,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -408,8 +405,8 @@ public class TestDummyController {
         Ride ride = new Ride();
         ride.setPrice(500);
         ride.setEstimatedTimeInMinutes(10);
-        ride.setStartDate(LocalDateTime.now());
-        ride.setEndDate(LocalDateTime.now());
+        ride.setStartTime(LocalDateTime.now());
+        ride.setEndTime(LocalDateTime.now());
         ride.setBabyOnBoard(false);
         ride.setPetOnBoard(false);
         ride.setStatus(Enums.RideStatus.ACTIVE);

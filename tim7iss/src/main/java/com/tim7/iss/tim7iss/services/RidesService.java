@@ -32,6 +32,7 @@ public class RidesService {
         return ridesRepository.findRideByPassengersId(id, page);
     }
 
+
     public Ride findByDriverIdAndStatus(Long id, Integer status){
         return ridesRepository.findByDriverIdAndStatus(id, status);
     }

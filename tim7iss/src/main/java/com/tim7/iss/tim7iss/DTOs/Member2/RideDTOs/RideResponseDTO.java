@@ -52,8 +52,8 @@ public class RideResponseDTO {
         if(ride == null)
             return;
         this.id = id;
-        this.startTime = String.valueOf(ride.getStartDate());
-        this.endTime =  String.valueOf(ride.getEndDate());
+        this.startTime = String.valueOf(ride.getStartTime());
+        this.endTime =  String.valueOf(ride.getEndTime());
         this.totalCost = ride.getPrice();
         this.estimatedTimeInMinutes = ride.getEstimatedTimeInMinutes();
         if(ride.getVehicleType() == null)
