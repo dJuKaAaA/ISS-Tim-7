@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.DTOs;
 
+import com.tim7.iss.tim7iss.models.Constants;
 import com.tim7.iss.tim7iss.models.Refusal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +16,7 @@ public class RejectionDTO {
     public RejectionDTO(Refusal refusal) {
         if (refusal != null) {
             this.reason = refusal.getReason();
-            this.timeOfRejection = refusal.getTime().toString();
+            this.timeOfRejection = refusal.getTime().format(Constants.customDateTimeFormat);
         }
     }
 }

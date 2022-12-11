@@ -6,6 +6,8 @@ import com.tim7.iss.tim7iss.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -37,7 +39,7 @@ public class ReviewService {
     @Autowired
     PassengerRepository passengerRepository;
 
-    public ReviewDTO addVehicleReview(Long vehicleId, Long rideId, POSTReviewDTO postReviewDTO) {
+    public ResponseEntity<ReviewDTO> addVehicleReview(Long vehicleId, Long rideId, POSTReviewDTO postReviewDTO) {
 
         VehicleReview review = new VehicleReview();
         Ride ride = rideRepository.findById(rideId).get();
@@ -49,7 +51,7 @@ public class ReviewService {
         review.setPassenger(passengerRepository.findById(4L).orElse(null));
         review.setVehicle(vehicle);
         reviewRepository.save(review);
-        return new ReviewDTO(review);
+        return new ResponseEntity<>(new ReviewDTO(review), HttpStatus.OK);
     }
 
     public ReviewDTO addVehicleReviewK1() {
@@ -62,9 +64,9 @@ public class ReviewService {
         return reviewDTO;
     }
 
-    public ReviewsDTO getVehicleReviews(Long vehicleId) {
+    public ResponseEntity<ReviewsDTO> getVehicleReviews(Long vehicleId) {
         List<VehicleReview> vehicleReviews = vehicleReviewRepository.findAllByVehicleId(vehicleId);
-        return new ReviewsDTO(new HashSet<>(vehicleReviews));
+        return new ResponseEntity<>(new ReviewsDTO(new HashSet<>(vehicleReviews)), HttpStatus.OK);
     }
 
     public ReviewsDTO getVehicleReviewsK1() {
@@ -86,7 +88,7 @@ public class ReviewService {
         return reviewsDTO;
     }
 
-    public ReviewDTO addDriverReview(Long driverId, Long rideId, POSTReviewDTO postReviewDTO) {
+    public ResponseEntity<ReviewDTO> addDriverReview(Long driverId, Long rideId, POSTReviewDTO postReviewDTO) {
         DriverReview review = new DriverReview();
         Driver driver = driverRepository.findById(driverId).get();
         Ride ride = rideRepository.findById(rideId).get();
@@ -98,7 +100,7 @@ public class ReviewService {
         review.setPassenger(passengerRepository.findById(4L).orElse(null));
         review.setDriver(driver);
         driverReviewRepository.save(review);
-        return new ReviewDTO(review);
+        return new ResponseEntity<>(new ReviewDTO(review), HttpStatus.OK);
 
     }
 
@@ -112,9 +114,9 @@ public class ReviewService {
         return reviewDTO;
     }
 
-    public ReviewsDTO getDriverReviews(Long driveId) {
+    public ResponseEntity<ReviewsDTO> getDriverReviews(Long driveId) {
         List<DriverReview> driverReviews = driverReviewRepository.findAllByDriverId(driveId);
-        return new ReviewsDTO(new HashSet<>(driverReviews));
+        return new ResponseEntity<>(new ReviewsDTO(new HashSet<>(driverReviews)), HttpStatus.OK);
     }
 
     public ReviewsDTO getDriverReviewsK1() {
@@ -135,7 +137,7 @@ public class ReviewService {
         return reviewsDTO;
     }
 
-    public RideReviewDTO getRideReviews(Long rideId) {
+    public ResponseEntity<RideReviewDTO> getRideReviews(Long rideId) {
         List<Review> reviews = reviewRepository.findAllByRideId(rideId);
 
         HashSet<Review> vehiclesReviews = new HashSet<>();
@@ -148,7 +150,7 @@ public class ReviewService {
                 driveReviews.add(review);
             }
         }
-        return new RideReviewDTO(vehiclesReviews, driveReviews);
+        return new ResponseEntity<>(new RideReviewDTO(vehiclesReviews, driveReviews), HttpStatus.OK);
     }
 
     public RideReviewDTO getRideReviewsK1() {
