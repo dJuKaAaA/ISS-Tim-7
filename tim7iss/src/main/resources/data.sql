@@ -1,7 +1,9 @@
 -- location creation
 INSERT INTO location (name, longitude, latitude)
-VALUES ('Neka tamo lokacija', 1.5, 1.5);
+VALUES ('Valentina Vodnika 10, Novi Sad', 19.8366902, 45.255956);
 
+INSERT INTO location (name, longitude, latitude)
+VALUES ('Beogradska 7, Petrovaradin', 19.8612956, 45.254896);
 -- vehicle type creation
 INSERT INTO vehicle_type (price_per_km, name)
 VALUES (100, 'STANDARDNO');
@@ -56,11 +58,15 @@ INSERT INTO ride (price, start_date, end_date, estimated_time_in_minutes,
 VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
         0, 1, 1);
 
+-- route creation
+INSERT INTO route(id, starting_point_id, end_point_id, distance, ride_id)
+VALUES (1, 1, 2, 150, 1);
+
 -- passengers creation
-INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
-                        email_address, address, password, is_blocked, is_active, dtype)
-VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
-        'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
+    INSERT
+INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
+                 email_address, address, password, is_blocked, is_active, dtype)
+VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs', 'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
                         email_address, address, password, is_blocked, is_active, dtype)
 VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
