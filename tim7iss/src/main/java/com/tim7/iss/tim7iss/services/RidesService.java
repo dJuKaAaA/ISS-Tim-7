@@ -33,6 +33,7 @@ public class RidesService {
     }
 
 
+    //Pitati zasto ovo ne radi
     public Ride findByDriverIdAndStatus(Long id, Integer status){
         return ridesRepository.findByDriverIdAndStatus(id, status);
     }

@@ -17,28 +17,10 @@ INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
                         email_address, address, password, is_blocked, is_active, dtype)
 VALUES ('Mika', 'Mikic', 'saimse', '8149081249081', 'mika@mikic.rs',
         'Mikina kuca', 'nekasifra', FALSE, FALSE, 'Driver');
-
--- vehicles creation
-INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
-                     vehicle_type_id, driver_id, location_id)
-VALUES ('Neki tamo model 1', 'Redzistrejsn plejt 1', 5, FALSE, TRUE,
-        1, 1, 1);
-INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
-                     vehicle_type_id, driver_id, location_id)
-VALUES ('Neki tamo model 2', 'Redzistrejsn plejt 2', 5, FALSE, TRUE,
-        1, NULL, 1);
-INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
-                     vehicle_type_id, driver_id, location_id)
-VALUES ('Neki tamo model 3', 'Redzistrejsn plejt 3', 5, FALSE, TRUE,
-        1, NULL, 1);
-INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
-                     vehicle_type_id, driver_id, location_id)
-VALUES ('Neki tamo model 4', 'Redzistrejsn plejt 4', 5, FALSE, TRUE,
-        1, NULL, 1);
-INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
-                     vehicle_type_id, driver_id, location_id)
-VALUES ('Neki tamo model 5', 'Redzistrejsn plejt 5', 5, FALSE, TRUE,
-        1, NULL, 1);
+INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
+                        email_address, address, password, is_blocked, is_active, dtype)
+VALUES ('Zoran', 'Zoranovic', 'saimse', '8149081249081', 'zoran@zoranovic.rs',
+        'Zoranova kuca', 'nekasifra', FALSE, FALSE, 'Driver');
 
 -- rides creation
 INSERT INTO ride (price, start_time, end_time, estimated_time_in_minutes,
@@ -60,7 +42,7 @@ INSERT INTO ride (price, start_time, end_time, estimated_time_in_minutes,
                   baby_on_board, pet_on_board, split_fare, status, driver_id,
                   vehicle_type_id)
 VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
-        0, 1, 1);
+        3, 2, 1);
 
 -- route creation
 INSERT INTO route(starting_point_id, end_point_id, distance, ride_id)
@@ -89,15 +71,11 @@ VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
 
 -- rides and passengers finished rides creation
 INSERT INTO finished_rides (passenger_id, ride_id)
-VALUES (2, 1);
+VALUES (6, 1);
 INSERT INTO finished_rides (passenger_id, ride_id)
-VALUES (2, 2);
+VALUES (6, 2);
 INSERT INTO finished_rides (passenger_id, ride_id)
-VALUES (2, 3);
-INSERT INTO finished_rides (passenger_id, ride_id)
-VALUES (2, 4);
-INSERT INTO finished_rides (passenger_id, ride_id)
-VALUES (3, 3);
+VALUES (6, 4);
 INSERT INTO finished_rides (passenger_id, ride_id)
 VALUES (3, 4);
 INSERT INTO finished_rides (passenger_id, ride_id)
@@ -105,11 +83,7 @@ VALUES (4, 1);
 INSERT INTO finished_rides (passenger_id, ride_id)
 VALUES (4, 2);
 INSERT INTO finished_rides (passenger_id, ride_id)
-VALUES (4, 3);
-INSERT INTO finished_rides (passenger_id, ride_id)
 VALUES (5, 2);
-INSERT INTO finished_rides (passenger_id, ride_id)
-VALUES (5, 3);
 INSERT INTO finished_rides (passenger_id, ride_id)
 VALUES (5, 4);
 
@@ -128,14 +102,40 @@ INSERT INTO document (driver_id, name, picture_path)
 VALUES (1, 'licna', '');
 
 -- insert location
-INSERT INTO location (name, longitude, latitude)
+INSERT INTO location (name, latitude, longitude)
 VALUES ('Neka tamo lokacija', 1.5, 1.5);
+INSERT INTO location (name, latitude, longitude)
+VALUES ('Zmaj Jovina 26', 45.25685617386568, 19.84799528633145);
+INSERT INTO location (name, latitude, longitude)
+VALUES ('Bulevar cara Lazara', 45.24863618765179, 19.85191711614038);
 
--- insert vehicle
+---- insert route
+INSERT INTO route (distance, end_point_id, ride_id, starting_point_id)
+VALUES (1200,4,4,3);
+INSERT INTO route (distance, end_point_id, ride_id, starting_point_id)
+VALUES (1200,3,3,4);
+
+-- vehicles creation
 INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
                      vehicle_type_id, driver_id, location_id)
 VALUES ('Neki tamo model 1', 'Redzistrejsn plejt 1', 5, FALSE, TRUE,
-        1, 2, 1);
+        1, 1, 3);
+INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
+                     vehicle_type_id, driver_id, location_id)
+VALUES ('Neki tamo model 2', 'Redzistrejsn plejt 2', 5, FALSE, TRUE,
+        1, NULL, 1);
+INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
+                     vehicle_type_id, driver_id, location_id)
+VALUES ('Neki tamo model 3', 'Redzistrejsn plejt 3', 5, FALSE, TRUE,
+        1, NULL, 1);
+INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
+                     vehicle_type_id, driver_id, location_id)
+VALUES ('Neki tamo model 4', 'Redzistrejsn plejt 4', 5, FALSE, TRUE,
+        1, NULL, 1);
+INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
+                     vehicle_type_id, driver_id, location_id)
+VALUES ('Neki tamo model 5', 'Redzistrejsn plejt 5', 5, FALSE, TRUE,
+        1, 2, 4);
 
 -- user activation creation
 INSERT INTO user_activation (creation_date, expiration_date, user_id)
