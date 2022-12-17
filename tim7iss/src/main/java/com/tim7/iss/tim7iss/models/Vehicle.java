@@ -35,7 +35,7 @@ public class Vehicle {
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 
@@ -63,4 +63,15 @@ public class Vehicle {
         this.petsAllowed = petsAllowed;
         this.location = location;
     }
+
+    public Vehicle(VehicleRequestBodyDTO vehicleRequest, VehicleType vehicleType) {
+        this.model = vehicleRequest.getModel();
+        this.registrationPlate = vehicleRequest.getLicenseNumber();
+        this.seatNumber = vehicleRequest.getPassengerSeats();
+        this.babyAllowed = vehicleRequest.isBabyTransport();
+        this.petsAllowed = vehicleRequest.isPetTransport();
+        this.location = new Location(vehicleRequest.getCurrentLocation());
+        this.vehicleType = vehicleType;
+    }
+
 }

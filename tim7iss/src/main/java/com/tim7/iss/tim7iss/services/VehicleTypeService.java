@@ -5,6 +5,8 @@ import com.tim7.iss.tim7iss.repositories.VehicleTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class VehicleTypeService {
     @Autowired
@@ -20,5 +22,7 @@ public class VehicleTypeService {
     public VehicleType getByName(String name) {
         return vehicleTypeRepository.findByName(name).orElse(null);
     }
+
+    public List<VehicleType> findAll() { return vehicleTypeRepository.findAll(); }
 
 }

@@ -1,14 +1,17 @@
 package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.DTOs.Member2.VehicleDTOs.VehicleDTO;
+import com.tim7.iss.tim7iss.DTOs.apidriver.VehicleRequestBodyDTO;
 import com.tim7.iss.tim7iss.DTOs.apidriver.VehicleResponseDTO;
 import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.Location;
 import com.tim7.iss.tim7iss.models.Vehicle;
 import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationResponseDTO;
+import com.tim7.iss.tim7iss.models.VehicleType;
 import com.tim7.iss.tim7iss.services.DriverService;
 import com.tim7.iss.tim7iss.services.LocationService;
 import com.tim7.iss.tim7iss.services.VehicleService;
+import com.tim7.iss.tim7iss.services.VehicleTypeService;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,9 @@ public class VehicleController {
 
     @Autowired
     private DriverService driverService;
+
+    @Autowired
+    private VehicleTypeService vehicleTypeService;
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Vehicle> getById(@PathVariable Long id) {
@@ -76,6 +82,12 @@ public class VehicleController {
         return new ResponseEntity<>(new VehicleDTO(vehicle), HttpStatus.OK);
     }
 
+    @PostMapping
+    public ResponseEntity<VehicleRequestBodyDTO>save(@RequestBody VehicleRequestBodyDTO vehicleRequest){
+        VehicleType vehicleType = vehicleTypeService.getByName(vehicleRequest.getVehicleType());
+        vehicleService.save(new Vehicle(vehicleRequest, vehicleType));
+        return new ResponseEntity<>(vehicleRequest,HttpStatus.OK);
+    }
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 //    @ExceptionHandler(Exception.class)
 //    public String badRequestException(){
