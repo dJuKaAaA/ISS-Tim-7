@@ -153,11 +153,11 @@ public class RideController {
         return ride.getId();
     }
 
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(Exception.class)
-    public String badRequestException(){
-        return "Invalid data";
-    }
+//    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+//    @ExceptionHandler(Exception.class)
+//    public String badRequestException(){
+//        return "Invalid data";
+//    }
 
 
 }

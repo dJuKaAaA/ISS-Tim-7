@@ -53,7 +53,6 @@ public class PassengerController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    //Uncomment deletById after tests
     @GetMapping(value = "/activate/{activationId}")
     public ResponseEntity<String> activateUser(@PathVariable Long activationId) {
         UserActivation activation = userActivationService.findById(activationId);
@@ -64,24 +63,20 @@ public class PassengerController {
             return new ResponseEntity<>("This activation has expired", HttpStatus.BAD_REQUEST);
         }
         activation.getUser().setActive(true);
-//        userActivationService.deleteById(activationId);
+        userActivationService.deleteById(activationId);
         return new ResponseEntity<>("Successful account activation", HttpStatus.OK);
     }
 
-    //Delete fixed id
     @GetMapping(value = "/{id}")
     public ResponseEntity<PassengerResponseDTO> findPassengerByID(@PathVariable Long id) throws UserNotFoundException {
-        id = 2L;
         Passenger passenger = passengerService.findById(id);
         if (passenger == null) throw new UserNotFoundException() {
         };
         return new ResponseEntity<>(new PassengerResponseDTO(passenger), HttpStatus.OK);
     }
 
-    //Delete fixed id
     @PutMapping("/{id}")
     public ResponseEntity<PassengerResponseDTO> save(@RequestBody PassengerRequestDTO passengerRequestDTO, @PathVariable Long id) throws UserNotFoundException {
-        id = 2L;
         Passenger passenger = passengerService.findById(id);
         if (passenger == null) throw new UserNotFoundException() {
         };
@@ -90,11 +85,9 @@ public class PassengerController {
         return new ResponseEntity<>(new PassengerResponseDTO(passenger), HttpStatus.OK);
     }
 
-    //Delete fixed id
     @GetMapping("/{id}/ride")
     public ResponseEntity<RideResponseListDTO> findRidesByPassengerId(@PathVariable Long id, Pageable page) {
 //        ridesService.findByFilter();
-        id = 2L;
         Page<Ride> rides = ridesService.findRideByPassengerId(id, page);
         RideResponseListDTO response = new RideResponseListDTO();
         for (Ride ride : rides) {

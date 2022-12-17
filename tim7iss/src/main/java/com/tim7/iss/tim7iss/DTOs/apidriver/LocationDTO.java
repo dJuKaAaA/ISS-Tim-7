@@ -15,9 +15,9 @@ public class LocationDTO {
     private double longitude;
 
     public LocationDTO(Location location) {
-        this.address = "Neka adresa";  // TODO: Extract address name from map using latitude and longitude
-        this.latitude = location.getLongitude();
-        this.longitude = location.getLatitude();
+        this.address = location.getName();  // TODO: Extract address name from map using latitude and longitude
+        this.latitude = location.getLatitude();
+        this.longitude = location.getLongitude();
     }
 
 }

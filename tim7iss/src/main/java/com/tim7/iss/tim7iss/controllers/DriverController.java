@@ -19,6 +19,7 @@ import java.util.*;
 @Transactional
 @RestController
 @RequestMapping("api/driver")
+@CrossOrigin
 public class DriverController {
 
     @Autowired

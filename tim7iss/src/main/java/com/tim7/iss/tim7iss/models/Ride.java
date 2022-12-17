@@ -4,6 +4,8 @@ import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationRequestDTO;
 import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
