@@ -21,7 +21,7 @@ public class Passenger extends User {
 
     @ManyToMany
     @JoinTable(
-            name = "finished_rides",
+            name = "passenger_rides",
             joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id")
     )

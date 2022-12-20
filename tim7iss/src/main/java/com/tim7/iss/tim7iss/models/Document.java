@@ -25,7 +25,6 @@ public class Document {
     private String name;
     private String picturePath;
 
-
     public Document(DocumentRequestBodyDTO documentRequestBodyDTO, Driver driver) {
         this.setName(documentRequestBodyDTO.getName());
         this.setPicturePath(documentRequestBodyDTO.getDocumentImage());

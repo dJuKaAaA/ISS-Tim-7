@@ -45,10 +45,10 @@ VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
         3, 2, 1);
 
 -- route creation
-INSERT INTO route(starting_point_id, end_point_id, distance, ride_id)
-VALUES ( 1, 2, 150, 1);
-INSERT INTO route(starting_point_id, end_point_id, distance, ride_id)
-VALUES (2, 3, 150, 1);
+INSERT INTO route(starting_point_id, end_point_id, distance)
+VALUES ( 1, 2, 150);
+INSERT INTO route(starting_point_id, end_point_id, distance)
+VALUES (2, 3, 150);
 
 -- passengers creation
 INSERT
@@ -69,22 +69,22 @@ INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
 VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
         'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
 
--- rides and passengers finished rides creation
-INSERT INTO finished_rides (passenger_id, ride_id)
+-- rides and passengers passenger rides creation
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (6, 1);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (6, 2);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (6, 4);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (3, 4);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (4, 1);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (4, 2);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (5, 2);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (5, 4);
 
 -- insert admin
@@ -110,10 +110,10 @@ INSERT INTO location (name, latitude, longitude)
 VALUES ('Bulevar cara Lazara', 45.24863618765179, 19.85191711614038);
 
 ---- insert route
-INSERT INTO route (distance, end_point_id, ride_id, starting_point_id)
-VALUES (1200,4,4,3);
-INSERT INTO route (distance, end_point_id, ride_id, starting_point_id)
-VALUES (1200,3,3,4);
+INSERT INTO route (distance, end_point_id, starting_point_id)
+VALUES (1200,4,3);
+INSERT INTO route (distance, end_point_id, starting_point_id)
+VALUES (1200,3,4);
 
 -- vehicles creation
 INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
@@ -139,9 +139,9 @@ VALUES ('Neki tamo model 5', 'Redzistrejsn plejt 5', 5, FALSE, TRUE,
 
 -- user activation creation
 INSERT INTO user_activation (creation_date, expiration_date, user_id)
-VALUES ('2022-12-21', '2022-12-21', 2);
+VALUES ('2022-12-21', '2022-12-21', 3);
 INSERT INTO user_activation (creation_date, expiration_date, user_id)
-VALUES ('2022-12-21', '2023-12-21', 3);
+VALUES ('2022-12-21', '2023-12-21', 2);
 INSERT INTO user_activation (creation_date, expiration_date, user_id)
 VALUES ('2022-12-21', '2023-12-21', 4);
 INSERT INTO user_activation (creation_date, expiration_date, user_id)

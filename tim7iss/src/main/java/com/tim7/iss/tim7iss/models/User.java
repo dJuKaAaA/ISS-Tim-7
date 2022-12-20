@@ -32,16 +32,4 @@ public abstract class User {
     private boolean isBlocked;
     private boolean isActive;
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.MERGE)
-    private Set<Message> sentMessages = new HashSet<>();
-
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.PERSIST)
-    private Set<Message> receivedMessages = new HashSet<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
-    private Set<Refusal> refusals = new HashSet<>();
-
-    @OneToMany(mappedBy = "passenger", cascade = CascadeType.PERSIST)
-    private Set<Review> reviews = new HashSet<>();
-
 }

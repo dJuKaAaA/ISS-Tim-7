@@ -44,9 +44,6 @@ public class TestDummyController {
     private RidesRepository rideRepository;
 
     @Autowired
-    private EntityManager entityManager;
-
-    @Autowired
     private VehicleTypeService vehicleTypeService;
 
     @Autowired
@@ -381,14 +378,9 @@ public class TestDummyController {
         driver.setPassword("123");
         driver.setBlocked(false);
         driver.setActive(false);
-        driver.setSentMessages(new HashSet<>());
-        driver.setReceivedMessages(new HashSet<>());
-        driver.setRefusals(new HashSet<>());
         Set<Review> driverReviews = new HashSet<>();
-        driver.setReviews(driverReviews);
         driver.setVehicle(null);
         driver.setWorkHours(null);
-        driver.setRides(new HashSet<>());
 
         Set<Document> documents = new HashSet<>();
         documents.add(getDocument());
@@ -408,10 +400,6 @@ public class TestDummyController {
         passenger.setPassword("123");
         passenger.setBlocked(false);
         passenger.setActive(false);
-        passenger.setSentMessages(new HashSet<>());
-        passenger.setReceivedMessages(new HashSet<>());
-        passenger.setRefusals(new HashSet<>());
-        passenger.setReviews(new HashSet<>());
         passenger.setFinishedRides(new HashSet<>());
         passenger.setFavouriteRoutes(new HashSet<>());
         return passenger;
@@ -428,10 +416,7 @@ public class TestDummyController {
         ride.setStatus(Enums.RideStatus.ACTIVE);
         ride.setDriver(null);
         ride.setVehicleType(null);
-        ride.setMessages(new HashSet<>());
-        ride.setPassengers(new HashSet<>());
         ride.setRefusal(null);
-        ride.setReviews(new HashSet<>());
         ride.setRoutes(null);
         return ride;
     }
@@ -457,6 +442,5 @@ public class TestDummyController {
         review.setComment("Driver review");
         return review;
     }
-
 
 }

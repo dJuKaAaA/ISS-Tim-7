@@ -15,4 +15,5 @@ public class DriverReview extends Review {
     @ManyToOne
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
+
 }

@@ -19,7 +19,6 @@ public class UserController {
     @Autowired
     UserService userService;
 
-
     @GetMapping("/api/user/{id}/ride")
     public ResponseEntity<RidesDTO> getRides(@PathVariable("id") Long id) throws Exception {
         LOGGER.info("get rides");
@@ -44,8 +43,8 @@ public class UserController {
     @GetMapping("/api/user/{id}/message")
     public ResponseEntity<MessagesDTO> getMessages(@PathVariable("id") Long id) throws Exception {
         LOGGER.info("get messages");
-        return userService.getMessages(id);
-//        return new ResponseEntity<>(userService.getMessagesK1(),HttpStatus.OK);
+//        return userService.getMessages(id);
+        return new ResponseEntity<>(userService.getMessagesK1(),HttpStatus.OK);
     }
 
     @PostMapping("/api/user/{id}/message")

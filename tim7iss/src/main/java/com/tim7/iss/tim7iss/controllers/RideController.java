@@ -39,7 +39,7 @@ public class RideController {
     RoutesService routesService;
 
     @PostMapping
-    public ResponseEntity<RideResponseDTO>save(@RequestBody RideRequestDTO rideRequestDTO){
+    public ResponseEntity<RideResponseDTO> save(@RequestBody RideRequestDTO rideRequestDTO){
         RideResponseDTO response = new RideResponseDTO(rideRequestDTO);
         Long id = savePassengersAndDrivers(rideRequestDTO, response);
         response.id = id;
@@ -57,7 +57,7 @@ public class RideController {
     //Delete fixed id
     @GetMapping(value = "/passenger/{passengerId}/active")
     public ResponseEntity<RideResponseDTO> getPassengersActiveRide(@PathVariable Long passengerId){
-        passengerId = 2L;
+        passengerId = 3L;
         Ride ride = ridesService.findByPassengerIdAndStatus(passengerId, Enums.RideStatus.ACTIVE.ordinal());
         if(ride == null){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -78,7 +78,7 @@ public class RideController {
     //Voznja moze da se prekine samo ukoliko je stanje voznje pending ili accepted,
     //Radi testiranja validacija stanja je zakomentarisana
     @PutMapping(value = "/{id}/withdraw")
-    public ResponseEntity<RideResponseDTO>cancelRideById(@PathVariable Long id){
+    public ResponseEntity<RideResponseDTO> cancelRideById(@PathVariable Long id){
         Ride ride = ridesService.findById(id);
 //        Ride ride = ridesService.findByIdAndStatus(id, Enums.RideStatus.PENDING.ordinal());
         if (ride == null){
@@ -93,8 +93,8 @@ public class RideController {
     }
 
     @PutMapping(value = "/{rideId}/panic")
-    public ResponseEntity<PanicDTO>creatingPanicProcedure(@RequestBody PanicReasonDTO reason, @PathVariable Long rideId){
-        User user = passengerService.findById(2L);
+    public ResponseEntity<PanicDTO> creatingPanicProcedure(@RequestBody PanicReasonDTO reason, @PathVariable Long rideId){
+        User user = passengerService.findById(3L);
         Ride ride = ridesService.findById(rideId);
         Panic panic = new Panic(reason,ride,user);
         panicService.save(panic);
@@ -102,7 +102,7 @@ public class RideController {
     }
 
     @PutMapping(value = "{id}/accept")
-    public ResponseEntity<RideResponseDTO>acceptRide(@PathVariable Long id){
+    public ResponseEntity<RideResponseDTO> acceptRide(@PathVariable Long id){
         Ride ride = ridesService.findById(id);
         if(ride == null){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -113,7 +113,7 @@ public class RideController {
     }
 
     @PutMapping(value = "{id}/end")
-    public ResponseEntity<RideResponseDTO>endRide(@PathVariable Long id){
+    public ResponseEntity<RideResponseDTO> endRide(@PathVariable Long id){
         Ride ride = ridesService.findById(id);
         if(ride == null){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -124,7 +124,7 @@ public class RideController {
     }
 
     @PutMapping(value = "{id}/cancel")
-    public ResponseEntity<RideResponseDTO>acceptRide(@PathVariable Long id, @RequestBody ErrorDTO reason){
+    public ResponseEntity<RideResponseDTO> acceptRide(@PathVariable Long id, @RequestBody ErrorDTO reason){
         Ride ride = ridesService.findById(id);
         if(ride == null){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

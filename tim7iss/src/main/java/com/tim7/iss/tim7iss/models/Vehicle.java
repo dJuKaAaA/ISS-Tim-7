@@ -39,9 +39,6 @@ public class Vehicle {
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 
-    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
-    private Set<VehicleReview> reviews;
-
     public Vehicle(VehicleRequestBodyDTO vehicleRequestBodyDTO, VehicleType vehicleType, Driver driver,
                    Location location) {
         this.model = vehicleRequestBodyDTO.getModel();

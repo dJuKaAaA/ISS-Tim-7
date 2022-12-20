@@ -40,19 +40,18 @@ public class Ride {
     @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id")
     private VehicleType vehicleType;
 
-    @OneToMany(mappedBy = "ride")
-    private Set<Message> messages = new HashSet<>();
-
     @ManyToMany(mappedBy = "finishedRides")
     private Set<Passenger> passengers = new HashSet<>();
 
     @OneToOne(mappedBy = "ride", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     private Refusal refusal;
 
-    @OneToMany(mappedBy = "ride", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-    private Set<Review> reviews = new HashSet<>();
-
-    @OneToMany(mappedBy = "ride")
+    @ManyToMany
+    @JoinTable(
+            name = "ride_routes",
+            joinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "route_id", referencedColumnName = "id")
+    )
     private Set<Route> routes = new HashSet<>();
 
     public Ride(Passenger passenger){
@@ -62,7 +61,6 @@ public class Ride {
     public Ride(RideRequestDTO rideRequestDTO) {
         for (LocationRequestDTO location : rideRequestDTO.locations) {
             Route r = new Route(new Location(location.departure), new Location(location.destination));
-            r.setRide(this);
             this.routes.add(r);
         }
 //        this.vehicleType = new VehicleType();

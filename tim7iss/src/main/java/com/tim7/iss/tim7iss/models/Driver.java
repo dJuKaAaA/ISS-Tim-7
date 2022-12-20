@@ -20,7 +20,7 @@ import java.util.Set;
 public class Driver extends User {
 
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY,
-            cascade = { CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST })
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     private Set<Document> documents;
 
     @OneToOne(mappedBy = "driver", fetch = FetchType.LAZY,
@@ -30,9 +30,6 @@ public class Driver extends User {
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     private Set<WorkHour> workHours = new HashSet<>();
-
-    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
-    private Set<Ride> rides = new HashSet<>();
 
     public Driver(DriverRequestBodyDTO driverRequestBodyDTO) {
         this.setFirstName(driverRequestBodyDTO.getName());
