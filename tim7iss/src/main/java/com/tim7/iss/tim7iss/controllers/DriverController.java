@@ -101,7 +101,7 @@ public class DriverController {
         return new ResponseEntity<>(new DocumentResponseDTO(newDocument), HttpStatus.OK);
     }
 
-    @GetMapping("{id}/vehicle")
+    @GetMapping("/{id}/vehicle")
     public ResponseEntity<VehicleResponseDTO> getVehicle(@PathVariable Long id) {
         Driver driver = driverService.getById(id);
         Vehicle vehicle = driver.getVehicle();
@@ -109,7 +109,7 @@ public class DriverController {
         return new ResponseEntity<>(new VehicleResponseDTO(vehicle), HttpStatus.OK);
     }
 
-    @PostMapping("{id}/vehicle")
+    @PostMapping("/{id}/vehicle")
     public ResponseEntity<VehicleResponseDTO> addVehicle(@PathVariable Long id,
                                                          @RequestBody VehicleRequestBodyDTO vehicleRequestBodyDTO) {
         Driver driver = driverService.getById(id);
@@ -129,7 +129,7 @@ public class DriverController {
         return new ResponseEntity<>(new VehicleResponseDTO(newVehicle), HttpStatus.OK);
     }
 
-    @PutMapping("{id}/vehicle")
+    @PutMapping("/{id}/vehicle")
     public ResponseEntity<VehicleResponseDTO> changeVehicle(@PathVariable Long id,
                                                             @RequestBody VehicleRequestBodyDTO vehicleRequestBodyDTO) {
         Driver driver = driverService.getById(id);
@@ -150,7 +150,7 @@ public class DriverController {
         return new ResponseEntity<>(new VehicleResponseDTO(newVehicle), HttpStatus.OK);
     }
 
-    @GetMapping("{id}/working-hour")
+    @GetMapping("/{id}/working-hour")
     public ResponseEntity<PaginatedDriverWorkHoursResponseDTO> getWorkHours(@PathVariable Long id, Pageable page) {
         Driver driver = driverService.getById(id);
         Collection<WorkHour> workHours = workHourService.getByDriverId(id, page);
@@ -161,7 +161,7 @@ public class DriverController {
     }
 
 
-    @PostMapping("{id}/working-hour")
+    @PostMapping("/{id}/working-hour")
     public ResponseEntity<WorkHourResponseDTO> addWorkHour(@PathVariable Long id) {
         WorkHourRequestBodyDTO workHourRequestBodyDTO = new WorkHourRequestBodyDTO(
                 LocalDateTime.now(), LocalDateTime.now());
@@ -172,7 +172,7 @@ public class DriverController {
         return new ResponseEntity<>(new WorkHourResponseDTO(newWorkHour), HttpStatus.OK);
     }
 
-    @GetMapping("{id}/ride")
+    @GetMapping("/{id}/ride")
     public ResponseEntity<PaginatedDriverRidesResponseDTO> getRides(@PathVariable Long id, Pageable page) {
         Collection<Ride> rides = rideService.getByDriverId(id, page);
         List<RideResponseDTO> rideDTOs = new ArrayList<>();
@@ -186,7 +186,7 @@ public class DriverController {
         return new ResponseEntity<>(new WorkHourResponseDTO(workHour), HttpStatus.OK);
     }
 
-    @PutMapping("working-hour/{workingHourId}")
+    @PutMapping("/working-hour/{workingHourId}")
     public ResponseEntity<WorkHourResponseDTO> changeWorkHour(@PathVariable Long workingHourId) {
         WorkHourRequestBodyDTO workHourRequestBodyDTO = new WorkHourRequestBodyDTO(
                 LocalDateTime.of(2022, 11, 7, 21, 0),
