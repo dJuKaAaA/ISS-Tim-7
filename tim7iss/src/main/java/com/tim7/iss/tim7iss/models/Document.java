@@ -32,6 +32,4 @@ public class Document {
         this.driver = driver;
     }
 
-
-
 }

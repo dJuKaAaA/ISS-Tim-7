@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@ToString
 public class Ride {
 
     @Id
@@ -46,10 +46,10 @@ public class Ride {
     @ManyToMany(mappedBy = "finishedRides")
     private Set<Passenger> passengers = new HashSet<>();
 
-    @OneToOne(mappedBy = "ride")
+    @OneToOne(mappedBy = "ride", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     private Refusal refusal;
 
-    @OneToMany(mappedBy = "ride")
+    @OneToMany(mappedBy = "ride", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     private Set<Review> reviews = new HashSet<>();
 
     @OneToMany(mappedBy = "ride")
@@ -71,18 +71,6 @@ public class Ride {
         this.petOnBoard = rideRequestDTO.petTransport;
         this.status = Enums.RideStatus.PENDING;
     }
-    @Override
-    public String toString() {
-        return "Ride{" +
-                "id=" + id +
-                ", price=" + price +
-                ", startDate=" + startTime +
-                ", endDate=" + endTime +
-                ", estimatedTime=" + estimatedTimeInMinutes +
-                ", babyOnBoard=" + babyOnBoard +
-                ", petOnBoard=" + petOnBoard +
-                ", status=" + status +
-                '}';
-    }
+
 }
 

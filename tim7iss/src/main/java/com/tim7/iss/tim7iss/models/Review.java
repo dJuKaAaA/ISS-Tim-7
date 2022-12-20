@@ -28,5 +28,6 @@ public class Review {
 
     @ManyToOne
     @JoinColumn(name = "passenger_id", referencedColumnName = "id")
-    private User passenger; // TODO promeniti u passenger klasu
+    private Passenger passenger;
+
 }

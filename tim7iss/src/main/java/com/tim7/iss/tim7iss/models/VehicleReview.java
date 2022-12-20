@@ -10,10 +10,10 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class VehicleReview extends Review {
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id")
     private Vehicle vehicle;
+
 }

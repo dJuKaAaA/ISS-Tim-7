@@ -31,9 +31,9 @@ public class Route {
     @JoinColumn(name = "end_point_id", referencedColumnName = "id")
     private Location endPoint;
 
-
     public Route(Location startingPoint, Location endPoint) {
         this.startingPoint = startingPoint;
         this.endPoint = endPoint;
     }
+
 }

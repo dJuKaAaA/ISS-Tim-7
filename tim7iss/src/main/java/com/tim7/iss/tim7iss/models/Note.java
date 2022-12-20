@@ -12,15 +12,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
 public class Note {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String message;
     private LocalDateTime date;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
 }

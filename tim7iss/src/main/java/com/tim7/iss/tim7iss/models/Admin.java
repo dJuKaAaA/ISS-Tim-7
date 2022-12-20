@@ -16,6 +16,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Admin extends User{
+public class Admin extends User {
+
     private String username;
+
 }

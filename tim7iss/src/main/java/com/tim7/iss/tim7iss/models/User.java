@@ -26,14 +26,13 @@ public abstract class User {
     private String lastName;
     private String profilePicture;
     private String phoneNumber;
-//    @Email
     private String emailAddress;
     private String address;
     private String password;
     private boolean isBlocked;
     private boolean isActive;
 
-    @OneToMany(mappedBy = "sender")
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.MERGE)
     private Set<Message> sentMessages = new HashSet<>();
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.PERSIST)

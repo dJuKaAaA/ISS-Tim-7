@@ -35,13 +35,12 @@ public class Vehicle {
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
     private Set<VehicleReview> reviews;
-
 
     public Vehicle(VehicleRequestBodyDTO vehicleRequestBodyDTO, VehicleType vehicleType, Driver driver,
                    Location location) {

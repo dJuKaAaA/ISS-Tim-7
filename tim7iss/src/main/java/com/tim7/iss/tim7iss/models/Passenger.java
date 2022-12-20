@@ -16,10 +16,10 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@Builder
+@ToString
 public class Passenger extends User {
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany
     @JoinTable(
             name = "finished_rides",
             joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
@@ -55,20 +55,4 @@ public class Passenger extends User {
         this.setPassword(passengerRequestDTO.password);
     }
 
-    @Override
-    public String toString() {
-        String string = "Passenger:" +
-                "id=" + this.getId() +
-                ", firstName='" + this.getFirstName() + '\'' +
-                ", lastName='" + this.getLastName() + '\'' +
-                ", profilePicture='" + this.getProfilePicture() + '\'' +
-                ", phoneNumber='" + this.getPhoneNumber() + '\'' +
-                ", emailAddress='" + this.getAddress() + '\'' +
-                ", address='" + this.getAddress() + '\'' +
-                ", password='" + this.getPassword() + '\'' +
-                ", isBlocked=" + this.isBlocked() +
-                ", isActive=" + this.isActive();
-
-        return string;
-    }
 }

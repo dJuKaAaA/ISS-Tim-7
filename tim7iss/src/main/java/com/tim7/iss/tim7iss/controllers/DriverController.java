@@ -145,8 +145,11 @@ public class DriverController {
 //                vehicleRequestBodyDTO.getCurrentLocation().getLatitude());
         Location location = locationService.getById(1L);
         Vehicle newVehicle = new Vehicle(vehicleRequestBodyDTO, vehicleType, driver, location);
-        newVehicle.setId(driver.getVehicle().getId());
-        vehicleService.save(newVehicle);
+//        newVehicle.setId(driver.getVehicle().getId());
+//        vehicleService.save(newVehicle);
+        newVehicle.setId(driver.getVehicle(). getId());
+        driver.setVehicle(newVehicle);
+        driverService.save(driver);
         return new ResponseEntity<>(new VehicleResponseDTO(newVehicle), HttpStatus.OK);
     }
 

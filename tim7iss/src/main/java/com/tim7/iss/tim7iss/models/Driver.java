@@ -16,16 +16,19 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@Builder
+@ToString
 public class Driver extends User {
 
-    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY,
+            cascade = { CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST })
     private Set<Document> documents;
 
-    @OneToOne(mappedBy = "driver", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "driver", fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     private Vehicle vehicle;
 
-    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     private Set<WorkHour> workHours = new HashSet<>();
 
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY)
@@ -43,20 +46,4 @@ public class Driver extends User {
         this.setBlocked(false);
     }
 
-    @Override
-    public String toString() {
-        String string = "Driver:" +
-                "id=" + this.getId() +
-                ", firstName='" + this.getFirstName() + '\'' +
-                ", lastName='" + this.getLastName() + '\'' +
-                ", profilePicture='" + this.getProfilePicture() + '\'' +
-                ", phoneNumber='" + this.getPhoneNumber() + '\'' +
-                ", emailAddress='" + this.getAddress() + '\'' +
-                ", address='" + this.getAddress() + '\'' +
-                ", password='" + this.getPassword() + '\'' +
-                ", isBlocked=" + this.isBlocked() +
-                ", isActive=" + this.isActive();
-
-        return string;
-    }
 }

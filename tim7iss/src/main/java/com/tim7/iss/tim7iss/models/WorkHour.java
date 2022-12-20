@@ -30,4 +30,5 @@ public class WorkHour {
         this.startDate = workHourRequestBodyDTO.getStart();
         this.endDate = workHourRequestBodyDTO.getEnd();
     }
+
 }
