@@ -2,6 +2,7 @@ package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.DTOs.apidriver.VehicleRequestBodyDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,8 +22,13 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String model;
+
+    @NotBlank
     private String registrationPlate;
+
+
     private int seatNumber;
     private boolean babyAllowed;
     private boolean petsAllowed;

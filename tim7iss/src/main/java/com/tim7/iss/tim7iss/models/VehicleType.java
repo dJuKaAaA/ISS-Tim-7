@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Entity
@@ -18,6 +19,8 @@ public class VehicleType {
     private Long id;
 
     private int pricePerKm;
+
+    @NotBlank
     private String name; // standard
 
 }

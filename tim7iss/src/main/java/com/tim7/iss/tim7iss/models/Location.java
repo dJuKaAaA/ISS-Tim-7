@@ -2,20 +2,17 @@ package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.DTOs.LocationDTO;
 import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationResponseDTO;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(uniqueConstraints =
+        {@UniqueConstraint(name = "UniqueLatitudeAndLongitude", columnNames = { "latitude", "longitude" })})
 public class Location {
 
     @Id
@@ -23,7 +20,11 @@ public class Location {
     private Long id;
 
     private String name;
+
+    // TODO: Make allowed values from -180 to 180
     private double longitude;
+
+    // TODO: Make allowed values from -90 to 90
     private double latitude;
 
 

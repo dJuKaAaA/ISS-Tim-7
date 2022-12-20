@@ -16,6 +16,8 @@ public class Route {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    // TODO: Make not negative constraint
     private int distance;
 
     @ManyToOne(cascade = CascadeType.PERSIST)

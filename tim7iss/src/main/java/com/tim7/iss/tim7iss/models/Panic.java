@@ -2,6 +2,7 @@ package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicReasonDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,8 @@ public class Panic {
     private Long id;
 
     private LocalDateTime sentTime;
+
+    @NotBlank
     private String reason;
 
     @ManyToOne

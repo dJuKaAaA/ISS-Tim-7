@@ -20,7 +20,7 @@ VALUES ('Mika', 'Mikic', 'saimse', '8149081249081', 'mika@mikic.rs',
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
                         email_address, address, password, is_blocked, is_active, dtype)
 VALUES ('Zoran', 'Zoranovic', 'saimse', '8149081249081', 'zoran@zoranovic.rs',
-        'Zoranova kuca', 'nekasifra', FALSE, FALSE, 'Driver');
+        'Zoranova kuca', 'nekasifra2', FALSE, FALSE, 'Driver');
 
 -- rides creation
 INSERT INTO ride (price, start_time, end_time, estimated_time_in_minutes,
@@ -54,20 +54,20 @@ VALUES (2, 3, 150);
 INSERT
 INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
                  email_address, address, password, is_blocked, is_active, dtype)
-VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs', 'Zikina kuca', 'nekasifra', FALSE, FALSE,
+VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika1@zikic.rs', 'Zikina kuca', 'nekasifra3', FALSE, FALSE,
         'Passenger');
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
                         email_address, address, password, is_blocked, is_active, dtype)
-VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
-        'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
+VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika2@zikic.rs',
+        'Zikina kuca', 'nekasifra4', FALSE, FALSE, 'Passenger');
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
                         email_address, address, password, is_blocked, is_active, dtype)
-VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
-        'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
+VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika3@zikic.rs',
+        'Zikina kuca', 'nekasifra5', FALSE, FALSE, 'Passenger');
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
                         email_address, address, password, is_blocked, is_active, dtype)
-VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika@zikic.rs',
-        'Zikina kuca', 'nekasifra', FALSE, FALSE, 'Passenger');
+VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika4@zikic.rs',
+        'Zikina kuca', 'nekasifra6', FALSE, FALSE, 'Passenger');
 
 -- rides and passengers passenger rides creation
 INSERT INTO passenger_rides (passenger_id, ride_id)
@@ -173,6 +173,6 @@ VALUES ('message2', 3, 1, 2, '2022-12-21', 'STANDARD');
 
 -- create review
 INSERT INTO reviews (DTYPE, PASSENGER_ID, DRIVER_ID, VEHICLE_ID, RIDE_ID, RATING, COMMENT)
-VALUES ('VehicleReview', 2, 1, 1, 1, 3, 'Commnent');
+VALUES ('VehicleReview', 2, 1, 1, 1, 3, 'Comment');
 INSERT INTO reviews (DTYPE, PASSENGER_ID, DRIVER_ID, VEHICLE_ID, RIDE_ID, RATING, COMMENT)
-VALUES ('DriverReview', 2, 1, 1, 1, 3, 'Commnent');
+VALUES ('DriverReview', 2, 1, 1, 1, 3, 'Comment');

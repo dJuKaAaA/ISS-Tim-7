@@ -3,6 +3,7 @@ package com.tim7.iss.tim7iss.models;
 import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationRequestDTO;
 import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -32,10 +33,12 @@ public class Ride {
     private boolean splitFare;
     private Enums.RideStatus status;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id")
     private VehicleType vehicleType;

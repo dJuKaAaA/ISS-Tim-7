@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class Refusal {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @NotBlank
     private String reason;
     private LocalDateTime time;
 
