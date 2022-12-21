@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.DTOs.apidriver.*;
+import com.tim7.iss.tim7iss.dto.PaginatedResponseDto;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.DTOs.apidriver.PaginatedDriverWorkHoursResponseDTO;
 import com.tim7.iss.tim7iss.DTOs.apidriver.PaginatedDriversResponseDTO;
