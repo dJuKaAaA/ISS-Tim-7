@@ -3,6 +3,8 @@ package com.tim7.iss.tim7iss.models;
 import com.tim7.iss.tim7iss.DTOs.LocationDTO;
 import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationResponseDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -21,10 +23,12 @@ public class Location {
 
     private String name;
 
-    // TODO: Make allowed values from -180 to 180
+    @Min(-180)
+    @Max(180)
     private double longitude;
 
-    // TODO: Make allowed values from -90 to 90
+    @Min(-90)
+    @Max(90)
     private double latitude;
 
 
