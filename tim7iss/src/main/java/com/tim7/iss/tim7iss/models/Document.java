@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.DTOs.apidriver.DocumentRequestBodyDTO;
+import com.tim7.iss.tim7iss.dto.DriverDocumentDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,9 +32,9 @@ public class Document {
     @NotBlank(message = "Document picture is mandatory")
     private String picturePath;
 
-    public Document(DocumentRequestBodyDTO documentRequestBodyDTO, Driver driver) {
-        this.setName(documentRequestBodyDTO.getName());
-        this.setPicturePath(documentRequestBodyDTO.getDocumentImage());
+    public Document(DriverDocumentDto documentRequestBodyDto, Driver driver) {
+        this.setName(documentRequestBodyDto.getName());
+        this.setPicturePath(documentRequestBodyDto.getDocumentImage());
         this.driver = driver;
     }
 

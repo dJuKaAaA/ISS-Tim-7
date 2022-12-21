@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.dto.UserDto;
 import jakarta.persistence.*;
 import com.tim7.iss.tim7iss.DTOs.apidriver.DriverRequestBodyDTO;
 import jakarta.persistence.Entity;
@@ -31,14 +32,14 @@ public class Driver extends User {
             cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     private Set<WorkHour> workHours = new HashSet<>();
 
-    public Driver(DriverRequestBodyDTO driverRequestBodyDTO) {
-        this.setFirstName(driverRequestBodyDTO.getName());
-        this.setLastName(driverRequestBodyDTO.getSurname());
-        this.setProfilePicture(driverRequestBodyDTO.getProfilePicture());
-        this.setPhoneNumber(driverRequestBodyDTO.getTelephoneNumber());
-        this.setEmailAddress(driverRequestBodyDTO.getEmail());
-        this.setAddress(driverRequestBodyDTO.getAddress());
-        this.setPassword(driverRequestBodyDTO.getPassword());
+    public Driver(UserDto driverRequestBodyDto) {
+        this.setFirstName(driverRequestBodyDto.getName());
+        this.setLastName(driverRequestBodyDto.getSurname());
+        this.setProfilePicture(driverRequestBodyDto.getProfilePicture());
+        this.setPhoneNumber(driverRequestBodyDto.getTelephoneNumber());
+        this.setEmailAddress(driverRequestBodyDto.getEmail());
+        this.setAddress(driverRequestBodyDto.getAddress());
+        this.setPassword(driverRequestBodyDto.getPassword());
         this.setActive(false);
         this.setBlocked(false);
     }

@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.DTOs.apidriver.VehicleRequestBodyDTO;
+import com.tim7.iss.tim7iss.dto.VehicleDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -45,13 +46,13 @@ public class Vehicle {
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 
-    public Vehicle(VehicleRequestBodyDTO vehicleRequestBodyDTO, VehicleType vehicleType, Driver driver,
+    public Vehicle(VehicleDto vehicleRequestBodyDto, VehicleType vehicleType, Driver driver,
                    Location location) {
-        this.model = vehicleRequestBodyDTO.getModel();
-        this.registrationPlate = vehicleRequestBodyDTO.getLicenseNumber();
-        this.seatNumber = vehicleRequestBodyDTO.getPassengerSeats();
-        this.babyAllowed = vehicleRequestBodyDTO.isBabyTransport();
-        this.petsAllowed = vehicleRequestBodyDTO.isPetTransport();
+        this.model = vehicleRequestBodyDto.getModel();
+        this.registrationPlate = vehicleRequestBodyDto.getLicenseNumber();
+        this.seatNumber = vehicleRequestBodyDto.getPassengerSeats();
+        this.babyAllowed = vehicleRequestBodyDto.getBabyTransport();
+        this.petsAllowed = vehicleRequestBodyDto.getPetTransport();
         this.vehicleType = vehicleType;
         this.driver = driver;
         this.location = location;

@@ -17,4 +17,11 @@ public class DriverDocumentDto {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private Long driverId;
 
+    public DriverDocumentDto(Document document) {
+        this.id = document.getId();
+        this.name = document.getName();
+        this.documentImage = getDocumentImage();
+        this.driverId = document.getDriver().getId();
+    }
+
 }

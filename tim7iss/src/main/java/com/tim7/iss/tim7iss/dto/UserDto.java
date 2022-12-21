@@ -22,4 +22,14 @@ public class UserDto {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private String password;
 
+    public UserDto(User user) {
+        this.id = user.getId();
+        this.name = user.getFirstName();
+        this.surname = user.getLastName();
+        this.profilePicture = user.getProfilePicture();
+        this.telephoneNumber = user.getPhoneNumber();
+        this.email = user.getEmailAddress();
+        this.address = user.getAddress();
+    }
+
 }

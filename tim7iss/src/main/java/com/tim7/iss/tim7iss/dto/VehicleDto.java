@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.tim7.iss.tim7iss.models.Vehicle;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,9 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class VehicleDto {
 
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private Long id;
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private Long driverId;
     private String vehicleType;
     private String model;
@@ -22,5 +21,16 @@ public class VehicleDto {
     private Boolean babyTransport;
     private Boolean petTransport;
 
+    public VehicleDto(Vehicle vehicle) {
+        this.id = vehicle.getId();
+        this.driverId = vehicle.getDriver().getId();
+        this.vehicleType = vehicle.getVehicleType().getName();
+        this.model = vehicle.getModel();
+        this.licenseNumber = vehicle.getRegistrationPlate();
+        this.currentLocation = new GeoCoordinateDto(vehicle.getLocation());
+        this.passengerSeats = vehicle.getSeatNumber();
+        this.babyTransport = vehicle.isBabyAllowed();
+        this.petTransport = vehicle.isPetsAllowed();
+    }
 
 }

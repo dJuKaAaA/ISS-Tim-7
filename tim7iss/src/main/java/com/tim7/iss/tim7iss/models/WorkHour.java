@@ -26,9 +26,4 @@ public class WorkHour {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 
-    public WorkHour(WorkHourRequestBodyDTO workHourRequestBodyDTO) {
-        this.startDate = workHourRequestBodyDTO.getStart();
-        this.endDate = workHourRequestBodyDTO.getEnd();
-    }
-
 }
