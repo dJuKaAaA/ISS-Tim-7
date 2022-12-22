@@ -26,6 +26,7 @@ public class RideDto {
     private String vehicleType;
     private Boolean babyTransport;
     private Boolean petTransport;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private RideRejectDto rejection;
     private List<LocationsForRideDto> locations = new ArrayList<>();
     private String status;
@@ -43,7 +44,7 @@ public class RideDto {
         this.vehicleType = ride.getVehicleType().getName();
         this.babyTransport = ride.isBabyOnBoard();
         this.petTransport = ride.isPetOnBoard();
-        this.rejection = new RideRejectDto(ride.getRefusal());
+        this.rejection = ride.getRefusal() == null ? null : new RideRejectDto(ride.getRefusal());
         for (Route route : ride.getRoutes()) {
             this.locations.add(new LocationsForRideDto(route));
         }

@@ -163,10 +163,8 @@ public class DriverController {
         WorkHour newWorkHour = new WorkHour();
         newWorkHour.setStartDate(LocalDateTime.now());
         newWorkHour.setEndDate(LocalDateTime.now());
-        driver.getWorkHours().add(newWorkHour);
-        driverService.save(driver);
-//        newWorkHour.setDriver(driver);
-//        workHourService.save(newWorkHour);
+        newWorkHour.setDriver(driver);
+        workHourService.save(newWorkHour);
         return new ResponseEntity<>(new WorkingHourDto(newWorkHour), HttpStatus.OK);
     }
 

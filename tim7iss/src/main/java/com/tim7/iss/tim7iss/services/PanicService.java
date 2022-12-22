@@ -17,4 +17,8 @@ public class PanicService {
     }
 
     public List<Panic> findAll() {return panicRepository.findAll(); }
+
+    public Long countAll() {
+        return panicRepository.count();
+    }
 }

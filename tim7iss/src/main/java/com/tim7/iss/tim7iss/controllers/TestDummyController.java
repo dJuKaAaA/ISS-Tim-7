@@ -41,7 +41,7 @@ public class TestDummyController {
     private UserActivationService userActivationService;
 
     @Autowired
-    private RidesRepository rideRepository;
+    private RideRepository rideRepository;
 
     @Autowired
     private VehicleTypeService vehicleTypeService;

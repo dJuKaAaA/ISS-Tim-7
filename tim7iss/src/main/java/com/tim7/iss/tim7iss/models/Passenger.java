@@ -1,6 +1,8 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerRequestDTO;
+import com.tim7.iss.tim7iss.DTOs.UserDTO;
+import com.tim7.iss.tim7iss.dto.UserDto;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -45,14 +47,14 @@ public class Passenger extends User {
         this.setPassword(passengerRequestDTO.password);
     }
 
-    public void setParameters(PassengerRequestDTO passengerRequestDTO){
-        this.setFirstName(passengerRequestDTO.name);
-        this.setLastName(passengerRequestDTO.surname);
-        this.setProfilePicture(passengerRequestDTO.profilePicture);
-        this.setPhoneNumber(passengerRequestDTO.telephoneNumber);
-        this.setEmailAddress(passengerRequestDTO.email);
-        this.setAddress(passengerRequestDTO.address);
-        this.setPassword(passengerRequestDTO.password);
+    public void setParameters(UserDto passengerRequestDto){
+        this.setFirstName(passengerRequestDto.getName());
+        this.setLastName(passengerRequestDto.getSurname());
+        this.setProfilePicture(passengerRequestDto.getProfilePicture());
+        this.setPhoneNumber(passengerRequestDto.getTelephoneNumber());
+        this.setEmailAddress(passengerRequestDto.getEmail());
+        this.setAddress(passengerRequestDto.getAddress());
+        this.setPassword(passengerRequestDto.getPassword());
     }
 
 }
