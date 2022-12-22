@@ -125,7 +125,7 @@ public class RideController {
     }
 
     @PutMapping(value = "{id}/cancel")
-    public ResponseEntity<RideDto> acceptRide(@PathVariable Long id){
+    public ResponseEntity<RideDto> rejectRide(@PathVariable Long id){
         Ride ride = rideService.findById(id);
         if(ride == null){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
