@@ -2,12 +2,6 @@ package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.models.*;
-import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicReasonDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.ErrorDTO.ErrorDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideResponseDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.RideUserDTO;
 import com.tim7.iss.tim7iss.services.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

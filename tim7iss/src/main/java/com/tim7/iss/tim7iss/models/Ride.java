@@ -1,16 +1,10 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationRequestDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
-import com.tim7.iss.tim7iss.dto.GeoCoordinateDto;
 import com.tim7.iss.tim7iss.dto.LocationsForRideDto;
 import com.tim7.iss.tim7iss.dto.RideCreationDto;
-import com.tim7.iss.tim7iss.dto.RideDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;

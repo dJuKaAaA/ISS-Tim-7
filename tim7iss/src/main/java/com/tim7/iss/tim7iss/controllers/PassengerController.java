@@ -1,6 +1,5 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerRequestDTO;
 import com.tim7.iss.tim7iss.dto.PaginatedResponseDto;
 import com.tim7.iss.tim7iss.dto.RideDto;
 import com.tim7.iss.tim7iss.dto.UserDto;
@@ -35,8 +34,9 @@ public class PassengerController {
     private RideService rideService;
 
     @PostMapping
-    public ResponseEntity<UserDto> save(@RequestBody PassengerRequestDTO passengerRequestDTO) {
-        Passenger passenger = new Passenger(passengerRequestDTO);
+    public ResponseEntity<UserDto> save(@RequestBody UserDto passengerRequestDto) {
+        Passenger passenger = new Passenger();
+        passenger.setParameters(passengerRequestDto);
         passengerService.save(passenger);
         return new ResponseEntity<>(new UserDto(passenger), HttpStatus.OK);
     }

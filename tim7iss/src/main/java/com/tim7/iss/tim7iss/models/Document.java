@@ -1,6 +1,5 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.DTOs.apidriver.DocumentRequestBodyDTO;
 import com.tim7.iss.tim7iss.dto.DriverDocumentDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

@@ -1,11 +1,8 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.DTOs.LocationDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationResponseDTO;
 import com.tim7.iss.tim7iss.dto.GeoCoordinateDto;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 
 @Entity
 @Getter
@@ -41,9 +38,4 @@ public class Location {
         this.latitude = geoCoordinateDto.getLatitude();
     }
 
-    public Location(com.tim7.iss.tim7iss.DTOs.apidriver.LocationDTO locationDTO) {
-        this.name = locationDTO.getAddress();
-        this.longitude = locationDTO.getLongitude();
-        this.latitude = locationDTO.getLatitude();
-    }
 }

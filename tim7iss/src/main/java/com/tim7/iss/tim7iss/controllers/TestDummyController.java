@@ -1,15 +1,10 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.tim7.iss.tim7iss.DTOs.DummyLoginBody;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
 import com.tim7.iss.tim7iss.services.*;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import lombok.Data;
-import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -74,8 +69,9 @@ public class TestDummyController {
     private RideService rideService;
 
     @PostMapping("/login")
-    public ResponseEntity<DummyLoginBody> dummyLogin(@RequestBody DummyLoginBody body) {
-        body.setToken("somerandomtokenidontknowwhatimdoingplzhelp");
+    public ResponseEntity<Map<String, Object>> dummyLogin(@RequestBody Map<String, Object> body) {
+        body.put("token", "somerandomtokenidontknowwhatimdoingplzhelp");
+        body.put("password", "");
         return new ResponseEntity<>(body, HttpStatus.OK);
     }   
     @GetMapping("/logout")

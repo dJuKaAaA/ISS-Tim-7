@@ -1,6 +1,5 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicReasonDTO;
 import com.tim7.iss.tim7iss.dto.PanicCreateDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
