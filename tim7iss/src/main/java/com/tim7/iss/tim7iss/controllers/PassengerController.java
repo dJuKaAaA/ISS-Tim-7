@@ -12,7 +12,6 @@ import com.tim7.iss.tim7iss.models.UserActivation;
 import com.tim7.iss.tim7iss.services.PassengerService;
 import com.tim7.iss.tim7iss.services.RidesService;
 import com.tim7.iss.tim7iss.services.UserActivationService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 
 @RestController

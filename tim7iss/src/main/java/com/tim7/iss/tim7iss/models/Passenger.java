@@ -1,13 +1,12 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerRequestDTO;
-import jakarta.persistence.*;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,7 +44,7 @@ public class Passenger extends User {
         this.setPassword(passengerRequestDTO.password);
     }
 
-    public void setParameters(PassengerRequestDTO passengerRequestDTO){
+    public void setParameters(PassengerRequestDTO passengerRequestDTO) {
         this.setFirstName(passengerRequestDTO.name);
         this.setLastName(passengerRequestDTO.surname);
         this.setProfilePicture(passengerRequestDTO.profilePicture);
@@ -71,4 +70,6 @@ public class Passenger extends User {
 
         return string;
     }
+
+
 }

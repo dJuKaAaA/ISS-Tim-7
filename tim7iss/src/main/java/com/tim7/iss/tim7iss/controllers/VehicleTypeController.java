@@ -2,7 +2,6 @@ package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.models.VehicleType;
 import com.tim7.iss.tim7iss.services.VehicleTypeService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController

@@ -6,13 +6,16 @@ import com.tim7.iss.tim7iss.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
 
     @Autowired
@@ -35,6 +38,9 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository;
+
+
+
 
     public ResponseEntity<RidesDTO> getRides(Long id) throws Exception {
         User user = userRepository.findById(id).get();
@@ -123,7 +129,7 @@ public class UserService {
 
     public ResponseEntity<UsersDTO> getUsersDetails() {
         Set<User> users = new HashSet<>(userRepository.findAll());
-        return new ResponseEntity<>(new UsersDTO(users),HttpStatus.OK);
+        return new ResponseEntity<>(new UsersDTO(users), HttpStatus.OK);
     }
 
     public UsersDTO getUsersDetailsK1() {
@@ -146,7 +152,9 @@ public class UserService {
     }
 
     public ResponseEntity<POSTLoginDTO> login(LoginDTO loginDTO) {
-        return new ResponseEntity<>(null, HttpStatus.OK);
+
+
+        return ResponseEntity.ok(new POSTLoginDTO("",""));
     }
 
     public POSTLoginDTO loginK1() {
@@ -297,4 +305,14 @@ public class UserService {
     }
 
 
+    @Override
+    // Vrsimo ucitavanje korisnika
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmailAddress(email);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", email));
+        } else {
+            return user;
+        }
+    }
 }
