@@ -1,13 +1,12 @@
 package com.tim7.iss.tim7iss.models;
 
-import jakarta.persistence.*;
 import com.tim7.iss.tim7iss.DTOs.apidriver.DriverRequestBodyDTO;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -59,4 +58,6 @@ public class Driver extends User {
 
         return string;
     }
+
+
 }

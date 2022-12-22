@@ -1,12 +1,18 @@
 package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.DTOs.*;
+import com.tim7.iss.tim7iss.models.User;
 import com.tim7.iss.tim7iss.services.UserService;
+import com.tim7.iss.tim7iss.util.TokenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,77 +21,93 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
-
     @Autowired
     UserService userService;
+    @Autowired
+    private TokenUtils tokenUtils;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @GetMapping("/api/user/{id}/ride")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('Passenger')")
     public ResponseEntity<RidesDTO> getRides(@PathVariable("id") Long id) throws Exception {
         LOGGER.info("get rides");
         return userService.getRides(id);
-//        return new ResponseEntity<>(userService.getRidesK1(), HttpStatus.OK);
     }
 
     @GetMapping("/api/user")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsersDTO> getUserDetails() {
         LOGGER.info("get user details");
         return userService.getUsersDetails();
-//        return new ResponseEntity<>(userService.getUsersDetailsK1(), HttpStatus.OK);
     }
 
     @PostMapping("/api/user/login")
     public ResponseEntity<POSTLoginDTO> login(@RequestBody LoginDTO loginDTO) {
         LOGGER.info("login");
-        return userService.login(loginDTO);
-//        return new ResponseEntity<>(userService.loginK1(),HttpStatus.OK);
+        //         Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
+//         AuthenticationException
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginDTO.getEmail(), loginDTO.getPassword()));
+
+        // Ukoliko je autentifikacija uspesna, ubaci korisnika u trenutni security
+        // kontekst
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Kreiraj token za tog korisnika
+        User user = (User) authentication.getPrincipal();
+        String jwt = tokenUtils.generateToken(user.getUsername());
+        int expiresIn = tokenUtils.getExpiredIn();
+
+        // Vrati token kao odgovor na uspesnu autentifikaciju
+        return ResponseEntity.ok(new POSTLoginDTO(jwt, ""));
     }
 
     @GetMapping("/api/user/{id}/message")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity<MessagesDTO> getMessages(@PathVariable("id") Long id) throws Exception {
         LOGGER.info("get messages");
         return userService.getMessages(id);
-//        return new ResponseEntity<>(userService.getMessagesK1(),HttpStatus.OK);
     }
 
     @PostMapping("/api/user/{id}/message")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity<MessageDTO> sendMessage(@PathVariable("id") Long id,
                                                   @RequestBody POSTMessageDTO messageDTO) throws Exception {
         LOGGER.info("send messages");
-        return userService.sendMessage(id,messageDTO);
-//        return new ResponseEntity<>(userService.sendMessageK1(),HttpStatus.OK);
+        return userService.sendMessage(id, messageDTO);
     }
 
     @PutMapping("/api/user/{id}/block")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity block(@PathVariable("id") Long id) throws Exception {
         LOGGER.info("block");
         return userService.block(id);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/api/user/{id}/unblock")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity unblock(@PathVariable("id") Long id) throws Exception {
         LOGGER.info("unblock");
         return userService.unblock(id);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // Add note for user to help to decide to ban user
     @PostMapping("/api/user/{id}/note")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<NoteDTO> addNoteForUser(@PathVariable("id") Long userId,
-                                                 @RequestBody SimpleMessageDTO noteDTO) throws Exception {
+                                                  @RequestBody SimpleMessageDTO noteDTO) throws Exception {
         LOGGER.info("create note");
-        return userService.addNote(userId,noteDTO);
-//        return new ResponseEntity<>(userService.addNoteK1(), HttpStatus.OK);
-
+        return userService.addNote(userId, noteDTO);
     }
 
     // Get note for user to help to decide to ban user
     @GetMapping("/api/user/{id}/note")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<NotesDTO> getNotes(@PathVariable("id") Long userId) throws Exception {
         LOGGER.info("get notes");
         return userService.getNotes(userId);
-//        return new ResponseEntity<>(userService.getNotesK1(),HttpStatus.OK);
     }
 
 

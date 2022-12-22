@@ -2,11 +2,9 @@ package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationRequestDTO;
 import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
-import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,7 +53,7 @@ public class Ride {
     @OneToMany(mappedBy = "ride")
     private Set<Route> routes = new HashSet<>();
 
-    public Ride(Passenger passenger){
+    public Ride(Passenger passenger) {
         this.passengers.add(passenger);
     }
 
@@ -71,6 +69,7 @@ public class Ride {
         this.petOnBoard = rideRequestDTO.petTransport;
         this.status = Enums.RideStatus.PENDING;
     }
+
     @Override
     public String toString() {
         return "Ride{" +
