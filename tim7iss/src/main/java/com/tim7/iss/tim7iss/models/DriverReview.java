@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 public class DriverReview extends Review {
 
-    @NotNull
+    @NotNull(message = "Driver review must contain a driver")
     @ManyToOne
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;

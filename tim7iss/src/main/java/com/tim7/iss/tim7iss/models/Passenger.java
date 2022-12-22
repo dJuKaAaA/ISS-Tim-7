@@ -1,7 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerRequestDTO;
-import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -25,7 +24,7 @@ public class Passenger extends User {
             joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id")
     )
-    private Set<Ride> finishedRides = new HashSet<>();
+    private Set<Ride> rides = new HashSet<>();
 
     @ManyToMany
     @JoinTable(

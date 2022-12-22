@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,10 +23,12 @@ public class Notification {
 
     private LocalDateTime date;
 
+    @NotNull(message = "Notification must contain a user")
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @NotNull(message = "Message is mandatory")
     @OneToOne
     @JoinColumn(name = "message_id", referencedColumnName = "id")
     private Message message;

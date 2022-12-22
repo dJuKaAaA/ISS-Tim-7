@@ -2,7 +2,10 @@ package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.DTOs.apidriver.VehicleRequestBodyDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,18 +24,17 @@ public class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @NotBlank
     private String model;
-
     @NotBlank
     private String registrationPlate;
-
-
+    @Min(value = 1, message = "There must be at least one available seat for a passenger")
+    @Max(value = 20, message = "Maximum capacity reached (20)")
     private int seatNumber;
     private boolean babyAllowed;
     private boolean petsAllowed;
 
+    @NotNull(message = "Vehicle type is mandatory")
     @ManyToOne
     @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id")
     private VehicleType vehicleType;
@@ -41,6 +43,7 @@ public class Vehicle {
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
+    @NotNull(message = "Vehicle cannot be nowhere")
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;

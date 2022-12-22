@@ -3,10 +3,10 @@ package com.tim7.iss.tim7iss.models;
 import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationRequestDTO;
 import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -24,31 +24,35 @@ public class Ride {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Min(value = 0, message = "Price cannot be a negative number")
     private int price;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    @Min(value = 0, message = "Estimated time in minutes cannot be a negative number")
     private Integer estimatedTimeInMinutes;
     private boolean babyOnBoard;
     private boolean petOnBoard;
     private boolean splitFare;
     private Enums.RideStatus status;
 
-    @NotNull
+    @NotNull(message = "Driver is mandatory")
     @ManyToOne
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
-    @NotNull
+    @NotNull(message = "Vehicle type is mandatory")
     @ManyToOne
     @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id")
     private VehicleType vehicleType;
 
-    @ManyToMany(mappedBy = "finishedRides")
+    @NotEmpty(message = "There must be at least 1 passenger assigned to a ride")
+    @ManyToMany(mappedBy = "rides")
     private Set<Passenger> passengers = new HashSet<>();
 
     @OneToOne(mappedBy = "ride", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     private Refusal refusal;
 
+    @NotEmpty(message = "There must be at least 1 route for the driver to traverse")
     @ManyToMany
     @JoinTable(
             name = "ride_routes",

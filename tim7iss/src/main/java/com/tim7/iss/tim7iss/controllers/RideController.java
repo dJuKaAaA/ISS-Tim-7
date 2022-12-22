@@ -1,6 +1,5 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicReasonDTO;
 import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
@@ -142,7 +141,7 @@ public class RideController {
                 if(passenger == null) {
                     continue;
                 }
-                passenger.getFinishedRides().add(ride);
+                passenger.getRides().add(ride);
         }
         Driver driver = driverService.findById(1L);
         if(driver != null) {

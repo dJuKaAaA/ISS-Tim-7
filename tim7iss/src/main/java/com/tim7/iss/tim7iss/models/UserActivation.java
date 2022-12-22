@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ public class UserActivation {
     private LocalDateTime creationDate;
     private LocalDateTime expirationDate;
 
+    @NotNull(message = "User is mandatory")
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;

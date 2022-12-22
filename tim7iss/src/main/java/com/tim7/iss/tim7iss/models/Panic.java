@@ -3,6 +3,7 @@ package com.tim7.iss.tim7iss.models;
 import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicReasonDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,13 +21,15 @@ public class Panic {
 
     private LocalDateTime sentTime;
 
-    @NotBlank
+    @NotBlank(message = "Panic reason cannot be empty")
     private String reason;
 
+    @NotNull(message = "Ride is mandatory")
     @ManyToOne
     @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 
+    @NotNull(message = "Panic must have a sender")
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;

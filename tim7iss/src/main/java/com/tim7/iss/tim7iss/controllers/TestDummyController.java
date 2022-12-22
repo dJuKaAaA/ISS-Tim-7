@@ -4,19 +4,14 @@ import com.tim7.iss.tim7iss.DTOs.DummyLoginBody;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
 import com.tim7.iss.tim7iss.services.*;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import lombok.Data;
-import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -400,7 +395,7 @@ public class TestDummyController {
         passenger.setPassword("123");
         passenger.setBlocked(false);
         passenger.setActive(false);
-        passenger.setFinishedRides(new HashSet<>());
+        passenger.setRides(new HashSet<>());
         passenger.setFavouriteRoutes(new HashSet<>());
         return passenger;
     }

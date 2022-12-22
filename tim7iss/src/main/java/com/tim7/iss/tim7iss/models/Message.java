@@ -22,18 +22,18 @@ public class Message {
 
     private LocalDateTime sentDate;
 
-    @NotBlank
+    @NotBlank(message = "Message must have a type")
     private String type;
 
-    @NotBlank
+    @NotBlank(message = "Message content cannot be empty")
     private String content;
 
-    @NotNull
+    @NotNull(message = "Message must have a sender")
     @ManyToOne
     @JoinColumn(name = "sender_id", referencedColumnName = "id")
     private User sender;
 
-    @NotNull
+    @NotNull(message = "Message must have a receiver")
     @ManyToOne
     @JoinColumn(name = "receiver_id", referencedColumnName = "id")
     private User receiver;
