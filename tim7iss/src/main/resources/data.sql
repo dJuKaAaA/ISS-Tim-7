@@ -169,7 +169,7 @@ values ('Reason', '2022-12-21', 3, 2);
 INSERT INTO message(content, receiver_id, ride_id, sender_id, sent_date, type)
 VALUES ('message1', 2, 1, 3, '2022-12-21', 'STANDARD');
 INSERT INTO message(content, receiver_id, ride_id, sender_id, sent_date, type)
-VALUES ('message2', 3, 1, 2, '2022-12-21', 'STANDARD');
+VALUES ('message2', 2, 1, 3, '2022-12-21', 'STANDARD');
 
 -- create review
 INSERT INTO reviews (DTYPE, PASSENGER_ID, DRIVER_ID, VEHICLE_ID, RIDE_ID, RATING, COMMENT)

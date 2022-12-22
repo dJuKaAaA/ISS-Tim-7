@@ -31,6 +31,6 @@ public class PanicController {
         for(Panic panic : panics){
             panicList.add(new PanicDetailsDto(panic));
         }
-        return new ResponseEntity<>(new PaginatedResponseDto<>(panicService.countAll(), panicList), HttpStatus.OK);
+        return new ResponseEntity<>(new PaginatedResponseDto<>(panicList.size(), panicList), HttpStatus.OK);
     }
 }

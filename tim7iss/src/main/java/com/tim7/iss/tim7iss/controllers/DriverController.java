@@ -50,7 +50,7 @@ public class DriverController {
         Page<Driver> allDrivers = driverService.getAll(pageable);
         Collection<UserDto> drivers = new ArrayList<>();
         allDrivers.forEach(driver -> drivers.add(new UserDto(driver)));
-        return new ResponseEntity<>(new PaginatedResponseDto<>(driverService.countAll(), drivers), HttpStatus.OK);
+        return new ResponseEntity<>(new PaginatedResponseDto<>(drivers.size(), drivers), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -153,7 +153,7 @@ public class DriverController {
         Collection<WorkHour> paginatedWorkHours = workHourService.getByDriverId(id, page);
         List<WorkingHourDto> workHours = new ArrayList<>();
         paginatedWorkHours.forEach(workHour -> workHours.add(new WorkingHourDto(workHour)));
-        return new ResponseEntity<>(new PaginatedResponseDto<>(workHourService.countAll(), workHours), HttpStatus.OK);
+        return new ResponseEntity<>(new PaginatedResponseDto<>(workHours.size(), workHours), HttpStatus.OK);
     }
 
 
@@ -172,7 +172,7 @@ public class DriverController {
     public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable Long id, Pageable page) {
         List<RideDto> rides = new ArrayList<>();
         rideService.getByDriverId(id, page).forEach(ride -> rides.add(new RideDto(ride)));
-        return new ResponseEntity<>(new PaginatedResponseDto<>(rideService.countAll(), rides), HttpStatus.OK);
+        return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
     }
 
     @GetMapping("/working-hour/{workingHourId}")

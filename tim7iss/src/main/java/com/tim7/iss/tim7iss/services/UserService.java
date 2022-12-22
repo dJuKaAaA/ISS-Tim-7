@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.services;
 
 import com.tim7.iss.tim7iss.DTOs.*;
+import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,16 +37,18 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public ResponseEntity<RidesDTO> getRides(Long id) throws Exception {
-        User user = userRepository.findById(id).get();
+    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(Long id) throws Exception {
+        User user = userRepository.findById(id).orElse(null);
 
         if (user instanceof Driver driver) {
-            List<Ride> rides = rideRepository.findRidesByDriverId(driver.getId());
-            return new ResponseEntity<>(new RidesDTO(new HashSet<>(rides)), HttpStatus.OK);
+            List<RideDto> rides = new ArrayList<>();
+            rideRepository.findRidesByDriverId(driver.getId()).forEach(ride -> rides.add(new RideDto(ride)));
+            return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
 
         } else if (user instanceof Passenger passenger) {
-            List<Ride> rides = rideRepository.findRidesByPassengersId(passenger.getId());
-            return new ResponseEntity<>(new RidesDTO(new HashSet<>(rides)), HttpStatus.OK);
+            List<RideDto> rides = new ArrayList<>();
+            rideRepository.findRidesByPassengersId(passenger.getId()).forEach(ride -> rides.add(new RideDto(ride)));
+            return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
 
         }
         return null;
@@ -121,9 +124,10 @@ public class UserService {
         return ride;
     }
 
-    public ResponseEntity<UsersDTO> getUsersDetails() {
-        Set<User> users = new HashSet<>(userRepository.findAll());
-        return new ResponseEntity<>(new UsersDTO(users),HttpStatus.OK);
+    public ResponseEntity<PaginatedResponseDto<UserDto>> getUsersDetails() {
+        Collection<UserDto> users = new ArrayList<>();
+        userRepository.findAll().forEach(user -> users.add(new UserDto(user)));
+        return new ResponseEntity<>(new PaginatedResponseDto<>(users.size(), users),HttpStatus.OK);
     }
 
     public UsersDTO getUsersDetailsK1() {
@@ -145,8 +149,8 @@ public class UserService {
         return usersDTO;
     }
 
-    public ResponseEntity<POSTLoginDTO> login(LoginDTO loginDTO) {
-        return new ResponseEntity<>(null, HttpStatus.OK);
+    public ResponseEntity<TokenResponseDto> login(LoginDto loginDto) {
+        return new ResponseEntity<>(new TokenResponseDto("neki", "token"), HttpStatus.OK);
     }
 
     public POSTLoginDTO loginK1() {
@@ -156,11 +160,13 @@ public class UserService {
         return postLoginDTO;
     }
 
-    public ResponseEntity<MessagesDTO> getMessages(Long id) throws Exception {
+    public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(Long id) throws Exception {
 
-        User user = userRepository.findById(id).get();
-        Set<Message> messages = new HashSet<>(getAllMessages(user));
-        return new ResponseEntity<>(new MessagesDTO(messages), HttpStatus.OK);
+        User user = userRepository.findById(id).orElse(null);
+        assert user != null;
+        Collection<MessageDto> messages = new ArrayList<>();
+        getAllMessages(user).forEach(message -> messages.add(new MessageDto(message)));
+        return new ResponseEntity<>(new PaginatedResponseDto<>(messages.size(), messages), HttpStatus.OK);
 
     }
 
@@ -180,18 +186,15 @@ public class UserService {
     }
 
 
-    public ResponseEntity<MessageDTO> sendMessage(Long id, POSTMessageDTO messageDTO) throws Exception {
+    public ResponseEntity<MessageDto> sendMessage(Long id, MessageDto messageDto) {
 
-        Ride ride = rideRepository.findById(messageDTO.getRideId()).get();
-        User receiver = userRepository.findById(messageDTO.getReceiverId()).get();
+        Ride ride = rideRepository.findById(messageDto.getRideId()).get();
+        User receiver = userRepository.findById(messageDto.getReceiverId()).get();
         User sender = userRepository.findById(id).get();
 
-        Message message = messageDTO.getMessage();
-        message.setRide(ride);
-        message.setSender(sender);
-        message.setReceiver(receiver);
+        Message message = new Message(messageDto, ride, sender, receiver);
         messageRepository.save(message);
-        return new ResponseEntity<>(new MessageDTO(message), HttpStatus.OK);
+        return new ResponseEntity<>(new MessageDto(message), HttpStatus.OK);
 
     }
 
@@ -207,7 +210,7 @@ public class UserService {
         return messageDTO;
     }
 
-    public ResponseEntity block(Long id) throws Exception {
+    public ResponseEntity block(Long id) {
         User user = userRepository.findById(id).get();
         changeUserBlockedState(user, true);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -230,11 +233,11 @@ public class UserService {
     }
 
 
-    public ResponseEntity<NoteDTO> addNote(Long userId, SimpleMessageDTO postNoteDTO) throws Exception {
-        User user = userRepository.findById(userId).get();
-        Note note = Note.builder().date(LocalDateTime.now()).user(user).message(postNoteDTO.getMessage()).build();
+    public ResponseEntity<NoteDto> addNote(Long userId, NoteDto postNoteDto) {
+        User user = userRepository.findById(userId).orElse(null);
+        Note note = Note.builder().date(LocalDateTime.now()).user(user).message(postNoteDto.getMessage()).build();
         noteRepository.save(note);
-        return new ResponseEntity<>(new NoteDTO(note), HttpStatus.OK);
+        return new ResponseEntity<>(new NoteDto(note), HttpStatus.OK);
 
     }
 
@@ -243,9 +246,10 @@ public class UserService {
         return noteDTO;
     }
 
-    public ResponseEntity<NotesDTO> getNotes(Long userId) throws Exception {
-        List<Note> notes = noteRepository.findAllByUserId(userId);
-        return new ResponseEntity<>(new NotesDTO(new HashSet<>(notes)), HttpStatus.OK);
+    public ResponseEntity<PaginatedResponseDto<NoteDto>> getNotes(Long userId) {
+        Collection<NoteDto> notes = new ArrayList<>();
+        noteRepository.findAllByUserId(userId).forEach(note -> notes.add(new NoteDto(note)));
+        return new ResponseEntity<>(new PaginatedResponseDto<>(notes.size(), notes), HttpStatus.OK);
     }
 
     public NotesDTO getNotesK1() {

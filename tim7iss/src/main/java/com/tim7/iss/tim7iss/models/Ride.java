@@ -4,6 +4,7 @@ import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationRequestDTO;
 import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
 import com.tim7.iss.tim7iss.dto.GeoCoordinateDto;
 import com.tim7.iss.tim7iss.dto.LocationsForRideDto;
+import com.tim7.iss.tim7iss.dto.RideCreationDto;
 import com.tim7.iss.tim7iss.dto.RideDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -64,7 +65,7 @@ public class Ride {
         this.passengers.add(passenger);
     }
 
-    public Ride(RideDto rideRequestDTO) {
+    public Ride(RideCreationDto rideRequestDTO) {
         for (LocationsForRideDto location : rideRequestDTO.getLocations()) {
             Route r = new Route(new Location(location.getDeparture()), new Location(location.getDestination()));
             this.routes.add(r);

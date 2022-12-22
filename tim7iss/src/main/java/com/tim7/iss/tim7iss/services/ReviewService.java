@@ -69,8 +69,7 @@ public class ReviewService {
         Collection<ReviewDto> vehicleReviews = new ArrayList<>();
         vehicleReviewRepository.findAllByVehicleId(vehicleId).forEach(review -> vehicleReviews.add(new ReviewDto(review)));
         return new ResponseEntity<>(
-                new PaginatedResponseDto<>(
-                        vehicleReviewRepository.countByVehicleId(vehicleId), vehicleReviews), HttpStatus.OK);
+                new PaginatedResponseDto<>(vehicleReviews.size(), vehicleReviews), HttpStatus.OK);
     }
 
     public ReviewsDTO getVehicleReviewsK1() {
@@ -122,8 +121,7 @@ public class ReviewService {
         Collection<ReviewDto> driverReviews = new ArrayList<>();
         driverReviewRepository.findAllByDriverId(driverId).forEach(review -> driverReviews.add(new ReviewDto(review)));
         return new ResponseEntity<>(
-                new PaginatedResponseDto<>(
-                        driverReviewRepository.countByDriverId(driverId), driverReviews), HttpStatus.OK);
+                new PaginatedResponseDto<>(driverReviews.size(), driverReviews), HttpStatus.OK);
     }
 
     public ReviewsDTO getDriverReviewsK1() {

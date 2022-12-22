@@ -11,7 +11,7 @@ import java.util.Collection;
 @AllArgsConstructor
 public class PaginatedResponseDto<T> {
 
-    public Long totalCount;
+    public Integer totalCount;
     public Collection<T> results;
 
 }

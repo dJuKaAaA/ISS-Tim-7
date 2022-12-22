@@ -31,6 +31,8 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 
     Page<Ride> findRideByPassengersId(Long id, Pageable page);
 
+    Long countByDriverId(Long driverId);
+
     Long countByPassengersId(Long passengerId);
 }
 

@@ -47,7 +47,7 @@ public class PassengerController {
         for (Passenger passenger : passengerService.findAll(page)) {
             passengers.add(new UserDto(passenger));
         }
-        return new ResponseEntity<>(new PaginatedResponseDto<>(passengerService.countAll(), passengers), HttpStatus.OK);
+        return new ResponseEntity<>(new PaginatedResponseDto<>(passengers.size(), passengers), HttpStatus.OK);
     }
 
     @GetMapping(value = "/activate/{activationId}")
@@ -89,7 +89,7 @@ public class PassengerController {
         for (Ride ride : rideService.findRideByPassengerId(id, page)) {
             rides.add(new RideDto(ride));
         }
-        return new ResponseEntity<>(new PaginatedResponseDto<>(rideService.countAllByPassengerId(id), rides), HttpStatus.OK);
+        return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
     }
 
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST)

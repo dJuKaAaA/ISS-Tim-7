@@ -1,8 +1,6 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.tim7.iss.tim7iss.dto.PanicDetailsDto;
-import com.tim7.iss.tim7iss.dto.RideDto;
-import com.tim7.iss.tim7iss.dto.UserRefDto;
+import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicReasonDTO;
 import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
@@ -43,7 +41,7 @@ public class RideController {
     RoutesService routesService;
 
     @PostMapping
-    public ResponseEntity<RideDto> save(@RequestBody RideDto rideRequestDto){
+    public ResponseEntity<RideDto> save(@RequestBody RideCreationDto rideRequestDto){
         Ride ride = savePassengersAndDrivers(rideRequestDto);
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
@@ -94,7 +92,7 @@ public class RideController {
     }
 
     @PutMapping(value = "/{rideId}/panic")
-    public ResponseEntity<PanicDetailsDto> creatingPanicProcedure(@RequestBody PanicReasonDTO reason, @PathVariable Long rideId){
+    public ResponseEntity<PanicDetailsDto> creatingPanicProcedure(@RequestBody PanicCreateDto reason, @PathVariable Long rideId){
         User user = passengerService.findById(3L);
         Ride ride = rideService.findById(rideId);
         Panic panic = new Panic(reason,ride,user);
@@ -135,7 +133,7 @@ public class RideController {
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
-    public Ride savePassengersAndDrivers(RideDto rideRequestDto){
+    public Ride savePassengersAndDrivers(RideCreationDto rideRequestDto){
         Ride ride = new Ride(rideRequestDto);
         ride.setVehicleType(vehicleTypeService.findById(1L));
         for(UserRefDto passengerRef : rideRequestDto.getPassengers()){

@@ -2,6 +2,8 @@ package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.DTOs.AssumedRideCostDTO;
 import com.tim7.iss.tim7iss.DTOs.OrderRideDTO;
+import com.tim7.iss.tim7iss.dto.RideCreationDto;
+import com.tim7.iss.tim7iss.dto.RideEstimationsDto;
 import com.tim7.iss.tim7iss.services.UnregisteredUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +20,9 @@ public class UnregisteredUserController {
     @Autowired
     UnregisteredUserService unregisteredUserService;
 
-    @PostMapping("/api/unregisteredUser/")
-    public ResponseEntity<AssumedRideCostDTO> getAssumedTimeAndCostOfRide(@RequestBody OrderRideDTO orderRideDTO) {
-        return unregisteredUserService.getAssumedRideCost(orderRideDTO);
+    @PostMapping("/api/unregisteredUser")
+    public ResponseEntity<RideEstimationsDto> getAssumedTimeAndCostOfRide(@RequestBody RideCreationDto rideCreationDto) {
+        return unregisteredUserService.getAssumedRideCost(rideCreationDto);
     }
 
 }
