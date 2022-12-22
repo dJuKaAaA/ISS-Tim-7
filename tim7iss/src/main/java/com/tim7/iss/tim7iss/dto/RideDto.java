@@ -19,7 +19,7 @@ public class RideDto {
     private Long id;
     private String startTime;
     private String endTime;
-    private Double totalCost;
+    private Integer totalCost;
     private UserRefDto driver;
     private List<UserRefDto> passengers = new ArrayList<>();
     private Integer estimatedTimeInMinutes;
@@ -35,7 +35,7 @@ public class RideDto {
         this.id = ride.getId();
         this.startTime = ride.getStartTime().toString();  // TODO: Change to better date format
         this.endTime = ride.getEndTime().toString();  // TODO: Change to better date format
-        this.totalCost = (double) ride.getPrice();  // TODO: Delete casting when price in ride class gets refactored from int to double
+        this.totalCost = ride.getPrice();
         this.driver = new UserRefDto(ride.getDriver());
         for (User passenger : ride.getPassengers()) {
             this.passengers.add(new UserRefDto(passenger));
