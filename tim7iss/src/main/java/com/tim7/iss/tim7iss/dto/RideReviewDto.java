@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RideReviewResponseDto {
+public class RideReviewDto {
 
     private ReviewDto vehicleReview;
     private ReviewDto driverReview;

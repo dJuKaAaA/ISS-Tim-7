@@ -1,5 +1,8 @@
 package com.tim7.iss.tim7iss.controllers;
 
+import com.tim7.iss.tim7iss.dto.PanicDetailsDto;
+import com.tim7.iss.tim7iss.dto.RideDto;
+import com.tim7.iss.tim7iss.dto.UserRefDto;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicReasonDTO;
 import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
@@ -13,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("api/ride")
@@ -38,46 +43,43 @@ public class RideController {
     RoutesService routesService;
 
     @PostMapping
-    public ResponseEntity<RideResponseDTO> save(@RequestBody RideRequestDTO rideRequestDTO){
-        RideResponseDTO response = new RideResponseDTO(rideRequestDTO);
-        Long id = savePassengersAndDrivers(rideRequestDTO, response);
-        response.id = id;
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<RideDto> save(@RequestBody RideDto rideRequestDto){
+        Ride ride = savePassengersAndDrivers(rideRequestDto);
+        return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
     @GetMapping(value = "/driver/{driverId}/active")
-    public ResponseEntity<RideResponseDTO> getDriversActiveRide(@PathVariable Long driverId){
+    public ResponseEntity<RideDto> getDriversActiveRide(@PathVariable Long driverId){
         Ride ride = rideService.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACTIVE.ordinal());
         if(ride == null){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(new RideResponseDTO(ride), HttpStatus.OK);
+        return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
     //Delete fixed id
     @GetMapping(value = "/passenger/{passengerId}/active")
-    public ResponseEntity<RideResponseDTO> getPassengersActiveRide(@PathVariable Long passengerId){
-        passengerId = 3L;
+    public ResponseEntity<RideDto> getPassengersActiveRide(@PathVariable Long passengerId) {
         Ride ride = rideService.findByPassengerIdAndStatus(passengerId, Enums.RideStatus.ACTIVE.ordinal());
-        if(ride == null){
+        if (ride == null){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(new RideResponseDTO(ride), HttpStatus.OK);
+        return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<RideResponseDTO> getRideById(@PathVariable Long id){
+    public ResponseEntity<RideDto> getRideById(@PathVariable Long id){
         Ride ride = rideService.findById(id);
         if(ride == null){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(new RideResponseDTO(ride), HttpStatus.OK);
+        return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
     //Voznja moze da se prekine samo ukoliko je stanje voznje pending ili accepted,
     //Radi testiranja validacija stanja je zakomentarisana
     @PutMapping(value = "/{id}/withdraw")
-    public ResponseEntity<RideResponseDTO> cancelRideById(@PathVariable Long id){
+    public ResponseEntity<RideDto> cancelRideById(@PathVariable Long id){
         Ride ride = rideService.findById(id);
 //        Ride ride = ridesService.findByIdAndStatus(id, Enums.RideStatus.PENDING.ordinal());
         if (ride == null){
@@ -88,56 +90,56 @@ public class RideController {
         }
         ride.setStatus(Enums.RideStatus.CANCELED);
         rideService.save(ride);
-        return new ResponseEntity<>(new RideResponseDTO(ride), HttpStatus.OK);
+        return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
     @PutMapping(value = "/{rideId}/panic")
-    public ResponseEntity<PanicDTO> creatingPanicProcedure(@RequestBody PanicReasonDTO reason, @PathVariable Long rideId){
+    public ResponseEntity<PanicDetailsDto> creatingPanicProcedure(@RequestBody PanicReasonDTO reason, @PathVariable Long rideId){
         User user = passengerService.findById(3L);
         Ride ride = rideService.findById(rideId);
         Panic panic = new Panic(reason,ride,user);
         panicService.save(panic);
-        return new ResponseEntity<>(new PanicDTO(panic), HttpStatus.OK);
+        return new ResponseEntity<>(new PanicDetailsDto(panic), HttpStatus.OK);
     }
 
     @PutMapping(value = "{id}/accept")
-    public ResponseEntity<RideResponseDTO> acceptRide(@PathVariable Long id){
+    public ResponseEntity<RideDto> acceptRide(@PathVariable Long id){
         Ride ride = rideService.findById(id);
         if(ride == null){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
         ride.setStatus(Enums.RideStatus.ACCEPTED);
         rideService.save(ride);
-        return new ResponseEntity<>(new RideResponseDTO(ride), HttpStatus.OK);
+        return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
     @PutMapping(value = "{id}/end")
-    public ResponseEntity<RideResponseDTO> endRide(@PathVariable Long id){
+    public ResponseEntity<RideDto> endRide(@PathVariable Long id){
         Ride ride = rideService.findById(id);
         if(ride == null){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
         ride.setStatus(Enums.RideStatus.FINISHED);
         rideService.save(ride);
-        return new ResponseEntity<>(new RideResponseDTO(ride), HttpStatus.OK);
+        return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
     @PutMapping(value = "{id}/cancel")
-    public ResponseEntity<RideResponseDTO> acceptRide(@PathVariable Long id, @RequestBody ErrorDTO reason){
+    public ResponseEntity<RideDto> acceptRide(@PathVariable Long id){
         Ride ride = rideService.findById(id);
         if(ride == null){
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
         ride.setStatus(Enums.RideStatus.REJECTED);
         rideService.save(ride);
-        return new ResponseEntity<>(new RideResponseDTO(ride), HttpStatus.OK);
+        return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
-    public Long savePassengersAndDrivers(RideRequestDTO rideRequestDTO, RideResponseDTO response){
-        Ride ride = new Ride(rideRequestDTO);
+    public Ride savePassengersAndDrivers(RideDto rideRequestDto){
+        Ride ride = new Ride(rideRequestDto);
         ride.setVehicleType(vehicleTypeService.findById(1L));
-        for(RideUserDTO passengerDTO : rideRequestDTO.passengers){
-                Passenger passenger = passengerService.findById(passengerDTO.getId());
+        for(UserRefDto passengerRef : rideRequestDto.getPassengers()){
+                Passenger passenger = passengerService.findById(passengerRef.getId());
                 if(passenger == null) {
                     continue;
                 }
@@ -147,9 +149,17 @@ public class RideController {
         if(driver != null) {
             ride.setDriver(driver);
         }
+
+        // TODO: Decide how to determine start and end time
+        ride.setStartTime(LocalDateTime.now());  // TODO: Delete later
+        ride.setEndTime(LocalDateTime.now());  // TODO: Delete later
         rideService.save(ride);
+
+        // TODO: Check if route already exists
+        // spring boot throws error if we try to create a new location that already has a combination
+        // of latitude and longitude that are already present in the database
         routesService.saveRoutes(ride.getRoutes());
-        return ride.getId();
+        return ride;
     }
 
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST)

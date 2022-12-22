@@ -3,6 +3,7 @@ package com.tim7.iss.tim7iss.controllers;
 import com.tim7.iss.tim7iss.DTOs.Member2.VehicleDTOs.VehicleDTO;
 import com.tim7.iss.tim7iss.DTOs.apidriver.VehicleRequestBodyDTO;
 import com.tim7.iss.tim7iss.DTOs.apidriver.VehicleResponseDTO;
+import com.tim7.iss.tim7iss.dto.GeoCoordinateDto;
 import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.Location;
 import com.tim7.iss.tim7iss.models.Vehicle;
@@ -63,7 +64,7 @@ public class VehicleController {
     }
 
     @PutMapping("/{id}/location")
-    public ResponseEntity<String>changeLocation(@PathVariable Long id, @RequestBody LocationResponseDTO location){
+    public ResponseEntity<String> changeLocation(@PathVariable Long id, @RequestBody GeoCoordinateDto location){
         Vehicle vehicle = vehicleService.getById(id);
         if(vehicle == null){
             return new ResponseEntity<>("Vehicle does not exist", HttpStatus.NOT_FOUND);
@@ -75,7 +76,7 @@ public class VehicleController {
     }
 
     @PutMapping("/{id}/driver/{driver_id}")
-    public ResponseEntity<VehicleDTO>setDriver(@PathVariable Long id, @PathVariable Long driver_id){
+    public ResponseEntity<VehicleDTO> setDriver(@PathVariable Long id, @PathVariable Long driver_id){
         Vehicle vehicle = vehicleService.getById(id);
         vehicle.setDriver(driverService.findById(driver_id));
         vehicleService.save(vehicle);
@@ -83,7 +84,7 @@ public class VehicleController {
     }
 
     @PostMapping
-    public ResponseEntity<VehicleRequestBodyDTO>save(@RequestBody VehicleRequestBodyDTO vehicleRequest){
+    public ResponseEntity<VehicleRequestBodyDTO> save(@RequestBody VehicleRequestBodyDTO vehicleRequest){
         VehicleType vehicleType = vehicleTypeService.getByName(vehicleRequest.getVehicleType());
         vehicleService.save(new Vehicle(vehicleRequest, vehicleType));
         return new ResponseEntity<>(vehicleRequest,HttpStatus.OK);
