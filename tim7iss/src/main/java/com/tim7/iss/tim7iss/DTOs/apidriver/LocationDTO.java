@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 public class LocationDTO {
 
     private String address;
-    private double latitude;
-    private double longitude;
+    private Float latitude;
+    private Float longitude;
 
     public LocationDTO(Location location) {
         this.address = location.getName();  // TODO: Extract address name from map using latitude and longitude

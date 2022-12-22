@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LocationResponseDTO {
     String address;
-    Double latitude;
-    Double longitude;
+    Float latitude;
+    Float longitude;
     public LocationResponseDTO(Location location){
         this.address = location.getName();
         this.longitude = location.getLongitude();

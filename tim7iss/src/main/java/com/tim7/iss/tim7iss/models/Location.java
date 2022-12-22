@@ -26,14 +26,14 @@ public class Location {
 
     @Min(-180)
     @Max(180)
-    private double longitude;
+    private float longitude;
 
     @Min(-90)
     @Max(90)
-    private double latitude;
+    private float latitude;
 
 
-    public Location(String name, double longitude, double latitude) {
+    public Location(String name, float longitude, float latitude) {
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;

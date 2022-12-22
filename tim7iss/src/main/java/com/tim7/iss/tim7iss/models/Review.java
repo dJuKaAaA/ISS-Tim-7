@@ -25,7 +25,7 @@ public class Review {
 
     @Min(value = 0, message = "Rating cannot be a negative number")
     @Max(value = 5, message = "Rating cannot be greater than 5")
-    private double rating;
+    private float rating;
 
     private String comment;
 
