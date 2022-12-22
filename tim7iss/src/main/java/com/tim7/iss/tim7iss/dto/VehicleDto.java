@@ -23,7 +23,7 @@ public class VehicleDto {
 
     public VehicleDto(Vehicle vehicle) {
         this.id = vehicle.getId();
-        this.driverId = vehicle.getDriver().getId();
+        this.driverId = vehicle.getDriver() == null ? null : vehicle.getDriver().getId();
         this.vehicleType = vehicle.getVehicleType().getName();
         this.model = vehicle.getModel();
         this.licenseNumber = vehicle.getRegistrationPlate();

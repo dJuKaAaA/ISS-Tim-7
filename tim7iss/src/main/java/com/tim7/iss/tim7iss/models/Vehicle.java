@@ -67,12 +67,12 @@ public class Vehicle {
         this.location = location;
     }
 
-    public Vehicle(VehicleRequestBodyDTO vehicleRequest, VehicleType vehicleType) {
+    public Vehicle(VehicleDto vehicleRequest, VehicleType vehicleType) {
         this.model = vehicleRequest.getModel();
         this.registrationPlate = vehicleRequest.getLicenseNumber();
         this.seatNumber = vehicleRequest.getPassengerSeats();
-        this.babyAllowed = vehicleRequest.isBabyTransport();
-        this.petsAllowed = vehicleRequest.isPetTransport();
+        this.babyAllowed = vehicleRequest.getBabyTransport();
+        this.petsAllowed = vehicleRequest.getPetTransport();
         this.location = new Location(vehicleRequest.getCurrentLocation());
         this.vehicleType = vehicleType;
     }
