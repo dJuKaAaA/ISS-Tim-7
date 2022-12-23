@@ -1,12 +1,16 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.DTOs.apidriver.VehicleRequestBodyDTO;
+import com.tim7.iss.tim7iss.dto.VehicleDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Entity
@@ -19,13 +23,17 @@ public class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @NotBlank
     private String model;
+    @NotBlank
     private String registrationPlate;
+    @Min(value = 1, message = "There must be at least one available seat for a passenger")
+    @Max(value = 20, message = "Maximum capacity reached (20)")
     private int seatNumber;
     private boolean babyAllowed;
     private boolean petsAllowed;
 
+    @NotNull(message = "Vehicle type is mandatory")
     @ManyToOne
     @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id")
     private VehicleType vehicleType;
@@ -34,21 +42,18 @@ public class Vehicle {
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @NotNull(message = "Vehicle cannot be nowhere")
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 
-    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
-    private Set<VehicleReview> reviews;
-
-
-    public Vehicle(VehicleRequestBodyDTO vehicleRequestBodyDTO, VehicleType vehicleType, Driver driver,
+    public Vehicle(VehicleDto vehicleRequestBodyDto, VehicleType vehicleType, Driver driver,
                    Location location) {
-        this.model = vehicleRequestBodyDTO.getModel();
-        this.registrationPlate = vehicleRequestBodyDTO.getLicenseNumber();
-        this.seatNumber = vehicleRequestBodyDTO.getPassengerSeats();
-        this.babyAllowed = vehicleRequestBodyDTO.isBabyTransport();
-        this.petsAllowed = vehicleRequestBodyDTO.isPetTransport();
+        this.model = vehicleRequestBodyDto.getModel();
+        this.registrationPlate = vehicleRequestBodyDto.getLicenseNumber();
+        this.seatNumber = vehicleRequestBodyDto.getPassengerSeats();
+        this.babyAllowed = vehicleRequestBodyDto.getBabyTransport();
+        this.petsAllowed = vehicleRequestBodyDto.getPetTransport();
         this.vehicleType = vehicleType;
         this.driver = driver;
         this.location = location;
@@ -63,12 +68,12 @@ public class Vehicle {
         this.location = location;
     }
 
-    public Vehicle(VehicleRequestBodyDTO vehicleRequest, VehicleType vehicleType) {
+    public Vehicle(VehicleDto vehicleRequest, VehicleType vehicleType) {
         this.model = vehicleRequest.getModel();
         this.registrationPlate = vehicleRequest.getLicenseNumber();
         this.seatNumber = vehicleRequest.getPassengerSeats();
-        this.babyAllowed = vehicleRequest.isBabyTransport();
-        this.petsAllowed = vehicleRequest.isPetTransport();
+        this.babyAllowed = vehicleRequest.getBabyTransport();
+        this.petsAllowed = vehicleRequest.getPetTransport();
         this.location = new Location(vehicleRequest.getCurrentLocation());
         this.vehicleType = vehicleType;
     }

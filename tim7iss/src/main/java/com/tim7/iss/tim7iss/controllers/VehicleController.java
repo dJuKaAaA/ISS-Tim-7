@@ -1,8 +1,8 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationResponseDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.VehicleDTOs.VehicleDTO;
-import com.tim7.iss.tim7iss.DTOs.apidriver.VehicleRequestBodyDTO;
+import com.tim7.iss.tim7iss.dto.GeoCoordinateDto;
+import com.tim7.iss.tim7iss.dto.PaginatedResponseDto;
+import com.tim7.iss.tim7iss.dto.VehicleDto;
 import com.tim7.iss.tim7iss.models.Location;
 import com.tim7.iss.tim7iss.models.Vehicle;
 import com.tim7.iss.tim7iss.models.VehicleType;
@@ -13,9 +13,9 @@ import com.tim7.iss.tim7iss.services.VehicleTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class VehicleController {
     private VehicleTypeService vehicleTypeService;
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Vehicle> getById(@PathVariable Long id) {
+    public ResponseEntity<VehicleDto> getById(@PathVariable Long id) {
 
         Vehicle vehicle = vehicleService.getById(id);
 
@@ -46,23 +46,22 @@ public class VehicleController {
         if (vehicle == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(vehicle, HttpStatus.OK);
+        return new ResponseEntity<>(new VehicleDto(vehicle), HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<VehicleDTO>> getAll() {
-        List<Vehicle> vehicles = vehicleService.getAll();
-        List<VehicleDTO> vehicleDTOs = new ArrayList<>();
-        for (Vehicle vehicle : vehicles) {
-            vehicleDTOs.add(new VehicleDTO(vehicle));
+    public ResponseEntity<PaginatedResponseDto<VehicleDto>> getAll() {
+        List<VehicleDto> vehicles = new ArrayList<>();
+        for(Vehicle vehicle : vehicleService.getAll()){
+            vehicles.add(new VehicleDto(vehicle));
         }
-        return new ResponseEntity<>(vehicleDTOs, HttpStatus.OK);
+        return new ResponseEntity<>(new PaginatedResponseDto<>(vehicles.size(), vehicles), HttpStatus.OK);
     }
 
     @PutMapping("/{id}/location")
-    public ResponseEntity<String> changeLocation(@PathVariable Long id, @RequestBody LocationResponseDTO location) {
+    public ResponseEntity<String> changeLocation(@PathVariable Long id, @RequestBody GeoCoordinateDto location){
         Vehicle vehicle = vehicleService.getById(id);
-        if (vehicle == null) {
+        if(vehicle == null){
             return new ResponseEntity<>("Vehicle does not exist", HttpStatus.NOT_FOUND);
         }
         Location newLocation = new Location(location);
@@ -72,18 +71,19 @@ public class VehicleController {
     }
 
     @PutMapping("/{id}/driver/{driver_id}")
-    public ResponseEntity<VehicleDTO> setDriver(@PathVariable Long id, @PathVariable Long driver_id) {
+    public ResponseEntity<VehicleDto> setDriver(@PathVariable Long id, @PathVariable Long driver_id){
         Vehicle vehicle = vehicleService.getById(id);
         vehicle.setDriver(driverService.findById(driver_id));
         vehicleService.save(vehicle);
-        return new ResponseEntity<>(new VehicleDTO(vehicle), HttpStatus.OK);
+        return new ResponseEntity<>(new VehicleDto(vehicle), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<VehicleRequestBodyDTO> save(@RequestBody VehicleRequestBodyDTO vehicleRequest) {
+    public ResponseEntity<VehicleDto> save(@RequestBody VehicleDto vehicleRequest){
         VehicleType vehicleType = vehicleTypeService.getByName(vehicleRequest.getVehicleType());
-        vehicleService.save(new Vehicle(vehicleRequest, vehicleType));
-        return new ResponseEntity<>(vehicleRequest, HttpStatus.OK);
+        Vehicle newVehicle = new Vehicle(vehicleRequest, vehicleType);
+        vehicleService.save(newVehicle);
+        return new ResponseEntity<>(new VehicleDto(newVehicle), HttpStatus.OK);
     }
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 //    @ExceptionHandler(Exception.class)

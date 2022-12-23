@@ -1,10 +1,13 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationRequestDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
+import com.tim7.iss.tim7iss.dto.LocationsForRideDto;
+import com.tim7.iss.tim7iss.dto.RideCreationDto;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,74 +17,65 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@ToString
 public class Ride {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Min(value = 0, message = "Price cannot be a negative number")
     private int price;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    @Min(value = 0, message = "Estimated time in minutes cannot be a negative number")
     private Integer estimatedTimeInMinutes;
     private boolean babyOnBoard;
     private boolean petOnBoard;
     private boolean splitFare;
     private Enums.RideStatus status;
 
+    @NotNull(message = "Driver is mandatory")
     @ManyToOne
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
+    @NotNull(message = "Vehicle type is mandatory")
     @ManyToOne
     @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id")
     private VehicleType vehicleType;
 
-    @OneToMany(mappedBy = "ride")
-    private Set<Message> messages = new HashSet<>();
-
-    @ManyToMany(mappedBy = "finishedRides")
+    @NotEmpty(message = "There must be at least 1 passenger assigned to a ride")
+    @ManyToMany(mappedBy = "rides")
     private Set<Passenger> passengers = new HashSet<>();
 
-    @OneToOne(mappedBy = "ride")
+    @OneToOne(mappedBy = "ride", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     private Refusal refusal;
 
-    @OneToMany(mappedBy = "ride")
-    private Set<Review> reviews = new HashSet<>();
-
-    @OneToMany(mappedBy = "ride")
+    @NotEmpty(message = "There must be at least 1 route for the driver to traverse")
+    @ManyToMany
+    @JoinTable(
+            name = "ride_routes",
+            joinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "route_id", referencedColumnName = "id")
+    )
     private Set<Route> routes = new HashSet<>();
 
-    public Ride(Passenger passenger) {
+    public Ride(Passenger passenger){
         this.passengers.add(passenger);
     }
 
-    public Ride(RideRequestDTO rideRequestDTO) {
-        for (LocationRequestDTO location : rideRequestDTO.locations) {
-            Route r = new Route(new Location(location.departure), new Location(location.destination));
-            r.setRide(this);
+    public Ride(RideCreationDto rideRequestDTO) {
+        for (LocationsForRideDto location : rideRequestDTO.getLocations()) {
+            Route r = new Route(new Location(location.getDeparture()), new Location(location.getDestination()));
             this.routes.add(r);
         }
 //        this.vehicleType = new VehicleType();
 //        this.vehicleType.setVehicleName(rideRequestDTO.vehicleType);
-        this.babyOnBoard = rideRequestDTO.babyTransport;
-        this.petOnBoard = rideRequestDTO.petTransport;
+        this.babyOnBoard = rideRequestDTO.getBabyTransport();
+        this.petOnBoard = rideRequestDTO.getPetTransport();
         this.status = Enums.RideStatus.PENDING;
     }
 
-    @Override
-    public String toString() {
-        return "Ride{" +
-                "id=" + id +
-                ", price=" + price +
-                ", startDate=" + startTime +
-                ", endDate=" + endTime +
-                ", estimatedTime=" + estimatedTimeInMinutes +
-                ", babyOnBoard=" + babyOnBoard +
-                ", petOnBoard=" + petOnBoard +
-                ", status=" + status +
-                '}';
-    }
 }
 

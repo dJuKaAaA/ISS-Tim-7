@@ -1,14 +1,10 @@
 package com.tim7.iss.tim7iss.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Getter
@@ -21,7 +17,11 @@ public class VehicleType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Min(value = 0, message = "Price per kilometer cannot be a negative number")
     private int pricePerKm;
-    private String name; // standard
+
+    @Column(unique = true)
+    @NotBlank
+    private String name;
 
 }
