@@ -2,12 +2,12 @@ package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.dto.LocationsForRideDto;
 import com.tim7.iss.tim7iss.dto.RideCreationDto;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;

@@ -6,13 +6,16 @@ import com.tim7.iss.tim7iss.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
 
     @Autowired
@@ -36,16 +39,19 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+
+
+
     public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(Long id) throws Exception {
-        User user = userRepository.findById(id).orElse(null);
+        User user = userRepository.findById(id).get();
 
         if (user instanceof Driver driver) {
-            List<RideDto> rides = new ArrayList<>();
+            Collection<RideDto> rides = new ArrayList<>();
             rideRepository.findRidesByDriverId(driver.getId()).forEach(ride -> rides.add(new RideDto(ride)));
             return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
 
         } else if (user instanceof Passenger passenger) {
-            List<RideDto> rides = new ArrayList<>();
+            Collection<RideDto> rides = new ArrayList<>();
             rideRepository.findRidesByPassengersId(passenger.getId()).forEach(ride -> rides.add(new RideDto(ride)));
             return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
 
@@ -57,29 +63,28 @@ public class UserService {
     public ResponseEntity<PaginatedResponseDto<UserDto>> getUsersDetails() {
         Collection<UserDto> users = new ArrayList<>();
         userRepository.findAll().forEach(user -> users.add(new UserDto(user)));
-        return new ResponseEntity<>(new PaginatedResponseDto<>(users.size(), users),HttpStatus.OK);
+        return new ResponseEntity<>(new PaginatedResponseDto<>(users.size(), users), HttpStatus.OK);
     }
 
-    public ResponseEntity<TokenResponseDto> login(LoginDto loginDto) {
-        return new ResponseEntity<>(new TokenResponseDto("neki", "token"), HttpStatus.OK);
+    public ResponseEntity<TokenResponseDto> login(LoginDto loginDTO) {
+        return ResponseEntity.ok(new TokenResponseDto("",""));
     }
 
-    public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(Long id) throws Exception {
-
-        User user = userRepository.findById(id).orElse(null);
-        assert user != null;
+    public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(Long id) {
+        User user = userRepository.findById(id).get();
         Collection<MessageDto> messages = new ArrayList<>();
         getAllMessages(user).forEach(message -> messages.add(new MessageDto(message)));
         return new ResponseEntity<>(new PaginatedResponseDto<>(messages.size(), messages), HttpStatus.OK);
+
     }
 
-    public ResponseEntity<MessageDto> sendMessage(Long id, MessageDto messageDto) {
+    public ResponseEntity<MessageDto> sendMessage(Long id, MessageDto messageDTO) {
 
-        Ride ride = rideRepository.findById(messageDto.getRideId()).get();
-        User receiver = userRepository.findById(messageDto.getReceiverId()).get();
+        Ride ride = rideRepository.findById(messageDTO.getRideId()).get();
+        User receiver = userRepository.findById(messageDTO.getReceiverId()).get();
         User sender = userRepository.findById(id).get();
 
-        Message message = new Message(messageDto, ride, sender, receiver);
+        Message message = new Message(messageDTO, ride, sender, receiver);
         messageRepository.save(message);
         return new ResponseEntity<>(new MessageDto(message), HttpStatus.OK);
 
@@ -91,32 +96,21 @@ public class UserService {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    public ResponseEntity blockK1() {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
     public ResponseEntity unblock(Long id) throws Exception {
         User user = userRepository.findById(id).get();
         changeUserBlockedState(user, false);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
     }
 
-    public ResponseEntity unblockK1() {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
-    }
-
-
-    public ResponseEntity<NoteDto> addNote(Long userId, NoteDto postNoteDto) {
-        User user = userRepository.findById(userId).orElse(null);
-        Note note = Note.builder().date(LocalDateTime.now()).user(user).message(postNoteDto.getMessage()).build();
+    public ResponseEntity<NoteDto> addNote(Long userId, NoteDto postNoteDTO) throws Exception {
+        User user = userRepository.findById(userId).get();
+        Note note = Note.builder().date(LocalDateTime.now()).user(user).message(postNoteDTO.getMessage()).build();
         noteRepository.save(note);
         return new ResponseEntity<>(new NoteDto(note), HttpStatus.OK);
 
     }
 
-    public ResponseEntity<PaginatedResponseDto<NoteDto>> getNotes(Long userId) {
+    public ResponseEntity<PaginatedResponseDto<NoteDto>> getNotes(Long userId) throws Exception {
         Collection<NoteDto> notes = new ArrayList<>();
         noteRepository.findAllByUserId(userId).forEach(note -> notes.add(new NoteDto(note)));
         return new ResponseEntity<>(new PaginatedResponseDto<>(notes.size(), notes), HttpStatus.OK);
@@ -160,4 +154,14 @@ public class UserService {
     }
 
 
+    @Override
+    // Vrsimo ucitavanje korisnika
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmailAddress(email);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", email));
+        } else {
+            return user;
+        }
+    }
 }

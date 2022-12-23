@@ -10,10 +10,10 @@ import com.tim7.iss.tim7iss.services.DriverService;
 import com.tim7.iss.tim7iss.services.LocationService;
 import com.tim7.iss.tim7iss.services.VehicleService;
 import com.tim7.iss.tim7iss.services.VehicleTypeService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;

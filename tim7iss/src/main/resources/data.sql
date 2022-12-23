@@ -14,13 +14,15 @@ VALUES (100, 'STANDARDNO');
 
 -- driver creation
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
-                        email_address, address, password, is_blocked, is_active, dtype)
+                        email_address, address, password, is_blocked, is_active, dtype,
+                        enabled, last_password_reset_date)
 VALUES ('Mika', 'Mikic', 'saimse', '8149081249081', 'mika@mikic.rs',
-        'Mikina kuca', 'nekasifra', FALSE, FALSE, 'Driver');
+        'Mikina kuca', 'nekasifra', FALSE, FALSE, 'Driver', TRUE, '2022-12-21');
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
-                        email_address, address, password, is_blocked, is_active, dtype)
+                        email_address, address, password, is_blocked, is_active, dtype,
+                        enabled, last_password_reset_date)
 VALUES ('Zoran', 'Zoranovic', 'saimse', '8149081249081', 'zoran@zoranovic.rs',
-        'Zoranova kuca', 'nekasifra2', FALSE, FALSE, 'Driver');
+        'Zoranova kuca', 'nekasifra2', FALSE, FALSE, 'Driver', TRUE, '2022-12-21');
 
 -- rides creation
 INSERT INTO ride (price, start_time, end_time, estimated_time_in_minutes,
@@ -51,23 +53,26 @@ INSERT INTO route(starting_point_id, end_point_id, distance)
 VALUES (2, 3, 150);
 
 -- passengers creation
-INSERT
-INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
-                 email_address, address, password, is_blocked, is_active, dtype)
-VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika1@zikic.rs', 'Zikina kuca', 'nekasifra3', FALSE, FALSE,
-        'Passenger');
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
-                        email_address, address, password, is_blocked, is_active, dtype)
+                        email_address, address, password, is_blocked, is_active, dtype,
+                        enabled, last_password_reset_date)
+VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika1@zikic.rs',
+        'Zikina kuca', 'nekasifra3', FALSE, FALSE, 'Passenger', TRUE, '2022-12-21');
+INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
+                        email_address, address, password, is_blocked, is_active, dtype,
+                        enabled, last_password_reset_date)
 VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika2@zikic.rs',
-        'Zikina kuca', 'nekasifra4', FALSE, FALSE, 'Passenger');
+        'Zikina kuca', 'nekasifra4', FALSE, FALSE, 'Passenger', TRUE, '2022-12-21');
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
-                        email_address, address, password, is_blocked, is_active, dtype)
+                        email_address, address, password, is_blocked, is_active, dtype,
+                        enabled, last_password_reset_date)
 VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika3@zikic.rs',
-        'Zikina kuca', 'nekasifra5', FALSE, FALSE, 'Passenger');
+        'Zikina kuca', 'nekasifra5', FALSE, FALSE, 'Passenger', TRUE, '2022-12-21');
 INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
-                        email_address, address, password, is_blocked, is_active, dtype)
+                        email_address, address, password, is_blocked, is_active, dtype,
+                        enabled, last_password_reset_date)
 VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika4@zikic.rs',
-        'Zikina kuca', 'nekasifra6', FALSE, FALSE, 'Passenger');
+        'Zikina kuca', 'nekasifra6', FALSE, FALSE, 'Passenger', TRUE, '2022-12-21');
 
 -- rides and passengers passenger rides creation
 INSERT INTO passenger_rides (passenger_id, ride_id)
@@ -89,9 +94,9 @@ VALUES (5, 4);
 
 -- insert admin
 INSERT INTO ggcj_users (email_address, first_name, is_active, is_blocked, last_name, password, phone_number,
-                        profile_picture, username, dtype)
+                        profile_picture, username, dtype, enabled, last_password_reset_date)
 VALUES ('ivanmartic@gamil.com', 'Ivan', false, false, 'Martic', 'password', '0604672999', '', 'ivanmartic',
-        'Admin');
+        'Admin', TRUE, '2022-12-21');
 
 -- insert document
 INSERT INTO document (driver_id, name, picture_path)
