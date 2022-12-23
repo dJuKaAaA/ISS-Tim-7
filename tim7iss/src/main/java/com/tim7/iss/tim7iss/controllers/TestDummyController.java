@@ -1,6 +1,5 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.tim7.iss.tim7iss.DTOs.DummyLoginBody;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
 import com.tim7.iss.tim7iss.services.*;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -36,7 +36,7 @@ public class TestDummyController {
     private UserActivationService userActivationService;
 
     @Autowired
-    private RidesRepository rideRepository;
+    private RideRepository rideRepository;
 
     @Autowired
     private VehicleTypeService vehicleTypeService;
@@ -69,8 +69,9 @@ public class TestDummyController {
     private RideService rideService;
 
     @PostMapping("/login")
-    public ResponseEntity<DummyLoginBody> dummyLogin(@RequestBody DummyLoginBody body) {
-        body.setToken("somerandomtokenidontknowwhatimdoingplzhelp");
+    public ResponseEntity<Map<String, Object>> dummyLogin(@RequestBody Map<String, Object> body) {
+        body.put("token", "somerandomtokenidontknowwhatimdoingplzhelp");
+        body.put("password", "");
         return new ResponseEntity<>(body, HttpStatus.OK);
     }   
     @GetMapping("/logout")

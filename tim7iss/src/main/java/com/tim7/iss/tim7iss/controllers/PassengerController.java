@@ -1,26 +1,25 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerRequestDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerResponseDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerResponseListDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideResponseDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideResponseListDTO;
+import com.tim7.iss.tim7iss.dto.PaginatedResponseDto;
+import com.tim7.iss.tim7iss.dto.RideDto;
+import com.tim7.iss.tim7iss.dto.UserDto;
 import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.Passenger;
 import com.tim7.iss.tim7iss.models.Ride;
 import com.tim7.iss.tim7iss.models.UserActivation;
 import com.tim7.iss.tim7iss.services.PassengerService;
-import com.tim7.iss.tim7iss.services.RidesService;
+import com.tim7.iss.tim7iss.services.RideService;
 import com.tim7.iss.tim7iss.services.UserActivationService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("api/passenger")
@@ -28,29 +27,27 @@ import java.time.LocalDateTime;
 @CrossOrigin
 public class PassengerController {
     @Autowired
-    PassengerService passengerService;
+    private PassengerService passengerService;
     @Autowired
-    UserActivationService userActivationService;
+    private UserActivationService userActivationService;
     @Autowired
-    RidesService ridesService;
+    private RideService rideService;
 
     @PostMapping
-    public ResponseEntity<PassengerResponseDTO> save(@RequestBody PassengerRequestDTO passengerRequestDTO) {
-        Passenger passenger = new Passenger(passengerRequestDTO);
+    public ResponseEntity<UserDto> save(@RequestBody UserDto passengerRequestDto) {
+        Passenger passenger = new Passenger();
+        passenger.setParameters(passengerRequestDto);
         passengerService.save(passenger);
-        PassengerResponseDTO passengerDTO = new PassengerResponseDTO(passenger);
-        return new ResponseEntity<>(passengerDTO, HttpStatus.OK);
+        return new ResponseEntity<>(new UserDto(passenger), HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<PassengerResponseListDTO> load(Pageable page) {
-        Page<Passenger> passengers = passengerService.findAll(page);
-        PassengerResponseListDTO response = new PassengerResponseListDTO();
-        for (Passenger passenger : passengers) {
-            response.results.add(new PassengerResponseDTO(passenger));
-            response.totalCount += 1;
+    public ResponseEntity<PaginatedResponseDto<UserDto>> load(Pageable page) {
+        Collection<UserDto> passengers = new ArrayList<>();
+        for (Passenger passenger : passengerService.findAll(page)) {
+            passengers.add(new UserDto(passenger));
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new PaginatedResponseDto<>(passengers.size(), passengers), HttpStatus.OK);
     }
 
     @GetMapping(value = "/activate/{activationId}")
@@ -68,33 +65,31 @@ public class PassengerController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<PassengerResponseDTO> findPassengerByID(@PathVariable Long id) throws UserNotFoundException {
+    public ResponseEntity<UserDto> findPassengerByID(@PathVariable Long id) throws UserNotFoundException {
         Passenger passenger = passengerService.findById(id);
         if (passenger == null) throw new UserNotFoundException() {
         };
-        return new ResponseEntity<>(new PassengerResponseDTO(passenger), HttpStatus.OK);
+        return new ResponseEntity<>(new UserDto(passenger), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PassengerResponseDTO> save(@RequestBody PassengerRequestDTO passengerRequestDTO, @PathVariable Long id) throws UserNotFoundException {
+    public ResponseEntity<UserDto> save(@RequestBody UserDto passengerRequestDto, @PathVariable Long id) throws UserNotFoundException {
         Passenger passenger = passengerService.findById(id);
         if (passenger == null) throw new UserNotFoundException() {
         };
-        passenger.setParameters(passengerRequestDTO);
+        passenger.setParameters(passengerRequestDto);
         passengerService.save(passenger);
-        return new ResponseEntity<>(new PassengerResponseDTO(passenger), HttpStatus.OK);
+        return new ResponseEntity<>(new UserDto(passenger), HttpStatus.OK);
     }
 
     @GetMapping("/{id}/ride")
-    public ResponseEntity<RideResponseListDTO> findRidesByPassengerId(@PathVariable Long id, Pageable page) {
+    public ResponseEntity<PaginatedResponseDto<RideDto>> findRidesByPassengerId(@PathVariable Long id, Pageable page) {
 //        ridesService.findByFilter();
-        Page<Ride> rides = ridesService.findRideByPassengerId(id, page);
-        RideResponseListDTO response = new RideResponseListDTO();
-        for (Ride ride : rides) {
-            response.results.add(new RideResponseDTO(ride));
-            response.totalCount += 1;
+        Collection<RideDto> rides = new ArrayList<>();
+        for (Ride ride : rideService.findRideByPassengerId(id, page)) {
+            rides.add(new RideDto(ride));
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
     }
 
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST)

@@ -8,4 +8,7 @@ import java.util.List;
 public interface DriverReviewRepository extends JpaRepository<DriverReview,Long> {
 
     List<DriverReview> findAllByDriverId(Long driverId);
+
+    Long countByDriverId(Long driverId);
+
 }

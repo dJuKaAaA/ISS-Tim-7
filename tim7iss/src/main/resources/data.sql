@@ -46,7 +46,7 @@ VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
 
 -- route creation
 INSERT INTO route(starting_point_id, end_point_id, distance)
-VALUES ( 1, 2, 150);
+VALUES (1, 2, 150);
 INSERT INTO route(starting_point_id, end_point_id, distance)
 VALUES (2, 3, 150);
 
@@ -169,10 +169,10 @@ values ('Reason', '2022-12-21', 3, 2);
 INSERT INTO message(content, receiver_id, ride_id, sender_id, sent_date, type)
 VALUES ('message1', 2, 1, 3, '2022-12-21', 'STANDARD');
 INSERT INTO message(content, receiver_id, ride_id, sender_id, sent_date, type)
-VALUES ('message2', 3, 1, 2, '2022-12-21', 'STANDARD');
+VALUES ('message2', 2, 1, 3, '2022-12-21', 'STANDARD');
 
 -- create review
 INSERT INTO reviews (DTYPE, PASSENGER_ID, DRIVER_ID, VEHICLE_ID, RIDE_ID, RATING, COMMENT)
-VALUES ('VehicleReview', 2, 1, 1, 1, 3, 'Comment');
+VALUES ('VehicleReview', 6, 1, 1, 1, 3, 'Comment');
 INSERT INTO reviews (DTYPE, PASSENGER_ID, DRIVER_ID, VEHICLE_ID, RIDE_ID, RATING, COMMENT)
-VALUES ('DriverReview', 2, 1, 1, 1, 3, 'Comment');
+VALUES ('DriverReview', 6, 1, 1, 1, 3, 'Comment');

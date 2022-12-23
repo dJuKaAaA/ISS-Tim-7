@@ -1,12 +1,10 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.DTOs.LocationDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationResponseDTO;
+import com.tim7.iss.tim7iss.dto.GeoCoordinateDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 
 @Entity
 @Getter
@@ -39,15 +37,10 @@ public class Location {
         this.latitude = latitude;
     }
 
-    public Location(LocationResponseDTO locationResponseDTO) {
-        this.name = locationResponseDTO.getAddress();
-        this.longitude = locationResponseDTO.getLongitude();
-        this.latitude = locationResponseDTO.getLatitude();
+    public Location(GeoCoordinateDto geoCoordinateDto) {
+        this.name = geoCoordinateDto.getAddress();
+        this.longitude = geoCoordinateDto.getLongitude();
+        this.latitude = geoCoordinateDto.getLatitude();
     }
 
-    public Location(com.tim7.iss.tim7iss.DTOs.apidriver.LocationDTO locationDTO) {
-        this.name = locationDTO.getAddress();
-        this.longitude = locationDTO.getLongitude();
-        this.latitude = locationDTO.getLatitude();
-    }
 }

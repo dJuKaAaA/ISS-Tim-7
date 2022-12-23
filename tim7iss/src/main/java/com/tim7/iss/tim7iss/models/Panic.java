@@ -1,6 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.DTOs.Member2.PanicDTOs.PanicReasonDTO;
+import com.tim7.iss.tim7iss.dto.PanicCreateDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -34,8 +34,8 @@ public class Panic {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    public Panic(PanicReasonDTO reason, Ride ride, User user) {
-        this.reason = reason.reason;
+    public Panic(PanicCreateDto reason, Ride ride, User user) {
+        this.reason = reason.getReason();
         this.ride = ride;
         this.user = user;
         this.sentTime = LocalDateTime.now();

@@ -1,7 +1,7 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.DTOs.Member2.LocationDTOs.LocationRequestDTO;
-import com.tim7.iss.tim7iss.DTOs.Member2.RideDTOs.RideRequestDTO;
+import com.tim7.iss.tim7iss.dto.LocationsForRideDto;
+import com.tim7.iss.tim7iss.dto.RideCreationDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -65,15 +65,15 @@ public class Ride {
         this.passengers.add(passenger);
     }
 
-    public Ride(RideRequestDTO rideRequestDTO) {
-        for (LocationRequestDTO location : rideRequestDTO.locations) {
-            Route r = new Route(new Location(location.departure), new Location(location.destination));
+    public Ride(RideCreationDto rideRequestDTO) {
+        for (LocationsForRideDto location : rideRequestDTO.getLocations()) {
+            Route r = new Route(new Location(location.getDeparture()), new Location(location.getDestination()));
             this.routes.add(r);
         }
 //        this.vehicleType = new VehicleType();
 //        this.vehicleType.setVehicleName(rideRequestDTO.vehicleType);
-        this.babyOnBoard = rideRequestDTO.babyTransport;
-        this.petOnBoard = rideRequestDTO.petTransport;
+        this.babyOnBoard = rideRequestDTO.getBabyTransport();
+        this.petOnBoard = rideRequestDTO.getPetTransport();
         this.status = Enums.RideStatus.PENDING;
     }
 

@@ -1,6 +1,5 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.DTOs.apidriver.WorkHourRequestBodyDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -27,10 +26,5 @@ public class WorkHour {
     private Driver driver;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-
-    public WorkHour(WorkHourRequestBodyDTO workHourRequestBodyDTO) {
-        this.startDate = workHourRequestBodyDTO.getStart();
-        this.endDate = workHourRequestBodyDTO.getEnd();
-    }
 
 }

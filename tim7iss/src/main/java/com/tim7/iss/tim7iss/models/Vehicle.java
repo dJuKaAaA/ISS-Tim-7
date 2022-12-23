@@ -1,12 +1,11 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.DTOs.apidriver.VehicleRequestBodyDTO;
+import com.tim7.iss.tim7iss.dto.VehicleDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,13 +47,13 @@ public class Vehicle {
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 
-    public Vehicle(VehicleRequestBodyDTO vehicleRequestBodyDTO, VehicleType vehicleType, Driver driver,
+    public Vehicle(VehicleDto vehicleRequestBodyDto, VehicleType vehicleType, Driver driver,
                    Location location) {
-        this.model = vehicleRequestBodyDTO.getModel();
-        this.registrationPlate = vehicleRequestBodyDTO.getLicenseNumber();
-        this.seatNumber = vehicleRequestBodyDTO.getPassengerSeats();
-        this.babyAllowed = vehicleRequestBodyDTO.isBabyTransport();
-        this.petsAllowed = vehicleRequestBodyDTO.isPetTransport();
+        this.model = vehicleRequestBodyDto.getModel();
+        this.registrationPlate = vehicleRequestBodyDto.getLicenseNumber();
+        this.seatNumber = vehicleRequestBodyDto.getPassengerSeats();
+        this.babyAllowed = vehicleRequestBodyDto.getBabyTransport();
+        this.petsAllowed = vehicleRequestBodyDto.getPetTransport();
         this.vehicleType = vehicleType;
         this.driver = driver;
         this.location = location;
@@ -69,12 +68,12 @@ public class Vehicle {
         this.location = location;
     }
 
-    public Vehicle(VehicleRequestBodyDTO vehicleRequest, VehicleType vehicleType) {
+    public Vehicle(VehicleDto vehicleRequest, VehicleType vehicleType) {
         this.model = vehicleRequest.getModel();
         this.registrationPlate = vehicleRequest.getLicenseNumber();
         this.seatNumber = vehicleRequest.getPassengerSeats();
-        this.babyAllowed = vehicleRequest.isBabyTransport();
-        this.petsAllowed = vehicleRequest.isPetTransport();
+        this.babyAllowed = vehicleRequest.getBabyTransport();
+        this.petsAllowed = vehicleRequest.getPetTransport();
         this.location = new Location(vehicleRequest.getCurrentLocation());
         this.vehicleType = vehicleType;
     }

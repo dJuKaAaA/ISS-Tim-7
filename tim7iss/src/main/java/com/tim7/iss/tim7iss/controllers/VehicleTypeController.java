@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -18,12 +19,13 @@ import java.util.List;
 @CrossOrigin
 @Transactional
 public class VehicleTypeController {
+
     @Autowired
     VehicleTypeService vehicleTypeService;
 
     @GetMapping
-    public ResponseEntity<List<VehicleType>>findAll(){
-        List<VehicleType> vehicleTypes = vehicleTypeService.findAll();
+    public ResponseEntity<Collection<VehicleType>> findAll(){
+        Collection<VehicleType> vehicleTypes = vehicleTypeService.findAll();
         return new ResponseEntity<>(vehicleTypes, HttpStatus.OK);
     }
 }
