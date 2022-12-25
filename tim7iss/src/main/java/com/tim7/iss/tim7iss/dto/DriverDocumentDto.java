@@ -20,7 +20,7 @@ public class DriverDocumentDto {
     public DriverDocumentDto(Document document) {
         this.id = document.getId();
         this.name = document.getName();
-        this.documentImage = getDocumentImage();
+        this.documentImage = new String(document.getPicture());
         this.driverId = document.getDriver().getId();
     }
 

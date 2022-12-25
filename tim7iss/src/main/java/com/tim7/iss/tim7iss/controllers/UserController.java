@@ -2,6 +2,7 @@ package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.models.User;
+import com.tim7.iss.tim7iss.services.MailService;
 import com.tim7.iss.tim7iss.services.UserService;
 import com.tim7.iss.tim7iss.util.TokenUtils;
 import org.slf4j.Logger;
@@ -16,6 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @Transactional
 public class UserController {
@@ -28,6 +31,9 @@ public class UserController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    MailService mailService;
 
     @GetMapping("/api/user/{id}/ride")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('Passenger')")
@@ -44,7 +50,8 @@ public class UserController {
     }
 
     @PostMapping("/api/user/login")
-    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginDto loginDTO) {
+    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginDto loginDTO) throws IOException {
+
         LOGGER.info("login");
         //         Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
 //         AuthenticationException
