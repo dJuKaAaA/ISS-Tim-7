@@ -11,6 +11,7 @@ import java.util.List;
 
 @Service
 public class PassengerService {
+
     @Autowired
     private PassengerRepository passengerRepository;
 
@@ -21,6 +22,7 @@ public class PassengerService {
     public Page<Passenger> findAll(Pageable page) {
         return passengerRepository.findAll(page);
     }
+
     public List<Passenger> findAll() {
         return passengerRepository.findAll();
     }
@@ -30,5 +32,9 @@ public class PassengerService {
     }
 
     public boolean existsById(Long id) {return passengerRepository.existsById(id); }
+
+    public Long countAll() {
+        return passengerRepository.count();
+    }
 
 }

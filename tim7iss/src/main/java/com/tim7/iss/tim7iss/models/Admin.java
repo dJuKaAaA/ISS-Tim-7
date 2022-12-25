@@ -13,7 +13,8 @@ import javax.persistence.Entity;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Admin extends User{
+public class Admin extends User {
+
     private String username;
 
 }

@@ -1,5 +1,3 @@
--- password for all users is 123
-
 -- location creation
 INSERT INTO location (name, longitude, latitude)
 VALUES ('Valentina Vodnika 10, Novi Sad', 19.8366902, 45.255956);
@@ -52,14 +50,12 @@ VALUES (154, '2022-12-21', '2022-12-21', 10, FALSE, TRUE, FALSE,
         3, 2, 1);
 
 -- route creation
-INSERT INTO route(starting_point_id, end_point_id, distance, ride_id)
-VALUES (1, 2, 150, 1);
-INSERT INTO route(starting_point_id, end_point_id, distance, ride_id)
-VALUES (2, 3, 150, 1);
+INSERT INTO route(starting_point_id, end_point_id, distance)
+VALUES (1, 2, 150);
+INSERT INTO route(starting_point_id, end_point_id, distance)
+VALUES (2, 3, 150);
 
--- passengers creation
-INSERT
-INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
+INSERT INTO ggcj_users (first_name, last_name, profile_picture, phone_number,
                  email_address, address, password, is_blocked, is_active, enabled, last_password_reset_date, dtype)
 VALUES ('Zika', 'Zikic', 'saimse', '8149081249081',
         'zika1@zikic.rs', 'Zikina kuca', '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', FALSE,
@@ -85,25 +81,24 @@ VALUES ('Zika', 'Zikic', 'saimse', '8149081249081', 'zika4@zikic.rs',
         'Zikina kuca', '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', FALSE, FALSE, TRUE,
         '2017-10-01 18:57:58.508-07', 'Passenger');
 
--- rides and passengers finished rides creation
-INSERT INTO finished_rides (passenger_id, ride_id)
+-- rides and passengers passenger rides creation
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (6, 1);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (6, 2);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (6, 4);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (3, 4);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (4, 1);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (4, 2);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (5, 2);
-INSERT INTO finished_rides (passenger_id, ride_id)
+INSERT INTO passenger_rides (passenger_id, ride_id)
 VALUES (5, 4);
 
--- insert admin
 INSERT INTO ggcj_users (email_address, first_name, is_active, is_blocked, last_name, password, phone_number,
                         profile_picture, username, enabled, last_password_reset_date, dtype)
 VALUES ('ivanmartic@gamil.com', 'Ivan', false, false, 'Martic',
@@ -111,13 +106,14 @@ VALUES ('ivanmartic@gamil.com', 'Ivan', false, false, 'Martic',
         '2017-10-01 18:57:58.508-07',
         'Admin');
 
--- insert document
-INSERT INTO document (driver_id, name, picture_path)
-VALUES (1, 'saobracajna', '');
-INSERT INTO document (driver_id, name, picture_path)
-VALUES (1, 'vozacka', '');
-INSERT INTO document (driver_id, name, picture_path)
-VALUES (1, 'licna', '');
+-- Dodati sliku u bajtovima
+-- -- insert document
+-- INSERT INTO document (driver_id, name, picture_path)
+-- VALUES (1, 'saobracajna', '');
+-- INSERT INTO document (driver_id, name, picture_path)
+-- VALUES (1, 'vozacka', '');
+-- INSERT INTO document (driver_id, name, picture_path)
+-- VALUES (1, 'licna', '');
 
 -- insert location
 INSERT INTO location (name, latitude, longitude)
@@ -128,10 +124,10 @@ INSERT INTO location (name, latitude, longitude)
 VALUES ('Bulevar cara Lazara', 45.24863618765179, 19.85191711614038);
 
 ---- insert route
-INSERT INTO route (distance, end_point_id, ride_id, starting_point_id)
-VALUES (1200, 4, 4, 3);
-INSERT INTO route (distance, end_point_id, ride_id, starting_point_id)
-VALUES (1200, 3, 3, 4);
+INSERT INTO route (distance, end_point_id, starting_point_id)
+VALUES (1200, 4, 3);
+INSERT INTO route (distance, end_point_id, starting_point_id)
+VALUES (1200, 3, 4);
 
 -- vehicles creation
 INSERT INTO vehicle (model, registration_plate, seat_number, baby_allowed, pets_allowed,
@@ -157,21 +153,14 @@ VALUES ('Neki tamo model 5', 'Redzistrejsn plejt 5', 5, FALSE, TRUE,
 
 -- user activation creation
 INSERT INTO user_activation (creation_date, expiration_date, user_id)
-VALUES ('2022-12-21', '2022-12-21', 2);
+VALUES ('2022-12-21', '2022-12-21', 3);
 INSERT INTO user_activation (creation_date, expiration_date, user_id)
-VALUES ('2022-12-21', '2023-12-21', 3);
+VALUES ('2022-12-21', '2023-12-21', 2);
 INSERT INTO user_activation (creation_date, expiration_date, user_id)
 VALUES ('2022-12-21', '2023-12-21', 4);
 INSERT INTO user_activation (creation_date, expiration_date, user_id)
 VALUES ('2022-12-21', '2023-12-21', 5);
 
--- documents creation
-INSERT INTO document (driver_id, name, picture_path)
-VALUES (1, 'saobracajna', '');
-INSERT INTO document (driver_id, name, picture_path)
-VALUES (1, 'vozacka', '');
-INSERT INTO document (driver_id, name, picture_path)
-VALUES (1, 'licna', '');
 
 -- work hour creation
 INSERT INTO work_hour (driver_id, start_date, end_date)
@@ -187,13 +176,14 @@ values ('Reason', '2022-12-21', 3, 2);
 INSERT INTO message(content, receiver_id, ride_id, sender_id, sent_date, type)
 VALUES ('message1', 2, 1, 3, '2022-12-21', 'STANDARD');
 INSERT INTO message(content, receiver_id, ride_id, sender_id, sent_date, type)
-VALUES ('message2', 3, 1, 2, '2022-12-21', 'STANDARD');
+VALUES ('message2', 2, 1, 3, '2022-12-21', 'STANDARD');
 
 -- create review
 INSERT INTO reviews (DTYPE, PASSENGER_ID, DRIVER_ID, VEHICLE_ID, RIDE_ID, RATING, COMMENT)
-VALUES ('VehicleReview', 2, 1, 1, 1, 3, 'Commnent');
+VALUES ('VehicleReview', 6, 1, 1, 1, 3, 'Comment');
 INSERT INTO reviews (DTYPE, PASSENGER_ID, DRIVER_ID, VEHICLE_ID, RIDE_ID, RATING, COMMENT)
-VALUES ('DriverReview', 2, 1, 1, 1, 3, 'Commnent');
+VALUES ('DriverReview', 6, 1, 1, 1, 3, 'Comment');
+
 
 INSERT INTO ROLE(name)
 VALUES ('ROLE_PASSENGER');

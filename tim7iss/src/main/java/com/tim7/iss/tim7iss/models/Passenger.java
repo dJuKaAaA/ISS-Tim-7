@@ -1,12 +1,12 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.DTOs.Member2.PassengerDTOs.PassengerRequestDTO;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.tim7.iss.tim7iss.dto.UserDto;
+import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,16 +15,16 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@Builder
+@ToString
 public class Passenger extends User {
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany
     @JoinTable(
-            name = "finished_rides",
+            name = "passenger_rides",
             joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id")
     )
-    private Set<Ride> finishedRides = new HashSet<>();
+    private Set<Ride> rides = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -34,42 +34,14 @@ public class Passenger extends User {
     )
     private Set<Route> favouriteRoutes = new HashSet<>();
 
-    public Passenger(PassengerRequestDTO passengerRequestDTO) {
-        this.setFirstName(passengerRequestDTO.name);
-        this.setLastName(passengerRequestDTO.surname);
-        this.setProfilePicture(passengerRequestDTO.profilePicture);
-        this.setPhoneNumber(passengerRequestDTO.telephoneNumber);
-        this.setEmailAddress(passengerRequestDTO.email);
-        this.setAddress(passengerRequestDTO.address);
-        this.setPassword(passengerRequestDTO.password);
+    public void setParameters(UserDto passengerRequestDto){
+        this.setFirstName(passengerRequestDto.getName());
+        this.setLastName(passengerRequestDto.getSurname());
+        this.setProfilePicture(passengerRequestDto.getProfilePicture());
+        this.setPhoneNumber(passengerRequestDto.getTelephoneNumber());
+        this.setEmailAddress(passengerRequestDto.getEmail());
+        this.setAddress(passengerRequestDto.getAddress());
+        this.setPassword(passengerRequestDto.getPassword());
     }
-
-    public void setParameters(PassengerRequestDTO passengerRequestDTO) {
-        this.setFirstName(passengerRequestDTO.name);
-        this.setLastName(passengerRequestDTO.surname);
-        this.setProfilePicture(passengerRequestDTO.profilePicture);
-        this.setPhoneNumber(passengerRequestDTO.telephoneNumber);
-        this.setEmailAddress(passengerRequestDTO.email);
-        this.setAddress(passengerRequestDTO.address);
-        this.setPassword(passengerRequestDTO.password);
-    }
-
-    @Override
-    public String toString() {
-        String string = "Passenger:" +
-                "id=" + this.getId() +
-                ", firstName='" + this.getFirstName() + '\'' +
-                ", lastName='" + this.getLastName() + '\'' +
-                ", profilePicture='" + this.getProfilePicture() + '\'' +
-                ", phoneNumber='" + this.getPhoneNumber() + '\'' +
-                ", emailAddress='" + this.getAddress() + '\'' +
-                ", address='" + this.getAddress() + '\'' +
-                ", password='" + this.getPassword() + '\'' +
-                ", isBlocked=" + this.isBlocked() +
-                ", isActive=" + this.isActive();
-
-        return string;
-    }
-
 
 }

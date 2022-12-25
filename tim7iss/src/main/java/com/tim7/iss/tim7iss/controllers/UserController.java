@@ -1,7 +1,8 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.tim7.iss.tim7iss.DTOs.*;
+import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.models.User;
+import com.tim7.iss.tim7iss.services.MailService;
 import com.tim7.iss.tim7iss.services.UserService;
 import com.tim7.iss.tim7iss.util.TokenUtils;
 import org.slf4j.Logger;
@@ -16,6 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @Transactional
 public class UserController {
@@ -29,22 +32,26 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    MailService mailService;
+
     @GetMapping("/api/user/{id}/ride")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('Passenger')")
-    public ResponseEntity<RidesDTO> getRides(@PathVariable("id") Long id) throws Exception {
+    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable("id") Long id) throws Exception {
         LOGGER.info("get rides");
         return userService.getRides(id);
     }
 
     @GetMapping("/api/user")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UsersDTO> getUserDetails() {
+    public ResponseEntity<PaginatedResponseDto<UserDto>> getUserDetails() {
         LOGGER.info("get user details");
         return userService.getUsersDetails();
     }
 
     @PostMapping("/api/user/login")
-    public ResponseEntity<POSTLoginDTO> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginDto loginDTO) throws IOException {
+
         LOGGER.info("login");
         //         Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
 //         AuthenticationException
@@ -61,27 +68,27 @@ public class UserController {
         int expiresIn = tokenUtils.getExpiredIn();
 
         // Vrati token kao odgovor na uspesnu autentifikaciju
-        return ResponseEntity.ok(new POSTLoginDTO(jwt, ""));
+        return ResponseEntity.ok(new TokenResponseDto(jwt, ""));
     }
 
     @GetMapping("/api/user/{id}/message")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
-    public ResponseEntity<MessagesDTO> getMessages(@PathVariable("id") Long id) throws Exception {
+    public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(@PathVariable("id") Long id) {
         LOGGER.info("get messages");
         return userService.getMessages(id);
     }
 
     @PostMapping("/api/user/{id}/message")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
-    public ResponseEntity<MessageDTO> sendMessage(@PathVariable("id") Long id,
-                                                  @RequestBody POSTMessageDTO messageDTO) throws Exception {
+    public ResponseEntity<MessageDto> sendMessage(@PathVariable("id") Long id,
+                                                  @RequestBody MessageDto messageDTO) {
         LOGGER.info("send messages");
         return userService.sendMessage(id, messageDTO);
     }
 
     @PutMapping("/api/user/{id}/block")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity block(@PathVariable("id") Long id) throws Exception {
+    public ResponseEntity block(@PathVariable("id") Long id) {
         LOGGER.info("block");
         return userService.block(id);
     }
@@ -96,8 +103,8 @@ public class UserController {
     // Add note for user to help to decide to ban user
     @PostMapping("/api/user/{id}/note")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<NoteDTO> addNoteForUser(@PathVariable("id") Long userId,
-                                                  @RequestBody SimpleMessageDTO noteDTO) throws Exception {
+    public ResponseEntity<NoteDto> addNoteForUser(@PathVariable("id") Long userId,
+                                                  @RequestBody NoteDto noteDTO) throws Exception {
         LOGGER.info("create note");
         return userService.addNote(userId, noteDTO);
     }
@@ -105,7 +112,7 @@ public class UserController {
     // Get note for user to help to decide to ban user
     @GetMapping("/api/user/{id}/note")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<NotesDTO> getNotes(@PathVariable("id") Long userId) throws Exception {
+    public ResponseEntity<PaginatedResponseDto<NoteDto>> getNotes(@PathVariable("id") Long userId) throws Exception {
         LOGGER.info("get notes");
         return userService.getNotes(userId);
     }
