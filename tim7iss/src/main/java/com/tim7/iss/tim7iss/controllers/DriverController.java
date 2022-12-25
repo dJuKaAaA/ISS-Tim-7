@@ -88,9 +88,9 @@ public class DriverController {
 
     @PostMapping("/{id}/documents")
     public ResponseEntity<DriverDocumentDto> addDocument(@PathVariable Long id,
-                                                           @RequestBody DriverDocumentDto documentRequestBodyDto) {
+                                                           @RequestBody DriverDocumentDto driverDocumentDto) {
         Driver driver = driverService.getById(id);
-        Document newDocument = new Document(documentRequestBodyDto, driver);
+        Document newDocument = new Document(driverDocumentDto, driver);
         documentService.save(newDocument);
         return new ResponseEntity<>(new DriverDocumentDto(newDocument), HttpStatus.OK);
     }

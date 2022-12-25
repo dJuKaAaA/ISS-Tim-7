@@ -32,6 +32,8 @@ public abstract class User implements UserDetails {
 
     @NotBlank(message = "Surname must not be empty")
     private String lastName;
+
+    // TODO promeniti da bude niz bajtova
     private String profilePicture;
 
     @Length(min = 7, max = 15)
@@ -41,16 +43,7 @@ public abstract class User implements UserDetails {
     @NotBlank
     @Email
     private String emailAddress;
-
     private String address;
-
-    @Pattern.List({
-            @Pattern(regexp = "^(?=.*[0-9]).+", message = "Password must contain at least one number"),
-            @Pattern(regexp = "^(?=.*[a-z]).+", message = "Password must contain at least one lowercase letter"),
-            @Pattern(regexp = "^(?=.*[A-Z]).+", message = "Password must contain at least one uppercase letter")
-    })
-    @Length(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
-    @Column(unique = true)
     @NotBlank
     private String password;
     private boolean isBlocked;

@@ -29,13 +29,15 @@ public class Document {
     @NotBlank(message = "Document name is mandatory")
     private String name;
 
-    @NotBlank(message = "Document picture is mandatory")
-    private String picturePath;
+    @Column(length = 1000000)
+    private byte[] picture;
 
-    public Document(DriverDocumentDto documentRequestBodyDto, Driver driver) {
-        this.setName(documentRequestBodyDto.getName());
-        this.setPicturePath(documentRequestBodyDto.getDocumentImage());
+    public Document(DriverDocumentDto driverDocumentDto, Driver driver) {
+        this.setName(driverDocumentDto.getName());
+        this.setPicture(driverDocumentDto.getDocumentImage().getBytes());
         this.driver = driver;
     }
+
+
 
 }
