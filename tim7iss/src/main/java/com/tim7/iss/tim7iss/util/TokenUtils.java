@@ -65,10 +65,11 @@ public class TokenUtils {
     }
 
     // Generisemo token
-    public String generateToken(String email) {
+    public String generateToken(String email, Long id) {
         return Jwts.builder()
                 .setIssuer(APP_NAME)
                 .setSubject(email)
+                .claim("id",id)
                 .setAudience(generateAudience())
                 .setIssuedAt(new Date())
                 .setExpiration(generateExpirationDate())
