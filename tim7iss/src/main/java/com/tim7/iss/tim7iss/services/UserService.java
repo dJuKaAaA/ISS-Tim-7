@@ -42,7 +42,7 @@ public class UserService implements UserDetailsService {
 
 
 
-    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(Long id) throws Exception {
+    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(Long id)  {
         User user = userRepository.findById(id).get();
 
         if (user instanceof Driver driver) {
