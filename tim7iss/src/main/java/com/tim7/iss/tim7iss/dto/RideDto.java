@@ -8,6 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Future;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Null;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +20,13 @@ import java.util.List;
 @AllArgsConstructor
 public class RideDto {
 
+    @Null(message = "Id should not be provided")
     private Long id;
+    @Future(message = "Cannot start ride at past time")
     private String startTime;
+    @Future(message = "Cannot end ride at past time")
     private String endTime;
+    @Min(value = 0, message = "Total cost cannot be a negative number")
     private Integer totalCost;
     private UserRefDto driver;
     private List<UserRefDto> passengers = new ArrayList<>();
@@ -29,6 +37,7 @@ public class RideDto {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private RideRejectDto rejection;
     private List<LocationsForRideDto> locations = new ArrayList<>();
+    @NotBlank(message = "Status must be provided")
     private String status;
 
     public RideDto(Ride ride) {

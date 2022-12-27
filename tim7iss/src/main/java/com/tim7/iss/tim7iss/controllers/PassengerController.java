@@ -14,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +39,11 @@ public class PassengerController {
     public ResponseEntity<UserDto> save(@RequestBody UserDto passengerRequestDto) {
         Passenger passenger = new Passenger();
         passenger.setParameters(passengerRequestDto);
+        int strength = 10; // work factor of bcrypt
+        BCryptPasswordEncoder bCryptPasswordEncoder =
+                new BCryptPasswordEncoder(strength, new SecureRandom());
+        String encodedPassword = bCryptPasswordEncoder.encode(passengerRequestDto.getPassword());
+        passenger.setPassword(encodedPassword);
         passengerService.save(passenger);
         return new ResponseEntity<>(new UserDto(passenger), HttpStatus.OK);
     }

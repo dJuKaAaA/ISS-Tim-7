@@ -6,13 +6,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Null;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class NoteDto {
 
+    @Null(message = "Id should not be provided")
     private Long id;
     private String date;
+    @NotBlank(message = "No content for note provided")
     private String message;
 
     public NoteDto(Note note) {

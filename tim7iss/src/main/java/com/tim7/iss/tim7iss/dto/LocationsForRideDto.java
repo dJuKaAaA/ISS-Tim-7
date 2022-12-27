@@ -5,12 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class LocationsForRideDto {
 
+    @NotNull(message = "Departure not provided")
     private GeoCoordinateDto departure;
+    @NotNull(message = "Destination not provided")
     private GeoCoordinateDto destination;
 
     public LocationsForRideDto(Route route) {

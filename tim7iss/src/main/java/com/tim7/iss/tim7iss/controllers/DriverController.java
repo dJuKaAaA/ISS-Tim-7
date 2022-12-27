@@ -8,11 +8,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -43,6 +47,9 @@ public class DriverController {
     @Autowired
     private RideService rideService;
 
+    @Autowired
+    private RoleService roleService;
+
     @GetMapping
     public ResponseEntity<PaginatedResponseDto<UserDto>> getAll(Pageable pageable) {
         Page<Driver> allDrivers = driverService.getAll(pageable);
@@ -58,8 +65,14 @@ public class DriverController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> save(@RequestBody UserDto driverRequestBodyDto) {
+    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto driverRequestBodyDto) {
         Driver newDriver = new Driver(driverRequestBodyDto);
+        int strength = 10; // work factor of bcrypt
+        BCryptPasswordEncoder bCryptPasswordEncoder =
+                new BCryptPasswordEncoder(strength, new SecureRandom());
+        String encodedPassword = bCryptPasswordEncoder.encode(driverRequestBodyDto.getPassword());
+        newDriver.setPassword(encodedPassword);
+        newDriver.setRoles(List.of(roleService.getRoleByName("ROLE_DRIVER")));
         driverService.save(newDriver);
         return new ResponseEntity<>(new UserDto(newDriver), HttpStatus.OK);
     }

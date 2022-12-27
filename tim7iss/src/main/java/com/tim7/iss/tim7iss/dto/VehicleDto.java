@@ -6,17 +6,25 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.*;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class VehicleDto {
 
+    @Null(message = "Id should not be provided")
     private Long id;
     private Long driverId;
     private String vehicleType;
+    @NotBlank(message = "Model should be provided")
     private String model;
+    @NotBlank(message = "License number should be provided")
     private String licenseNumber;
+    @NotNull(message = "Vehicle should have a current location")
     private GeoCoordinateDto currentLocation;
+    @Min(value = 1, message = "Vehicle must have at least 1 passenger seat")
+    @Max(value = 5, message = "Vehicle cannot have more than 5 passenger seats")
     private Integer passengerSeats;
     private Boolean babyTransport;
     private Boolean petTransport;

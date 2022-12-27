@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AcceptRideDto {
 
+    // TODO: Make a custom constraint for time
     private String time;
 
 }
