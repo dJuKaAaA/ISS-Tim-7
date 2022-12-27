@@ -29,23 +29,21 @@ public class UserController {
     @Autowired
     UserService userService;
     @Autowired
+    MailService mailService;
+    @Autowired
     private TokenUtils tokenUtils;
-
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
-    MailService mailService;
-
     @GetMapping("/api/user/{id}/ride")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('Passenger')")
-    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable("id") Long id) throws Exception {
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('Passenger')")
+    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable("id") Long id) {
         LOGGER.info("get rides");
         return userService.getRides(id);
     }
 
     @GetMapping("/api/user")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PaginatedResponseDto<UserDto>> getUserDetails() {
         LOGGER.info("get user details");
         return userService.getUsersDetails();
@@ -53,7 +51,6 @@ public class UserController {
 
     @PostMapping("/api/user/login")
     public ResponseEntity<TokenResponseDto> login(@RequestBody LoginDto loginDTO) {
-
         LOGGER.info("login");
         //         Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
 //         AuthenticationException
@@ -74,14 +71,14 @@ public class UserController {
         return ResponseEntity.ok(new TokenResponseDto(jwt, ""));
     }
 
-    @GetMapping("/api/user/{id}/message")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
+//    @GetMapping("/api/user/{id}/message")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(@PathVariable("id") Long id) {
         LOGGER.info("get messages");
         return userService.getMessages(id);
     }
 
-    @PostMapping("/api/user/{id}/message")
+//    @PostMapping("/api/user/{id}/message")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity<MessageDto> sendMessage(@PathVariable("id") Long id,
                                                   @RequestBody MessageDto messageDTO) {
@@ -89,14 +86,14 @@ public class UserController {
         return userService.sendMessage(id, messageDTO);
     }
 
-    @PutMapping("/api/user/{id}/block")
+//    @PutMapping("/api/user/{id}/block")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity block(@PathVariable("id") Long id) {
         LOGGER.info("block");
         return userService.block(id);
     }
 
-    @PutMapping("/api/user/{id}/unblock")
+//    @PutMapping("/api/user/{id}/unblock")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity unblock(@PathVariable("id") Long id) throws Exception {
         LOGGER.info("unblock");
@@ -104,7 +101,7 @@ public class UserController {
     }
 
     // Add note for user to help to decide to ban user
-    @PostMapping("/api/user/{id}/note")
+//    @PostMapping("/api/user/{id}/note")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<NoteDto> addNoteForUser(@PathVariable("id") Long userId,
                                                   @RequestBody NoteDto noteDTO) throws Exception {
@@ -113,7 +110,7 @@ public class UserController {
     }
 
     // Get note for user to help to decide to ban user
-    @GetMapping("/api/user/{id}/note")
+//    @GetMapping("/api/user/{id}/note")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PaginatedResponseDto<NoteDto>> getNotes(@PathVariable("id") Long userId) throws Exception {
         LOGGER.info("get notes");

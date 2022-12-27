@@ -101,7 +101,7 @@ public class DriverController {
 
     @PostMapping("/{id}/documents")
     public ResponseEntity<DriverDocumentDto> addDocument(@PathVariable Long id,
-                                                           @RequestBody DriverDocumentDto driverDocumentDto) {
+                                                         @RequestBody DriverDocumentDto driverDocumentDto) {
         Driver driver = driverService.getById(id);
         Document newDocument = new Document(driverDocumentDto, driver);
         documentService.save(newDocument);
@@ -203,5 +203,6 @@ public class DriverController {
         workHourService.save(updatedWorkHour);
         return new ResponseEntity<>(new WorkingHourDto(updatedWorkHour), HttpStatus.OK);
     }
+
 
 }

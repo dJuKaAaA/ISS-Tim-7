@@ -29,7 +29,8 @@ public class Document {
     @NotBlank(message = "Document name is mandatory")
     private String name;
 
-    @Column(length = 1000000)
+    @Column(length = 1000000
+    )
     private byte[] picture;
 
     public Document(DriverDocumentDto driverDocumentDto, Driver driver) {

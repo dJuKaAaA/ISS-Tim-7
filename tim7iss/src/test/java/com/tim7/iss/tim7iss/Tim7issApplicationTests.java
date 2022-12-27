@@ -13,9 +13,7 @@ class Tim7issApplicationTests {
     @Autowired
     MailService mailService;
 
-    @Test
     void contextLoads() throws IOException {
-
     }
 
 }
