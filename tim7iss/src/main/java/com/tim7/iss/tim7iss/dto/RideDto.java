@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.tim7.iss.tim7iss.models.Constants;
 import com.tim7.iss.tim7iss.models.Ride;
 import com.tim7.iss.tim7iss.models.Route;
 import com.tim7.iss.tim7iss.models.User;
@@ -8,10 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Null;
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +21,12 @@ public class RideDto {
     @Null(message = "Id should not be provided")
     private Long id;
     @Future(message = "Cannot start ride at past time")
+    @Pattern(regexp = "^([1-9]|([012][0-9])|(3[01]))\\.([0]{0,1}[1-9]|1[012])\\.\\d\\d\\d\\d\\s([0-1]?[0-9]|2?[0-3]):([0-5]\\d)$",
+            message = "Invalid date format")
     private String startTime;
     @Future(message = "Cannot end ride at past time")
+    @Pattern(regexp = "^([1-9]|([012][0-9])|(3[01]))\\.([0]{0,1}[1-9]|1[012])\\.\\d\\d\\d\\d\\s([0-1]?[0-9]|2?[0-3]):([0-5]\\d)$",
+            message = "Invalid date format")
     private String endTime;
     @Min(value = 0, message = "Total cost cannot be a negative number")
     private Integer totalCost;
@@ -37,13 +39,14 @@ public class RideDto {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private RideRejectDto rejection;
     private List<LocationsForRideDto> locations = new ArrayList<>();
-    @NotBlank(message = "Status must be provided")
+    @Pattern(regexp="^(PENDING|ACCEPTED|REJECTED|ACTIVE|FINISHED)$",
+            message = "Invalid status... Must be PENDING, ACCEPTED, REJECTED, ACTIVE or FINISHED")
     private String status;
 
     public RideDto(Ride ride) {
         this.id = ride.getId();
-        this.startTime = ride.getStartTime().toString();  // TODO: Change to better date format
-        this.endTime = ride.getEndTime().toString();  // TODO: Change to better date format
+        this.startTime = ride.getStartTime().format(Constants.customDateTimeFormat);
+        this.endTime = ride.getEndTime().format(Constants.customDateTimeFormat);
         this.totalCost = ride.getPrice();
         this.driver = new UserRefDto(ride.getDriver());
         for (User passenger : ride.getPassengers()) {

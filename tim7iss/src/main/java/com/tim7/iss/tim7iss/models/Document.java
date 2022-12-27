@@ -29,8 +29,7 @@ public class Document {
     @NotBlank(message = "Document name is mandatory")
     private String name;
 
-    @Column(length = 1000000
-    )
+    @Column(length = Constants.imageFieldSize)
     private byte[] picture;
 
     public Document(DriverDocumentDto driverDocumentDto, Driver driver) {
@@ -38,7 +37,5 @@ public class Document {
         this.setPicture(driverDocumentDto.getDocumentImage().getBytes());
         this.driver = driver;
     }
-
-
 
 }

@@ -22,17 +22,18 @@ public class UserDto {
     @NotBlank(message = "Surame cannot be blank")
     private String surname;
     private String profilePicture;
-    // TODO: Place a constraint for phone number
+    @Pattern(regexp = "^[0,9]{7,15}")
     private String telephoneNumber;
     @Email(message = "Invalid data")
     private String email;
+    @NotBlank(message = "Address must be provided")
     private String address;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     @Pattern.List({
             @Pattern(regexp = "^(?=.*[0-9]).+", message = "Password must contain at least one number"),
             @Pattern(regexp = "^(?=.*[a-z]).+", message = "Password must contain at least one lowercase letter"),
             @Pattern(regexp = "^(?=.*[A-Z]).+", message = "Password must contain at least one uppercase letter"),
-            @Pattern(regexp = "^(?=.*{8,20}).+", message = "Password must be between 8 and 20 characters")
+            @Pattern(regexp = "^(?=.{8,20}).+", message = "Password must be between 8 and 20 characters")
     })
     private String password;
 

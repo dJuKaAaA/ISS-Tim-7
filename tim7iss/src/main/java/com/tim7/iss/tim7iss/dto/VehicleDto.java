@@ -13,9 +13,9 @@ import javax.validation.constraints.*;
 @AllArgsConstructor
 public class VehicleDto {
 
-    @Null(message = "Id should not be provided")
     private Long id;
     private Long driverId;
+    @Pattern(regexp = "^STANDARD|LUXURY|VAN$", message = "Invalid vehicle type... Must be STANDARD, LUXURY or VAN")
     private String vehicleType;
     @NotBlank(message = "Model should be provided")
     private String model;
@@ -26,7 +26,9 @@ public class VehicleDto {
     @Min(value = 1, message = "Vehicle must have at least 1 passenger seat")
     @Max(value = 5, message = "Vehicle cannot have more than 5 passenger seats")
     private Integer passengerSeats;
+    @NotNull(message = "Baby transport must be provided")
     private Boolean babyTransport;
+    @NotNull(message = "Pet transport must be provided")
     private Boolean petTransport;
 
     public VehicleDto(Vehicle vehicle) {

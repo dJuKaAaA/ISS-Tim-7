@@ -25,6 +25,7 @@ public class DriverDocumentChangeRequest {
     @JoinColumn(name = "document_id", referencedColumnName = "id")
     private Document document; // It will be null if request for adding new document is sent
     private String documentName;
+    @Column(length = Constants.imageFieldSize)
     private byte[] documentImage;
 
     @ManyToOne()
