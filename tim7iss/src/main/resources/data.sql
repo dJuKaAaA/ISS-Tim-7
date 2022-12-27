@@ -206,3 +206,5 @@ INSERT INTO USER_ROLE (user_id, role_id)
 VALUES (6, 1);
 INSERT INTO USER_ROLE (user_id, role_id)
 VALUES (7, 3);
+
+INSERT INTO RIDE_ROUTES(ride_id,route_id) VALUES (1,1)
