@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 public class WorkHourService {
@@ -19,8 +20,8 @@ public class WorkHourService {
         workHourRepository.save(workHour);
     }
 
-    public WorkHour getById(Long id) {
-        return workHourRepository.findById(id).orElse(null);
+    public Optional<WorkHour> getById(Long id) {
+        return workHourRepository.findById(id);
     }
 
     public Collection<WorkHour> getByDriverId(long driverId, Pageable page) {

@@ -23,18 +23,13 @@ public class Route {
     @Min(value = 0, message = "Distance cannot be a negative number")
     private int distance;
 
-    // cascade = CascadeType.PERSIST is not recommended
-    // before instantiating a route make sure the locations exist in the database
-    // if not, add them using locationService
-    // or use persist but still check if locations exist because an exception will be thrown
-    // a unique constraint exception for latitude and longitude
     @NotNull(message = "Start point is mandatory")
-    @ManyToOne
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @JoinColumn(name = "starting_point_id", referencedColumnName = "id")
     private Location startingPoint;
 
     @NotNull(message = "End point is mandatory")
-    @ManyToOne
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @JoinColumn(name = "end_point_id", referencedColumnName = "id")
     private Location endPoint;
 

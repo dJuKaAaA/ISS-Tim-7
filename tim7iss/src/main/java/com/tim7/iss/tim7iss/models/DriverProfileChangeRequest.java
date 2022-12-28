@@ -23,11 +23,11 @@ public class DriverProfileChangeRequest {
 
     private String firstName;
     private String lastName;
+    @Column(length = Constants.imageFieldSize)
     private byte[] profilePicture;
     private String phoneNumber;
     private String email;
     private String address;
-    private String password;
     private boolean isMessageDisplayed; // Is driver seen this message if his status is accepted or rejected
     private String status; // PADDING ACCEPTED, REJECTED
 
@@ -48,6 +48,7 @@ public class DriverProfileChangeRequest {
         this.address = requestDto.getAddress();
         this.isMessageDisplayed = requestDto.isMessageDisplayed();
         this.status = requestDto.getStatus();
+
         this.driver = driver;
         this.driverDocumentChangeRequests = driverDocumentChangeRequests;
 

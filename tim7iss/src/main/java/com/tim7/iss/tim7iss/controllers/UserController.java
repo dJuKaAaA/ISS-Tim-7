@@ -14,10 +14,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 
 @RestController
 @Transactional
@@ -47,12 +49,12 @@ public class UserController {
         return userService.getUsersDetails();
     }
 
-//    @PostMapping("/api/user/login")
-    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginDto loginDTO) throws IOException {
-
+    @PostMapping("/api/user/login")
+    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginDto loginDTO) {
         LOGGER.info("login");
         //         Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
 //         AuthenticationException
+
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDTO.getEmail(), loginDTO.getPassword()));
 
@@ -62,7 +64,7 @@ public class UserController {
 
         // Kreiraj token za tog korisnika
         User user = (User) authentication.getPrincipal();
-        String jwt = tokenUtils.generateToken(user.getUsername(),user.getId());
+        String jwt = tokenUtils.generateToken(user.getUsername());
         int expiresIn = tokenUtils.getExpiredIn();
 
         // Vrati token kao odgovor na uspesnu autentifikaciju

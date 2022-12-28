@@ -4,6 +4,7 @@ import com.tim7.iss.tim7iss.models.Panic;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.tim7.iss.tim7iss.models.Constants;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +21,7 @@ public class PanicDetailsDto {
         this.id = panic.getId();
         this.user = new UserDto(panic.getUser());
         this.ride = new RideDto(panic.getRide());
-        this.time = panic.getSentTime().toString();  // TODO: Change to better date format
+        this.time = panic.getSentTime().format(Constants.customDateTimeFormat);
         this.reason = panic.getReason();
     }
 

@@ -43,7 +43,7 @@ public class Vehicle {
     private Driver driver;
 
     @NotNull(message = "Vehicle cannot be nowhere")
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 

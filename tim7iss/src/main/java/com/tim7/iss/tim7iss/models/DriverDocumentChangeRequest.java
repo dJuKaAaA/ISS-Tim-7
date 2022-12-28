@@ -1,15 +1,13 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.dto.DriverChangeDocumentRequestDto;
+import com.tim7.iss.tim7iss.dto.DriverDocumentDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -27,6 +25,7 @@ public class DriverDocumentChangeRequest {
     @JoinColumn(name = "document_id", referencedColumnName = "id")
     private Document document; // It will be null if request for adding new document is sent
     private String documentName;
+    @Column(length = Constants.imageFieldSize)
     private byte[] documentImage;
 
     @ManyToOne()
