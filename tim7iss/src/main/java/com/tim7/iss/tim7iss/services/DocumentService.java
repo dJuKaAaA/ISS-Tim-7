@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 public class DocumentService {
@@ -27,6 +28,10 @@ public class DocumentService {
 
     public void deleteById(Long id) {
         documentRepository.deleteById(id);
+    }
+
+    public Optional<Document> getById(Long id) {
+        return documentRepository.findById(id);
     }
 
 

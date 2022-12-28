@@ -1,10 +1,13 @@
 package com.tim7.iss.tim7iss.util;
 
+import com.tim7.iss.tim7iss.models.Role;
 import com.tim7.iss.tim7iss.models.User;
+import com.tim7.iss.tim7iss.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -27,6 +30,9 @@ public class TokenUtils {
     private int EXPIRES_IN;
     @Value("Authorization")
     private String AUTH_HEADER;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // Metoda vraca informacije o uredjaju za koji je namenjen token
     private String generateAudience() {
@@ -65,14 +71,16 @@ public class TokenUtils {
     }
 
     // Generisemo token
-    public String generateToken(String email, Long id) {
+    public String generateToken(String email) {
+        User user = userRepository.findByEmailAddress(email);
         return Jwts.builder()
                 .setIssuer(APP_NAME)
                 .setSubject(email)
-                .claim("id",id)
                 .setAudience(generateAudience())
                 .setIssuedAt(new Date())
                 .setExpiration(generateExpirationDate())
+                .claim("roles", user.getRoles().stream().map(Role::getAuthority).toList())
+                .claim("id", user.getId())
                 .signWith(SIGNATURE_ALGORITHM, SECRET).compact();
 
         // moguce je postavljanje proizvoljnih podataka u telo JWT tokena.claim("key", value), npr. .claim("role", user.getRole())

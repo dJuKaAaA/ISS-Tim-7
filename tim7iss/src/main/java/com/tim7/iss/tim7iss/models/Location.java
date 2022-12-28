@@ -12,8 +12,6 @@ import javax.validation.constraints.Min;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints =
-        {@UniqueConstraint(name = "UniqueLatitudeAndLongitude", columnNames = { "latitude", "longitude" })})
 public class Location {
 
     @Id
@@ -30,7 +28,6 @@ public class Location {
     @Min(-90)
     @Max(90)
     private float latitude;
-
 
     public Location(String name, float longitude, float latitude) {
         this.name = name;
