@@ -43,6 +43,9 @@ public class DriverController {
     @Autowired
     private RideService rideService;
 
+    @Autowired
+    RequestService requestService;
+
     @GetMapping
     public ResponseEntity<PaginatedResponseDto<UserDto>> getAll(Pageable pageable) {
         Page<Driver> allDrivers = driverService.getAll(pageable);
@@ -191,5 +194,11 @@ public class DriverController {
         return new ResponseEntity<>(new WorkingHourDto(updatedWorkHour), HttpStatus.OK);
     }
 
+    @PostMapping("/request/{driverId}")
+    public HttpStatus saveRequest(@PathVariable Long driverId,
+                                  @RequestBody DriverChangeProfileRequestDto requestDto) {
+        return requestService.saveRequest(driverId,requestDto);
+
+    }
 
 }
