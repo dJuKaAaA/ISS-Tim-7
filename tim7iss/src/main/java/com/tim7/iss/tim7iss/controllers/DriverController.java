@@ -1,8 +1,13 @@
 package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.dto.*;
+import com.tim7.iss.tim7iss.exceptions.DocumentNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.EmailAlreadyExistsException;
+import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.WorkHourNotFoundException;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
+import org.hibernate.validator.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,10 +20,8 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Transactional
 @RestController
@@ -39,9 +42,6 @@ public class DriverController {
     private WorkHourService workHourService;
 
     @Autowired
-    private VehicleTypeService vehicleTypeService;
-
-    @Autowired
     private LocationService locationService;
 
     @Autowired
@@ -50,26 +50,31 @@ public class DriverController {
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @GetMapping
     public ResponseEntity<PaginatedResponseDto<UserDto>> getAll(Pageable pageable) {
-        Page<Driver> allDrivers = driverService.getAll(pageable);
-        Collection<UserDto> drivers = new ArrayList<>();
-        allDrivers.forEach(driver -> drivers.add(new UserDto(driver)));
+        Collection<UserDto> drivers = driverService.getAll(pageable)
+                .stream()
+                .map(UserDto::new)
+                .toList();
         return new ResponseEntity<>(new PaginatedResponseDto<>(drivers.size(), drivers), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getById(@PathVariable Long id) {
-        Driver driver = driverService.getById(id);
+    public ResponseEntity<UserDto> getById(@PathVariable Long id) throws UserNotFoundException {
+        Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
         return new ResponseEntity<>(new UserDto(driver), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto driverRequestBodyDto) {
+    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto driverRequestBodyDto) throws EmailAlreadyExistsException {
+        Optional<Driver> driverByEmail = driverService.getByEmailAddress(driverRequestBodyDto.getEmail());
+        if (driverByEmail.isPresent()) {
+            throw new EmailAlreadyExistsException();
+        }
         Driver newDriver = new Driver(driverRequestBodyDto);
-        int strength = 10; // work factor of bcrypt
-        BCryptPasswordEncoder bCryptPasswordEncoder =
-                new BCryptPasswordEncoder(strength, new SecureRandom());
         String encodedPassword = bCryptPasswordEncoder.encode(driverRequestBodyDto.getPassword());
         newDriver.setPassword(encodedPassword);
         newDriver.setRoles(List.of(roleService.getRoleByName("ROLE_DRIVER")));
@@ -86,39 +91,44 @@ public class DriverController {
     }
 
     @GetMapping("/{id}/documents")
-    public ResponseEntity<Collection<DriverDocumentDto>> getDocuments(@PathVariable Long id) {
-        Driver driver = driverService.getById(id);
-        Collection<DriverDocumentDto> documents = new ArrayList<>();
-        driver.getDocuments().forEach(document -> documents.add(new DriverDocumentDto(document)));
+    public ResponseEntity<Collection<DriverDocumentDto>> getDocuments(@PathVariable Long id) throws UserNotFoundException {
+        Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
+        Collection<DriverDocumentDto> documents = driver.getDocuments()
+                .stream()
+                .map(DriverDocumentDto::new)
+                .toList();
         return new ResponseEntity<>(documents, HttpStatus.OK);
     }
 
     @DeleteMapping("/document/{documentId}")
-    public ResponseEntity<Boolean> deleteDocuments(@PathVariable Long documentId) {
-        documentService.deleteById(documentId);
+    public ResponseEntity<Boolean> deleteDocuments(@PathVariable Long documentId) throws DocumentNotFoundException {
+        Document document = documentService.getById(documentId).orElseThrow(DocumentNotFoundException::new);
+        documentService.delete(document);
         return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/{id}/documents")
     public ResponseEntity<DriverDocumentDto> addDocument(@PathVariable Long id,
-                                                         @RequestBody DriverDocumentDto driverDocumentDto) {
-        Driver driver = driverService.getById(id);
+                                                         @Valid @RequestBody DriverDocumentDto driverDocumentDto) throws UserNotFoundException {
+        Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
         Document newDocument = new Document(driverDocumentDto, driver);
         documentService.save(newDocument);
         return new ResponseEntity<>(new DriverDocumentDto(newDocument), HttpStatus.OK);
     }
 
     @GetMapping("/{id}/vehicle")
-    public ResponseEntity<VehicleDto> getVehicle(@PathVariable Long id) {
-        Driver driver = driverService.getById(id);
+    public ResponseEntity<VehicleDto> getVehicle(@PathVariable Long id) throws UserNotFoundException {
+        Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
+        // TODO: Throw driver doesn't have vehicle registered if vehicle is null
         Vehicle vehicle = driver.getVehicle();
         return new ResponseEntity<>(new VehicleDto(vehicle), HttpStatus.OK);
     }
 
     @PostMapping("/{id}/vehicle")
     public ResponseEntity<VehicleDto> addVehicle(@PathVariable Long id,
-                                                         @RequestBody VehicleDto vehicleRequestBodyDto) {
-        Driver driver = driverService.getById(id);
+                                                 @Valid @RequestBody VehicleDto vehicleRequestBodyDto) throws UserNotFoundException {
+        Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
+        // TODO: Throw driver doesn't have vehicle registered if vehicle is null
         if (driver.getVehicle() != null) {
             driver.getVehicle().setDriver(null);
             driverService.save(driver);
@@ -138,8 +148,9 @@ public class DriverController {
 
     @PutMapping("/{id}/vehicle")
     public ResponseEntity<VehicleDto> changeVehicle(@PathVariable Long id,
-                                                            @RequestBody VehicleDto vehicleRequestBodyDto) {
-        Driver driver = driverService.getById(id);
+                                                    @Valid @RequestBody VehicleDto vehicleRequestBodyDto) throws UserNotFoundException {
+        Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
+        // TODO: Throw driver doesn't have vehicle registered if vehicle is null
         if (driver.getVehicle() != null) {
             driver.getVehicle().setDriver(null);
             driverService.save(driver);
@@ -160,18 +171,19 @@ public class DriverController {
     }
 
     @GetMapping("/{id}/working-hour")
-    public ResponseEntity<PaginatedResponseDto<WorkingHourDto>> getWorkHours(@PathVariable Long id, Pageable page) {
+    public ResponseEntity<PaginatedResponseDto<WorkingHourDto>> getWorkHours(@PathVariable Long id, Pageable page) throws UserNotFoundException {
+        driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
         Collection<WorkHour> paginatedWorkHours = workHourService.getByDriverId(id, page);
-        List<WorkingHourDto> workHours = new ArrayList<>();
-        paginatedWorkHours.forEach(workHour -> workHours.add(new WorkingHourDto(workHour)));
+        List<WorkingHourDto> workHours = paginatedWorkHours.stream().map(WorkingHourDto::new).toList();
         return new ResponseEntity<>(new PaginatedResponseDto<>(workHours.size(), workHours), HttpStatus.OK);
     }
 
 
     @PostMapping("/{id}/working-hour")
-    public ResponseEntity<WorkingHourDto> addWorkHour(@PathVariable Long id) {
-        Driver driver = driverService.getById(id);
+    public ResponseEntity<WorkingHourDto> addWorkHour(@PathVariable Long id) throws UserNotFoundException {
+        Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
         WorkHour newWorkHour = new WorkHour();
+        // TODO: Fetch start and end date from body
         newWorkHour.setStartDate(LocalDateTime.now());
         newWorkHour.setEndDate(LocalDateTime.now());
         newWorkHour.setDriver(driver);
@@ -180,22 +192,23 @@ public class DriverController {
     }
 
     @GetMapping("/{id}/ride")
-    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable Long id, Pageable page) {
-        List<RideDto> rides = new ArrayList<>();
-        rideService.getByDriverId(id, page).forEach(ride -> rides.add(new RideDto(ride)));
+    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable Long id, Pageable page) throws UserNotFoundException {
+        driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
+        List<RideDto> rides = rideService.getByDriverId(id, page).stream().map(RideDto::new).toList();
         return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
     }
 
     @GetMapping("/working-hour/{workingHourId}")
-    public ResponseEntity<WorkingHourDto> getWorkHourDetails(@PathVariable Long workingHourId) {
-        WorkHour workHour = workHourService.getById(workingHourId);
+    public ResponseEntity<WorkingHourDto> getWorkHourDetails(@PathVariable Long workingHourId) throws WorkHourNotFoundException {
+        WorkHour workHour = workHourService.getById(workingHourId).orElseThrow(WorkHourNotFoundException::new);
         return new ResponseEntity<>(new WorkingHourDto(workHour), HttpStatus.OK);
     }
 
     @PutMapping("/working-hour/{workingHourId}")
-    public ResponseEntity<WorkingHourDto> changeWorkHour(@PathVariable Long workingHourId) {
-        WorkHour workHour = workHourService.getById(workingHourId);
+    public ResponseEntity<WorkingHourDto> changeWorkHour(@PathVariable Long workingHourId) throws WorkHourNotFoundException {
+        WorkHour workHour = workHourService.getById(workingHourId).orElseThrow(WorkHourNotFoundException::new);
         WorkHour updatedWorkHour = new WorkHour();
+        // TODO: Fetch start and end date from body
         updatedWorkHour.setStartDate(LocalDateTime.now());
         updatedWorkHour.setEndDate(LocalDateTime.now());
         updatedWorkHour.setId(workHour.getId());

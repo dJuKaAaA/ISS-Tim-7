@@ -34,14 +34,13 @@ public class PassengerController {
     private UserActivationService userActivationService;
     @Autowired
     private RideService rideService;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping
     public ResponseEntity<UserDto> save(@RequestBody UserDto passengerRequestDto) {
         Passenger passenger = new Passenger();
         passenger.setParameters(passengerRequestDto);
-        int strength = 10; // work factor of bcrypt
-        BCryptPasswordEncoder bCryptPasswordEncoder =
-                new BCryptPasswordEncoder(strength, new SecureRandom());
         String encodedPassword = bCryptPasswordEncoder.encode(passengerRequestDto.getPassword());
         passenger.setPassword(encodedPassword);
         passengerService.save(passenger);

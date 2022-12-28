@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 public class DriverService {
@@ -19,6 +20,7 @@ public class DriverService {
     }
 
     public Driver findById(Long id){ return driverRepository.findById(id).orElse(null); }
+
     public Collection<Driver> getAll() {
         return driverRepository.findAll();
     }
@@ -27,12 +29,16 @@ public class DriverService {
         return driverRepository.findAll(pageable);
     }
 
-    public Driver getById(Long id) {
-        return driverRepository.findById(id).orElse(null);
+    public Optional<Driver> getById(Long id) {
+        return driverRepository.findById(id);
     }
 
     public long countAll() {
        return driverRepository.count();
+    }
+
+    public Optional<Driver> getByEmailAddress(String emailAddress) {
+        return driverRepository.findByEmailAddress(emailAddress);
     }
 
 }
