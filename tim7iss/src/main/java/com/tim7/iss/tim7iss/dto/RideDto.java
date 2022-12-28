@@ -20,11 +20,9 @@ public class RideDto {
 
     @Null(message = "Id should not be provided")
     private Long id;
-    @Future(message = "Cannot start ride at past time")
     @Pattern(regexp = "^([1-9]|([012][0-9])|(3[01]))\\.([0]{0,1}[1-9]|1[012])\\.\\d\\d\\d\\d\\s([0-1]?[0-9]|2?[0-3]):([0-5]\\d)$",
             message = "Invalid date format")
     private String startTime;
-    @Future(message = "Cannot end ride at past time")
     @Pattern(regexp = "^([1-9]|([012][0-9])|(3[01]))\\.([0]{0,1}[1-9]|1[012])\\.\\d\\d\\d\\d\\s([0-1]?[0-9]|2?[0-3]):([0-5]\\d)$",
             message = "Invalid date format")
     private String endTime;

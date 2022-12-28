@@ -22,7 +22,10 @@ public class UserDto {
     @NotBlank(message = "Surame cannot be blank")
     private String surname;
     private String profilePicture;
-    @Pattern(regexp = "^[0,9]{7,15}")
+    @Pattern.List({
+            @Pattern(regexp = "\\d+", message = "Phone number must contain only numbers"),
+            @Pattern(regexp = "^(?=.{7,15}).+", message = "Phone number have between 7 and 15 digits")
+    })
     private String telephoneNumber;
     @Email(message = "Invalid data")
     private String email;
