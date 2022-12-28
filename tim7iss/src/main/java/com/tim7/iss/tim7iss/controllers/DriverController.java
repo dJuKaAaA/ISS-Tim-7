@@ -48,6 +48,7 @@ public class DriverController {
     private RideService rideService;
 
     @Autowired
+    RequestService requestService;
     private RoleService roleService;
 
     @Autowired
@@ -217,5 +218,11 @@ public class DriverController {
         return new ResponseEntity<>(new WorkingHourDto(updatedWorkHour), HttpStatus.OK);
     }
 
+    @PostMapping("/request/{driverId}")
+    public HttpStatus saveRequest(@PathVariable Long driverId,
+                                  @RequestBody DriverChangeProfileRequestDto requestDto) {
+        return requestService.saveRequest(driverId,requestDto);
+
+    }
 
 }

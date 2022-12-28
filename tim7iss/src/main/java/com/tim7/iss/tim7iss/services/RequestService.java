@@ -1,7 +1,7 @@
 package com.tim7.iss.tim7iss.services;
 
 import com.tim7.iss.tim7iss.dto.DriverChangeDocumentRequestDto;
-import com.tim7.iss.tim7iss.dto.DriverChangeProfileDriverRequestDto;
+import com.tim7.iss.tim7iss.dto.DriverChangeProfileRequestDto;
 import com.tim7.iss.tim7iss.models.Document;
 import com.tim7.iss.tim7iss.models.Driver;
 import com.tim7.iss.tim7iss.models.DriverDocumentChangeRequest;
@@ -10,10 +10,8 @@ import com.tim7.iss.tim7iss.repositories.DocumentRepository;
 import com.tim7.iss.tim7iss.repositories.DriverDocumentRequestRepository;
 import com.tim7.iss.tim7iss.repositories.DriverRepository;
 import com.tim7.iss.tim7iss.repositories.DriverRequestRepository;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -34,17 +32,17 @@ public class RequestService {
     @Autowired
     DriverDocumentRequestRepository driverDocumentRequestRepository;
 
-    public ResponseEntity<DriverChangeProfileDriverRequestDto> getRequest(Long driverId) {
+    public ResponseEntity<DriverChangeProfileRequestDto> getRequest(Long driverId) {
 
         Driver driver = driverRepository.findById(driverId).get();
         DriverProfileChangeRequest request = driverRequestRepository.findByDriver(driver).get();
 
         // TODO dodati
-        return new ResponseEntity<>(new DriverChangeProfileDriverRequestDto(), HttpStatus.OK);
+        return new ResponseEntity<>(new DriverChangeProfileRequestDto(), HttpStatus.OK);
     }
 
     public HttpStatus saveRequest(Long driverId,
-                                  DriverChangeProfileDriverRequestDto requestDto) {
+                                  DriverChangeProfileRequestDto requestDto) {
 
         Driver driver = driverRepository.findById(driverId).get();
 

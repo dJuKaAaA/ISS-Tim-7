@@ -1,16 +1,12 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.dto.DriverChangeProfileDriverRequestDto;
-import com.tim7.iss.tim7iss.repositories.DriverRepository;
+import com.tim7.iss.tim7iss.dto.DriverChangeProfileRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -42,7 +38,7 @@ public class DriverProfileChangeRequest {
     @OneToMany(mappedBy = "driverProfileChangeRequest")
     private Set<DriverDocumentChangeRequest> driverDocumentChangeRequests;
 
-    public DriverProfileChangeRequest(DriverChangeProfileDriverRequestDto requestDto, Driver driver,
+    public DriverProfileChangeRequest(DriverChangeProfileRequestDto requestDto, Driver driver,
                                       Set<DriverDocumentChangeRequest> driverDocumentChangeRequests) {
         this.firstName = requestDto.getFirstName();
         this.lastName = requestDto.getLastName();
@@ -50,14 +46,15 @@ public class DriverProfileChangeRequest {
         this.email = requestDto.getEmail();
         this.phoneNumber = requestDto.getPhoneNumber();
         this.address = requestDto.getAddress();
-        this.isMessageDisplayed = false;
-        this.status = "PADDING";
+        this.isMessageDisplayed = requestDto.isMessageDisplayed();
+        this.status = requestDto.getStatus();
+
         this.driver = driver;
         this.driverDocumentChangeRequests = driverDocumentChangeRequests;
 
     }
 
-    public DriverProfileChangeRequest(Long id, DriverChangeProfileDriverRequestDto requestDto, Driver driver,
+    public DriverProfileChangeRequest(Long id, DriverChangeProfileRequestDto requestDto, Driver driver,
                                       Set<DriverDocumentChangeRequest> driverDocumentChangeRequests) {
         this.id = id;
         this.firstName = requestDto.getFirstName();
@@ -65,8 +62,8 @@ public class DriverProfileChangeRequest {
         this.profilePicture = requestDto.getProfilePicture().getBytes();
         this.email = requestDto.getEmail();
         this.address = requestDto.getAddress();
-        this.isMessageDisplayed = false;
-        this.status = "PADDING";
+        this.isMessageDisplayed = requestDto.isMessageDisplayed();
+        this.status = requestDto.getStatus();
         this.driver = driver;
         this.driverDocumentChangeRequests = driverDocumentChangeRequests;
 
