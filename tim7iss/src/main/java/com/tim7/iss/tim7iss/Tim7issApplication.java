@@ -221,7 +221,7 @@ public class Tim7issApplication {
                     LocalDateTime.now(),
                     null,
                     20, false && driver.getVehicle().isBabyAllowed(),
-                    true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACTIVE,
+                    true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED,
                     driver, driver.getVehicle().getVehicleType(),
                     Set.of(passenger2, passenger3, passenger5), null, Set.of(route4.clone())));
             Ride ride4 = rideRepository.save(new Ride(null, 1000,

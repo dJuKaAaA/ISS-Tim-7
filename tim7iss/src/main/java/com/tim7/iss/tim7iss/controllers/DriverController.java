@@ -1,10 +1,7 @@
 package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.dto.*;
-import com.tim7.iss.tim7iss.exceptions.DocumentNotFoundException;
-import com.tim7.iss.tim7iss.exceptions.EmailAlreadyExistsException;
-import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
-import com.tim7.iss.tim7iss.exceptions.WorkHourNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
 import org.hibernate.validator.constraints.Email;
@@ -248,6 +245,10 @@ public class DriverController {
         Collection<RideDto> rides = new ArrayList<>();
         rides.addAll(pendingRides);
         rides.addAll(acceptedRides);
+        rides = rides
+                .stream()
+                .sorted(Comparator.comparing((RideDto ride) -> LocalDateTime.parse(ride.getStartTime(), Constants.customDateTimeFormat)))
+                .toList();
         return new ResponseEntity<>(rides, HttpStatus.OK);
     }
 

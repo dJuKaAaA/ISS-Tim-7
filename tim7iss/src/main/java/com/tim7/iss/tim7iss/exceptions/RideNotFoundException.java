@@ -6,4 +6,7 @@ public class RideNotFoundException extends Exception {
         super("Ride not found");
     }
 
+    public RideNotFoundException(String message) {
+        super(message);
+    }
 }

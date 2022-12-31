@@ -2,6 +2,7 @@ package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.RideNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,12 +46,16 @@ public class RideController {
     }
 
     @GetMapping(value = "/driver/{driverId}/active")
-    public ResponseEntity<RideDto> getDriversActiveRide(@PathVariable Long driverId){
-        List<Ride> ride = rideService.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACTIVE.ordinal());
-        if(ride.size() == 0) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    public ResponseEntity<RideDto> getDriversActiveRide(@PathVariable Long driverId) throws UserNotFoundException, RideNotFoundException{
+        driverService.getById(driverId).orElseThrow(() -> new UserNotFoundException("Driver not found"));
+        List<RideDto> rides = rideService.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACTIVE.ordinal())
+                .stream()
+                .map(RideDto::new)
+                .toList();
+        if (rides.size() == 0) {
+            throw new RideNotFoundException("Driver has no active rides at the moment");
         }
-        return new ResponseEntity<>(new RideDto(ride.get(0)), HttpStatus.OK);
+        return new ResponseEntity<>(rides.get(0), HttpStatus.OK);
     }
     //Delete fixed id
     @GetMapping(value = "/passenger/{passengerId}/active")
@@ -110,10 +115,10 @@ public class RideController {
     }
 
     @PutMapping(value = "{id}/end")
-    public ResponseEntity<RideDto> endRide(@PathVariable Long id){
+    public ResponseEntity<RideDto> endRide(@PathVariable Long id) throws RideNotFoundException{
         Ride ride = rideService.findById(id);
         if(ride == null){
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            throw new RideNotFoundException();
         }
         ride.setStatus(Enums.RideStatus.FINISHED);
         ride.setEndTime(LocalDateTime.now());  // ride finishes as soon as its status is set to finished
@@ -131,6 +136,17 @@ public class RideController {
         refusal.setRide(ride);
         ride.setRefusal(refusal);
         ride.setStatus(Enums.RideStatus.CANCELED);  // Ovo je nekad bilo REJECTED ali sam stavio na CANCELED jer ima vise smisla
+        rideService.save(ride);
+        return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/start")
+    public ResponseEntity<RideDto> startRide(@PathVariable Long id) throws RideNotFoundException {
+        Ride ride = rideService.findById(id);
+        if(ride == null){
+            throw new RideNotFoundException();
+        }
+        ride.setStatus(Enums.RideStatus.ACTIVE);
         rideService.save(ride);
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
