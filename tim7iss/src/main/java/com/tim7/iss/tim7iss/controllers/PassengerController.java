@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.dto.PaginatedResponseDto;
+import com.tim7.iss.tim7iss.dto.PassengerNarrowedProfileInfoDto;
 import com.tim7.iss.tim7iss.dto.RideDto;
 import com.tim7.iss.tim7iss.dto.UserDto;
 import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,9 +40,8 @@ public class PassengerController {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping
-    public ResponseEntity<UserDto> save(@RequestBody UserDto passengerRequestDto) {
-        Passenger passenger = new Passenger();
-        passenger.setParameters(passengerRequestDto);
+    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto passengerRequestDto) {
+        Passenger passenger = new Passenger(passengerRequestDto);
         String encodedPassword = bCryptPasswordEncoder.encode(passengerRequestDto.getPassword());
         passenger.setPassword(encodedPassword);
         passengerService.save(passenger);
@@ -83,8 +84,9 @@ public class PassengerController {
         Passenger passenger = passengerService.findById(id);
         if (passenger == null) throw new UserNotFoundException() {
         };
-        passenger.setParameters(passengerRequestDto);
-        passengerService.save(passenger);
+        Passenger updatedPassenger = new Passenger(passengerRequestDto);
+        updatedPassenger.setId(passenger.getId());
+        passengerService.save(updatedPassenger);
         return new ResponseEntity<>(new UserDto(passenger), HttpStatus.OK);
     }
 
@@ -96,6 +98,19 @@ public class PassengerController {
             rides.add(new RideDto(ride));
         }
         return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
+    }
+
+    /* Treba mi za front za prikaz jednostavnih informacija o putniku u driver home page
+     * kad driver klikne na email u kartici za ride
+     * - Djukanovic
+     */
+    @GetMapping("/{id}/narrowed-profile-info")
+    public ResponseEntity<PassengerNarrowedProfileInfoDto> getNarrowedInfo(@PathVariable Long id) throws UserNotFoundException {
+        Passenger passenger = passengerService.findById(id);
+        if (passenger == null) {
+            throw new UserNotFoundException("Passenger not found");
+        }
+        return new ResponseEntity<>(new PassengerNarrowedProfileInfoDto(passenger), HttpStatus.OK);
     }
 
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST)

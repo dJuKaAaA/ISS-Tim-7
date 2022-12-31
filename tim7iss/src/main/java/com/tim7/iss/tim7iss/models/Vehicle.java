@@ -7,11 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -25,15 +21,11 @@ public class Vehicle {
     private Long id;
     @NotBlank
     private String model;
-    @NotBlank
     private String registrationPlate;
-    @Min(value = 1, message = "There must be at least one available seat for a passenger")
-    @Max(value = 20, message = "Maximum capacity reached (20)")
     private int seatNumber;
     private boolean babyAllowed;
     private boolean petsAllowed;
 
-    @NotNull(message = "Vehicle type is mandatory")
     @ManyToOne
     @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id")
     private VehicleType vehicleType;
@@ -42,8 +34,7 @@ public class Vehicle {
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
-    @NotNull(message = "Vehicle cannot be nowhere")
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 

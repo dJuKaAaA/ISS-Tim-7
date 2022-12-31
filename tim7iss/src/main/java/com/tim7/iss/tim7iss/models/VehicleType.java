@@ -17,10 +17,8 @@ public class VehicleType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Min(value = 0, message = "Price per kilometer cannot be a negative number")
     private int pricePerKm;
 
-    @Column(unique = true)
     @NotBlank
     private String name;
 

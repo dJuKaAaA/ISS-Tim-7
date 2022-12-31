@@ -1,6 +1,8 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -9,6 +11,8 @@ import javax.persistence.*;
 // POJO koji implementira Spring Security GrantedAuthority kojim se mogu definisati role u aplikaciji
 @Entity
 @Table(name="ROLE")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Role implements GrantedAuthority {
 
 	private static final long serialVersionUID = 1L;

@@ -1,11 +1,13 @@
 package com.tim7.iss.tim7iss.models;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Getter
@@ -14,7 +16,6 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class DriverReview extends Review {
 
-    @NotNull(message = "Driver review must contain a driver")
     @ManyToOne
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;

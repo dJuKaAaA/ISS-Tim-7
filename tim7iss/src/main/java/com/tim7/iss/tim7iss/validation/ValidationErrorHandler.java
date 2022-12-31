@@ -2,6 +2,7 @@ package com.tim7.iss.tim7iss.validation;
 
 import com.tim7.iss.tim7iss.dto.ErrorDto;
 import com.tim7.iss.tim7iss.exceptions.EmailAlreadyExistsException;
+import com.tim7.iss.tim7iss.exceptions.RideNotFoundException;
 import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,12 @@ public class ValidationErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<ErrorDto> handleDataIntegrityViolationException(EmailAlreadyExistsException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({RideNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ResponseEntity<ErrorDto> handelRideNotFoundException(RideNotFoundException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
 }

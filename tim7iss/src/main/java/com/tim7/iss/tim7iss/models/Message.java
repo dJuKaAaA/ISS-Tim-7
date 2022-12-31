@@ -1,12 +1,9 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.dto.MessageDto;
-
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,18 +21,14 @@ public class Message {
 
     private LocalDateTime sentDate;
 
-    @NotBlank(message = "Message must have a type")
     private String type;
 
-    @NotBlank(message = "Message content cannot be empty")
     private String content;
 
-    @NotNull(message = "Message must have a sender")
     @ManyToOne
     @JoinColumn(name = "sender_id", referencedColumnName = "id")
     private User sender;
 
-    @NotNull(message = "Message must have a receiver")
     @ManyToOne
     @JoinColumn(name = "receiver_id", referencedColumnName = "id")
     private User receiver;

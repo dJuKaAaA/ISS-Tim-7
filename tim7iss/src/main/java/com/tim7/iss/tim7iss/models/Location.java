@@ -1,33 +1,30 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.dto.GeoCoordinateDto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Location {
+public class Location implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column
     private String name;
 
-    @Min(-180)
-    @Max(180)
+    private float latitude;
     private float longitude;
 
-    @Min(-90)
-    @Max(90)
-    private float latitude;
 
     public Location(String name, float longitude, float latitude) {
         this.name = name;
@@ -41,4 +38,17 @@ public class Location {
         this.latitude = geoCoordinateDto.getLatitude();
     }
 
+    @Override
+    public Location clone() {
+        try {
+            Location clone = (Location) super.clone();
+            this.setId(null);
+            clone.setName(this.name);
+            clone.setLongitude(this.longitude);
+            clone.setLatitude(this.latitude);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

@@ -1,10 +1,7 @@
 package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.dto.*;
-import com.tim7.iss.tim7iss.exceptions.DocumentNotFoundException;
-import com.tim7.iss.tim7iss.exceptions.EmailAlreadyExistsException;
-import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
-import com.tim7.iss.tim7iss.exceptions.WorkHourNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
 import org.hibernate.validator.constraints.Email;
@@ -49,6 +46,8 @@ public class DriverController {
 
     @Autowired
     RequestService requestService;
+
+    @Autowired
     private RoleService roleService;
 
     @Autowired
@@ -84,7 +83,7 @@ public class DriverController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> save(@PathVariable Long id, @RequestBody UserDto driverRequestBodyDto) {
+    public ResponseEntity<UserDto> save(@PathVariable Long id, @Valid @RequestBody UserDto driverRequestBodyDto) {
         Driver updatedDriver = new Driver(driverRequestBodyDto);
         updatedDriver.setId(id);
         driverService.save(updatedDriver);
@@ -222,7 +221,35 @@ public class DriverController {
     public HttpStatus saveRequest(@PathVariable Long driverId,
                                   @RequestBody DriverChangeProfileRequestDto requestDto) {
         return requestService.saveRequest(driverId,requestDto);
+    }
 
+    @PostMapping("/{id}/activity")
+    public HttpStatus changeActivity(@PathVariable Long id) throws UserNotFoundException {
+        Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
+        driver.setActive(!driver.isActive());
+        driverService.save(driver);
+        return HttpStatus.OK;
+    }
+
+    @GetMapping("/{id}/rides/scheduled")
+    public ResponseEntity<Collection<RideDto>> getPendingRides(@PathVariable Long id) throws UserNotFoundException {
+        driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
+        Collection<RideDto> pendingRides = rideService.findByDriverIdAndStatus(id, Enums.RideStatus.PENDING.ordinal())
+                .stream()
+                .map(RideDto::new)
+                .toList();
+        Collection<RideDto> acceptedRides = rideService.findByDriverIdAndStatus(id, Enums.RideStatus.ACCEPTED.ordinal())
+                .stream()
+                .map(RideDto::new)
+                .toList();
+        Collection<RideDto> rides = new ArrayList<>();
+        rides.addAll(pendingRides);
+        rides.addAll(acceptedRides);
+        rides = rides
+                .stream()
+                .sorted(Comparator.comparing((RideDto ride) -> LocalDateTime.parse(ride.getStartTime(), Constants.customDateTimeFormat)))
+                .toList();
+        return new ResponseEntity<>(rides, HttpStatus.OK);
     }
 
 }
