@@ -20,10 +20,10 @@ public class RideDto {
 
     @Null(message = "Id should not be provided")
     private Long id;
-    @Pattern(regexp = "^([1-9]|([012][0-9])|(3[01]))\\.([0]{0,1}[1-9]|1[012])\\.\\d\\d\\d\\d\\s([0-1]?[0-9]|2?[0-3]):([0-5]\\d)$",
+    @Pattern(regexp = "^([1-9]|([012][0-9])|(3[01]))\\.([0]{0,1}[1-9]|1[012])\\.\\d\\d\\d\\d\\s([0-1]?[0-9]|2?[0-3]):([0-5]\\d):([0-5]\\d)$",
             message = "Invalid date format")
     private String startTime;
-    @Pattern(regexp = "^([1-9]|([012][0-9])|(3[01]))\\.([0]{0,1}[1-9]|1[012])\\.\\d\\d\\d\\d\\s([0-1]?[0-9]|2?[0-3]):([0-5]\\d)$",
+    @Pattern(regexp = "^([1-9]|([012][0-9])|(3[01]))\\.([0]{0,1}[1-9]|1[012])\\.\\d\\d\\d\\d\\s([0-1]?[0-9]|2?[0-3]):([0-5]\\d):([0-5]\\d)$",
             message = "Invalid date format")
     private String endTime;
     @Min(value = 0, message = "Total cost cannot be a negative number")
@@ -44,7 +44,9 @@ public class RideDto {
     public RideDto(Ride ride) {
         this.id = ride.getId();
         this.startTime = ride.getStartTime().format(Constants.customDateTimeFormat);
-        this.endTime = ride.getEndTime().format(Constants.customDateTimeFormat);
+        if (ride.getEndTime() != null) {
+            this.endTime = ride.getEndTime().format(Constants.customDateTimeFormat);
+        }
         this.totalCost = ride.getPrice();
         this.driver = new UserRefDto(ride.getDriver());
         for (User passenger : ride.getPassengers()) {

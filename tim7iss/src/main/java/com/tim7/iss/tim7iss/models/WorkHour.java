@@ -20,7 +20,6 @@ public class WorkHour {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Work hour must have a assigned driver")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;

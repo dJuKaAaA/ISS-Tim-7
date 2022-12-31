@@ -1,11 +1,13 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.dto.PanicCreateDto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,12 +26,10 @@ public class Panic {
     @NotBlank(message = "Panic reason cannot be empty")
     private String reason;
 
-    @NotNull(message = "Ride is mandatory")
     @ManyToOne
     @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 
-    @NotNull(message = "Panic must have a sender")
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;

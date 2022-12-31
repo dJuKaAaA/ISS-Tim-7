@@ -19,7 +19,7 @@ public class UserDto {
     private Long id;
     @NotBlank(message = "Name cannot be blank")
     private String name;
-    @NotBlank(message = "Surame cannot be blank")
+    @NotBlank(message = "Surname cannot be blank")
     private String surname;
     private String profilePicture;
     @Pattern.List({
@@ -27,7 +27,7 @@ public class UserDto {
             @Pattern(regexp = "^(?=.{7,15}).+", message = "Phone number have between 7 and 15 digits")
     })
     private String telephoneNumber;
-    @Email(message = "Invalid data")
+    @Email(message = "Invalid email")
     private String email;
     @NotBlank(message = "Address must be provided")
     private String address;

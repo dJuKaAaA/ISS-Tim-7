@@ -41,7 +41,7 @@ public class RideService {
     }
 
     //Pitati zasto ovo ne radi
-    public Ride findByDriverIdAndStatus(Long id, Integer status){
+    public List<Ride> findByDriverIdAndStatus(Long id, Integer status){
         return rideRepository.findByDriverIdAndStatus(id, status);
     }
 

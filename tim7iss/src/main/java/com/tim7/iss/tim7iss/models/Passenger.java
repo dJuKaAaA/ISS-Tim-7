@@ -1,12 +1,12 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.dto.UserDto;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,16 +14,10 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString
 public class Passenger extends User {
 
-    @ManyToMany
-    @JoinTable(
-            name = "passenger_rides",
-            joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id")
-    )
+    @ManyToMany(mappedBy = "passengers", cascade = {CascadeType.MERGE})
     private Set<Ride> rides = new HashSet<>();
 
     @ManyToMany
@@ -34,14 +28,16 @@ public class Passenger extends User {
     )
     private Set<Route> favouriteRoutes = new HashSet<>();
 
-    public void setParameters(UserDto passengerRequestDto){
-        this.setFirstName(passengerRequestDto.getName());
-        this.setLastName(passengerRequestDto.getSurname());
-        this.setProfilePicture(passengerRequestDto.getProfilePicture());
-        this.setPhoneNumber(passengerRequestDto.getTelephoneNumber());
-        this.setEmailAddress(passengerRequestDto.getEmail());
-        this.setAddress(passengerRequestDto.getAddress());
-        this.setPassword(passengerRequestDto.getPassword());
+    public Passenger(UserDto passengerRequestBodyDto) {
+        this.setFirstName(passengerRequestBodyDto.getName());
+        this.setLastName(passengerRequestBodyDto.getSurname());
+        this.setProfilePicture(passengerRequestBodyDto.getProfilePicture());
+        this.setPhoneNumber(passengerRequestBodyDto.getTelephoneNumber());
+        this.setEmailAddress(passengerRequestBodyDto.getEmail());
+        this.setAddress(passengerRequestBodyDto.getAddress());
+        this.setPassword(passengerRequestBodyDto.getPassword());
+        this.setActive(false);
+        this.setBlocked(false);
     }
 
 }
