@@ -39,7 +39,7 @@ public class Message {
 
     public Message(MessageDto messageDto, Ride ride, User sender, User receiver) {
         this.id = messageDto.getId();
-        this.sentDate = LocalDateTime.now(); // TODO promeniti
+        this.sentDate = LocalDateTime.parse(messageDto.getTimeOfSending(), Constants.customDateTimeFormat);
         this.type = messageDto.getType();
         this.content = messageDto.getMessage();
         this.ride = ride;

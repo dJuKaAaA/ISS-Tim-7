@@ -4,9 +4,7 @@ import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
-import org.hibernate.validator.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Transactional
 @RestController
@@ -101,10 +97,10 @@ public class DriverController {
     }
 
     @DeleteMapping("/document/{documentId}")
-    public ResponseEntity<Boolean> deleteDocuments(@PathVariable Long documentId) throws DocumentNotFoundException {
+    public HttpStatus deleteDocuments(@PathVariable Long documentId) throws DocumentNotFoundException {
         Document document = documentService.getById(documentId).orElseThrow(DocumentNotFoundException::new);
         documentService.delete(document);
-        return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
+        return HttpStatus.NO_CONTENT;
     }
 
     @PostMapping("/{id}/documents")
@@ -223,12 +219,18 @@ public class DriverController {
         return requestService.saveRequest(driverId,requestDto);
     }
 
-    @PostMapping("/{id}/activity")
-    public HttpStatus changeActivity(@PathVariable Long id) throws UserNotFoundException {
+    @GetMapping("{id}/activity")
+public ResponseEntity<ActivityDto> fetchActivity(@PathVariable Long id) throws UserNotFoundException {
         Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
-        driver.setActive(!driver.isActive());
+        return new ResponseEntity<>(new ActivityDto(driver.isActive()), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/activity")
+    public HttpStatus changeActivity(@PathVariable Long id, @Valid @RequestBody ActivityDto activity) throws UserNotFoundException {
+        Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
+        driver.setActive(activity.getIsActive());
         driverService.save(driver);
-        return HttpStatus.OK;
+        return HttpStatus.NO_CONTENT;
     }
 
     @GetMapping("/{id}/rides/scheduled")
@@ -250,6 +252,15 @@ public class DriverController {
                 .sorted(Comparator.comparing((RideDto ride) -> LocalDateTime.parse(ride.getStartTime(), Constants.customDateTimeFormat)))
                 .toList();
         return new ResponseEntity<>(rides, HttpStatus.OK);
+    }
+
+    @GetMapping("/activity-and-locations")
+    public ResponseEntity<PaginatedResponseDto<DriverActivityAndLocationDto>> fetchActivityAndLocations(Pageable pageable) {
+        Collection<DriverActivityAndLocationDto> drivers = driverService.getAll(pageable)
+                .stream()
+                .map(DriverActivityAndLocationDto::new)
+                .toList();
+        return new ResponseEntity<>(new PaginatedResponseDto<>(drivers.size(), drivers), HttpStatus.OK);
     }
 
 }

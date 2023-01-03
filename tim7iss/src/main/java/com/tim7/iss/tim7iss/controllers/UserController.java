@@ -1,6 +1,8 @@
 package com.tim7.iss.tim7iss.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tim7.iss.tim7iss.dto.*;
+import com.tim7.iss.tim7iss.models.Message;
 import com.tim7.iss.tim7iss.models.User;
 import com.tim7.iss.tim7iss.services.MailService;
 import com.tim7.iss.tim7iss.services.UserService;
@@ -9,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,8 +22,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.Map;
 
 @RestController
 @Transactional
@@ -34,6 +40,8 @@ public class UserController {
     private TokenUtils tokenUtils;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @GetMapping("/api/user/{id}/ride")
 //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('Passenger')")
@@ -71,19 +79,52 @@ public class UserController {
         return ResponseEntity.ok(new TokenResponseDto(jwt, ""));
     }
 
-//    @GetMapping("/api/user/{id}/message")
+    @GetMapping("/api/user/{id}/message")
 //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(@PathVariable("id") Long id) {
         LOGGER.info("get messages");
         return userService.getMessages(id);
     }
 
-//    @PostMapping("/api/user/{id}/message")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
+    @PostMapping("/api/user/{id}/message")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity<MessageDto> sendMessage(@PathVariable("id") Long id,
-                                                  @RequestBody MessageDto messageDTO) {
+                                                  @Valid @RequestBody MessageDto messageDTO) {
         LOGGER.info("send messages");
         return userService.sendMessage(id, messageDTO);
+    }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    @MessageMapping("/send/message")
+    public Map<String, Object> sendMessage(String message) {
+        Map<String, Object> messageConverted = parseMessage(message);
+
+        if (messageConverted != null) {
+            if (messageConverted.containsKey("receiverId") && messageConverted.get("receiverId") != null) {
+                this.simpMessagingTemplate.convertAndSend("/socket-send-message/" + messageConverted.get("receiverId"),
+                        messageConverted);
+                this.simpMessagingTemplate.convertAndSend("/socket-send-message/" + messageConverted.get("senderId"),
+                        messageConverted);
+            } else {
+                this.simpMessagingTemplate.convertAndSend("/socket-send-message", messageConverted);
+            }
+        }
+        
+        return messageConverted;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> parseMessage(String message) {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> retVal;
+
+        try {
+            retVal = mapper.readValue(message, Map.class); // parsiranje JSON stringa
+        } catch (IOException e) {
+            retVal = null;
+        }
+
+        return retVal;
     }
 
 //    @PutMapping("/api/user/{id}/block")

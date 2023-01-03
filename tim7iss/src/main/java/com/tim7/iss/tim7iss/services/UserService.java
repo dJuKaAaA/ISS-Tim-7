@@ -80,7 +80,10 @@ public class UserService implements UserDetailsService {
 
     public ResponseEntity<MessageDto> sendMessage(Long id, MessageDto messageDTO) {
 
-        Ride ride = rideRepository.findById(messageDTO.getRideId()).get();
+        Ride ride = null;
+        if (messageDTO.getRideId() != null) {
+            ride = rideRepository.findById(messageDTO.getRideId()).get();
+        }
         User receiver = userRepository.findById(messageDTO.getReceiverId()).get();
         User sender = userRepository.findById(id).get();
 
