@@ -7,10 +7,6 @@ import javax.persistence.Entity;
 
 
 @Entity
-@Getter
-@Setter
 public class Admin extends User {
-
-    private String username;
 
 }
