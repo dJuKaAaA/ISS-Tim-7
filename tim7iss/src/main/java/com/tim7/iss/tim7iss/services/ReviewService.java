@@ -1,8 +1,11 @@
 package com.tim7.iss.tim7iss.services;
 
+import com.tim7.iss.tim7iss.dto.CreateReviewDto;
 import com.tim7.iss.tim7iss.dto.PaginatedResponseDto;
 import com.tim7.iss.tim7iss.dto.ReviewDto;
 import com.tim7.iss.tim7iss.dto.RideReviewDto;
+import com.tim7.iss.tim7iss.exceptions.RideNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.VehicleNotFoundException;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
 import org.slf4j.Logger;
@@ -39,55 +42,58 @@ public class ReviewService {
     @Autowired
     PassengerRepository passengerRepository;
 
-    public ResponseEntity<ReviewDto> addVehicleReview(Long vehicleId, Long rideId, ReviewDto postReviewDto) {
+    public ResponseEntity<ReviewDto> addVehicleReview(Long rideId, String email, CreateReviewDto createReviewDto) throws RideNotFoundException {
 
         VehicleReview review = new VehicleReview();
-        Ride ride = rideRepository.findById(rideId).orElse(null);
-        Vehicle vehicle = vehicleRepository.findById(vehicleId).orElse(null);
-        Passenger passenger = passengerRepository.findById(3L).orElse(null); // TODO promeniti
-        review.setComment(postReviewDto.getComment());
-        review.setRating(postReviewDto.getRating());
+        Ride ride = rideRepository.findById(rideId).orElseThrow(RideNotFoundException::new);
+        Vehicle vehicle = ride.getDriver().getVehicle();
+        Passenger passenger = passengerRepository.findByEmailAddress(email).get();
+
+        review.setComment(createReviewDto.getComment());
+        review.setRating(createReviewDto.getRating());
         review.setRide(ride);
         review.setPassenger(passenger);
         review.setVehicle(vehicle);
+
         reviewRepository.save(review);
         return new ResponseEntity<>(new ReviewDto(review), HttpStatus.OK);
     }
 
-    public ResponseEntity<PaginatedResponseDto<ReviewDto>> getVehicleReviews(Long vehicleId) {
+    public ResponseEntity<PaginatedResponseDto<ReviewDto>> getVehicleReviews(Long vehicleId) throws VehicleNotFoundException {
         Collection<ReviewDto> vehicleReviews = new ArrayList<>();
-        vehicleReviewRepository.findAllByVehicleId(vehicleId).forEach(review -> vehicleReviews.add(new ReviewDto(review)));
-        return new ResponseEntity<>(
-                new PaginatedResponseDto<>(vehicleReviews.size(), vehicleReviews), HttpStatus.OK);
+        Vehicle vehicle = vehicleRepository.findById(vehicleId).orElseThrow(VehicleNotFoundException::new);
+        vehicleReviewRepository.findAllByVehicleId(vehicle.getId()).forEach(review -> vehicleReviews.add(new ReviewDto(review)));
+        return new ResponseEntity<>(new PaginatedResponseDto<>(vehicleReviews.size(), vehicleReviews), HttpStatus.OK);
     }
 
-    public ResponseEntity<ReviewDto> addDriverReview(Long driverId, Long rideId, ReviewDto postReviewDto) {
+    public ResponseEntity<ReviewDto> addDriverReview(Long rideId, String email, CreateReviewDto createReviewDto) throws RideNotFoundException {
         DriverReview review = new DriverReview();
-        Driver driver = driverRepository.findById(driverId).orElse(null);
-        Ride ride = rideRepository.findById(rideId).orElse(null);
-        Passenger passenger = passengerRepository.findById(3L).orElse(null); // TODO promeniti
 
-        review.setComment(postReviewDto.getComment());
-        review.setRating(postReviewDto.getRating());
+        Ride ride = rideRepository.findById(rideId).orElseThrow(RideNotFoundException::new);
+        Driver driver = ride.getDriver();
+        Passenger passenger = passengerRepository.findByEmailAddress(email).get();
+
+        review.setComment(createReviewDto.getComment());
+        review.setRating(createReviewDto.getRating());
         review.setRide(ride);
         review.setPassenger(passenger);
         review.setDriver(driver);
         driverReviewRepository.save(review);
+
         return new ResponseEntity<>(new ReviewDto(review), HttpStatus.OK);
 
     }
 
-    public ResponseEntity<PaginatedResponseDto<ReviewDto>> getDriverReviews(Long driverId) {
+    public ResponseEntity<PaginatedResponseDto<ReviewDto>> getDriverReviews(Long driverId) throws RideNotFoundException {
+        Driver driver = driverRepository.findById(driverId).orElseThrow(RideNotFoundException::new);
         Collection<ReviewDto> driverReviews = new ArrayList<>();
-        driverReviewRepository.findAllByDriverId(driverId).forEach(review -> driverReviews.add(new ReviewDto(review)));
-        return new ResponseEntity<>(
-                new PaginatedResponseDto<>(driverReviews.size(), driverReviews), HttpStatus.OK);
+        driverReviewRepository.findAllByDriverId(driver.getId()).forEach(review -> driverReviews.add(new ReviewDto(review)));
+        return new ResponseEntity<>(new PaginatedResponseDto<>(driverReviews.size(), driverReviews), HttpStatus.OK);
     }
 
-    public ResponseEntity<Collection<RideReviewDto>> getRideReviews(Long rideId) {
-        List<Review> reviews = reviewRepository.findAllByRideId(rideId);
-
-        // what if passenger leaves review for driver or vehicle but leaves out review for the other?
+    public ResponseEntity<Collection<RideReviewDto>> getRideReviews(Long rideId) throws RideNotFoundException {
+        Ride ride = rideRepository.findById(rideId).orElseThrow(RideNotFoundException::new);
+        List<Review> reviews = reviewRepository.findAllByRideId(ride.getId());
 
         Set<Long> passengerIds = new HashSet<>();
         Map<Long, ReviewDto> vehicleReviews = new HashMap<>();
