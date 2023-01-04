@@ -1,8 +1,7 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tim7.iss.tim7iss.dto.*;
-import com.tim7.iss.tim7iss.models.Message;
+import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.User;
 import com.tim7.iss.tim7iss.services.MailService;
 import com.tim7.iss.tim7iss.services.UserService;
@@ -18,13 +17,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.IOException;
-import java.security.SecureRandom;
 import java.util.Map;
 
 @RestController
@@ -97,7 +93,7 @@ public class UserController {
     @CrossOrigin(origins = "http://localhost:4200")
     @MessageMapping("/send/message")
     public Map<String, Object> sendMessage(String message) {
-        Map<String, Object> messageConverted = parseMessage(message);
+        Map<String, Object> messageConverted = Constants.parseJsonString(message);
 
         if (messageConverted != null) {
             if (messageConverted.containsKey("receiverId") && messageConverted.get("receiverId") != null) {
@@ -113,19 +109,6 @@ public class UserController {
         return messageConverted;
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> parseMessage(String message) {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> retVal;
-
-        try {
-            retVal = mapper.readValue(message, Map.class); // parsiranje JSON stringa
-        } catch (IOException e) {
-            retVal = null;
-        }
-
-        return retVal;
-    }
 
 //    @PutMapping("/api/user/{id}/block")
     @PreAuthorize("hasRole('ADMIN')")

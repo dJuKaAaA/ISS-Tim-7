@@ -20,6 +20,6 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
 		registry.setApplicationDestinationPrefixes("/socket-subscriber")
-				.enableSimpleBroker("/socket-schedule-ride", "/socket-send-message");
+				.enableSimpleBroker("/socket-schedule-ride", "/socket-send-message", "/socket-driver-movement");
 	}
 }

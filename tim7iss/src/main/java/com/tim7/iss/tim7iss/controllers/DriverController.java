@@ -2,12 +2,15 @@ package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.*;
+import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,6 +51,9 @@ public class DriverController {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @GetMapping
     public ResponseEntity<PaginatedResponseDto<UserDto>> getAll(Pageable pageable) {
@@ -262,5 +268,21 @@ public ResponseEntity<ActivityDto> fetchActivity(@PathVariable Long id) throws U
                 .toList();
         return new ResponseEntity<>(new PaginatedResponseDto<>(drivers.size(), drivers), HttpStatus.OK);
     }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    @MessageMapping("/driver/send/current/location")
+    public Map<String, Object> sendCurrentLocation(String socketMessage) {
+        Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
+
+        if (socketMessageConverted != null) {
+            if (socketMessageConverted.containsKey("rideId") && socketMessageConverted.get("rideId") != null) {
+                this.simpMessagingTemplate.convertAndSend("/socket-driver-movement/" + socketMessageConverted.get("rideId"),
+                        socketMessageConverted);
+            }
+        }
+
+        return socketMessageConverted;
+    }
+
 
 }

@@ -4,7 +4,7 @@ import com.tim7.iss.tim7iss.models.Panic;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.tim7.iss.tim7iss.models.Constants;
+import com.tim7.iss.tim7iss.global.Constants;
 
 @Data
 @NoArgsConstructor
