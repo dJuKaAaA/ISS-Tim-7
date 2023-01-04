@@ -100,7 +100,7 @@ public class RideController {
         Ride ride = rideService.findById(rideId);
         Panic panic = new Panic(reason,ride,user);
         panicService.save(panic);
-        return new ResponseEntity<>(new PanicDextailsDto(panic), HttpStatus.OK);
+        return new ResponseEntity<>(new PanicDetailsDto(panic), HttpStatus.OK);
     }
 
     @PutMapping(value = "{id}/accept")
