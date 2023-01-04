@@ -30,7 +30,8 @@ public class DriverChangeProfileRequestDto {
     @NotBlank(message = "Address must be provided")
     private String address;
 
-    // TODO staviti validaciju
+    @Pattern(regexp="^(PENDING|ACCEPTED|REJECTED)$",
+            message = "Invalid status... Must be PENDING, ACCEPTED, REJECTED")
     private String status;
     private boolean isMessageDisplayed;
 
