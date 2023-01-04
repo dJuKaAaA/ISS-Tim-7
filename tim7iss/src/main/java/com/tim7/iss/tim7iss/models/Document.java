@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.dto.DriverDocumentDto;
+import com.tim7.iss.tim7iss.global.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

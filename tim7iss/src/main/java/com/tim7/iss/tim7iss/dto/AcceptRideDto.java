@@ -3,8 +3,6 @@ package com.tim7.iss.tim7iss.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
-import com.tim7.iss.tim7iss.models.Constants;
 
 import javax.validation.constraints.Pattern;
 

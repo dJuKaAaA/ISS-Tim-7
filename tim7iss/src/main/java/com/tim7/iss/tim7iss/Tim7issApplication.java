@@ -67,14 +67,14 @@ public class Tim7issApplication {
             Role passengerRole = roleRepository.save(new Role(null, "ROLE_PASSENGER"));
             Role anonymousRole = roleRepository.save(new Role(null, "ROLE_ANONYMOUS"));
 
-            // admin creation
+            // admin creatioAdmin123n
             Admin admin = new Admin();
             admin.setFirstName("Adonis");
             admin.setLastName("Adonis");
             admin.setProfilePicture("something");
             admin.setPhoneNumber("003814523423");
             admin.setEmailAddress("admin@email.com");
-            admin.setPassword("$2a$12$Dtc8siWn13V8WDWkB6Lgu.0TzLVGgFGDh7ZYEw2epeDkMBv39VLh.");  // Adonis1Jeffrey0
+            admin.setPassword("$2a$12$c9cKc9F6WaOKIchi9bWCpOrWRnXTBEKTU4NFtS3azXhJWy4TAcTey");  // Admin123
             admin.setEnabled(true);
             admin.setRoles(List.of(adminRole));
             adminRepository.save(admin);
@@ -91,7 +91,7 @@ public class Tim7issApplication {
                     "$2a$12$4z3y3x45WYUdy98AhcW5Vee6UmIAClGcs61e1yJZpwpaobzkm5asa"));  // Mika1234
             driver.setEnabled(true);
             driver.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5,
-                    false, true, vehicleType, null,
+                    false, true, vehicleType, driver,
                     new Location(null,
                             "Fakultet tehnickih nauka Univerziteta u Novom Sadu, Trg Dositeja Obradovica, Novi Sad",
                             45.24648813f, 19.8516641f)));

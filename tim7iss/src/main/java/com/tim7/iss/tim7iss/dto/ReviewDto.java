@@ -24,7 +24,7 @@ public class ReviewDto {
     @NotNull
     private String comment;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private UserRefDto ride;  // why is the instance of UserRefDto named ride in swagger
+    private UserRefDto ride;
     private UserRefDto passenger;
 
     public ReviewDto(Review review) {

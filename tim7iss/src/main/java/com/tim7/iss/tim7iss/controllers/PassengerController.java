@@ -1,12 +1,10 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.tim7.iss.tim7iss.dto.PaginatedResponseDto;
-import com.tim7.iss.tim7iss.dto.PassengerNarrowedProfileInfoDto;
-import com.tim7.iss.tim7iss.dto.RideDto;
-import com.tim7.iss.tim7iss.dto.UserDto;
+import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.Passenger;
 import com.tim7.iss.tim7iss.models.Ride;
+import com.tim7.iss.tim7iss.models.User;
 import com.tim7.iss.tim7iss.models.UserActivation;
 import com.tim7.iss.tim7iss.services.PassengerService;
 import com.tim7.iss.tim7iss.services.RideService;
@@ -111,6 +109,12 @@ public class PassengerController {
             throw new UserNotFoundException("Passenger not found");
         }
         return new ResponseEntity<>(new PassengerNarrowedProfileInfoDto(passenger), HttpStatus.OK);
+    }
+
+    @PostMapping("/by-email")
+    public ResponseEntity<UserRefDto> fetchPassengerByEmail(@Valid @RequestBody UserRefDto passenger) throws UserNotFoundException {
+        Passenger passengerByEmail = passengerService.findByEmailAddress(passenger.getEmail()).orElseThrow(() -> new UserNotFoundException("Passenger not found"));
+        return new ResponseEntity<>(new UserRefDto(passengerByEmail), HttpStatus.OK);
     }
 
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST)

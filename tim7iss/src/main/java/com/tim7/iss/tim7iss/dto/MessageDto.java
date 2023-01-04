@@ -1,7 +1,6 @@
 package com.tim7.iss.tim7iss.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.tim7.iss.tim7iss.models.Constants;
+import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.Message;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,7 +21,6 @@ public class MessageDto {
     @Pattern(regexp = "^([1-9]|([012][0-9])|(3[01]))\\.([0]{0,1}[1-9]|1[012])\\.\\d\\d\\d\\d\\s([0-1]?[0-9]|2?[0-3]):([0-5]\\d):([0-5]\\d)$",
             message = "Invalid date format")
     private String timeOfSending;
-    @NotNull(message = "Sender not provided")
     private Long senderId;
     @NotNull(message = "Receiver not provided")
     private Long receiverId;
@@ -30,7 +28,6 @@ public class MessageDto {
     private String message;
     @Pattern(regexp="^(SUPPORT|RIDE|PANIC)$", message = "Invalid message type... Must be SUPPORT, RIDE or PANIC")
     private String type;
-    @NotNull(message = "Ride id must be provided")
     private Long rideId;
 
     public MessageDto(Message message) {
@@ -40,7 +37,7 @@ public class MessageDto {
         this.receiverId = message.getReceiver().getId();
         this.message = message.getContent();
         this.type = message.getType();
-        this.rideId = message.getRide().getId();
+        this.rideId = message.getRide() == null ? null : message.getRide().getId();
     }
 
 }
