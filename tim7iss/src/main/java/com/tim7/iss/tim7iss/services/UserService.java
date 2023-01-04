@@ -17,7 +17,6 @@ import java.util.*;
 @Service
 public class UserService implements UserDetailsService {
 
-
     @Autowired
     DriverRepository driverRepository;
 
@@ -164,4 +163,6 @@ public class UserService implements UserDetailsService {
             return user;
         }
     }
+
+    public User findById(Long id){return userRepository.findById(id).orElse(null); }
 }
