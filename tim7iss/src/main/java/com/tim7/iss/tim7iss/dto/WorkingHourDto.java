@@ -1,6 +1,6 @@
 package com.tim7.iss.tim7iss.dto;
 
-import com.tim7.iss.tim7iss.models.Constants;
+import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.WorkHour;
 import lombok.AllArgsConstructor;
 import lombok.Data;

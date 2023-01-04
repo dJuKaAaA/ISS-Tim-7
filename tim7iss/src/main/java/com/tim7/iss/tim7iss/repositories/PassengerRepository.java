@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface PassengerRepository extends JpaRepository<Passenger, Long> {
     Page<Passenger> findAll(Pageable page);
 
-    Optional<Passenger> findByEmailAddress(String email);
+    Optional<Passenger> findByEmailAddress(String emailAddress);
 }

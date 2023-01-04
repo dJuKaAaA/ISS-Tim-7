@@ -2,6 +2,7 @@ package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.*;
+import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.User;
 import com.tim7.iss.tim7iss.services.MailService;
 import com.tim7.iss.tim7iss.services.UserService;
@@ -10,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,7 +20,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @Transactional
@@ -32,6 +37,8 @@ public class UserController {
     private TokenUtils tokenUtils;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     // TODO testirati
     @PutMapping("/api/user/{id}/changePassword")
@@ -95,10 +102,31 @@ public class UserController {
 
     @PostMapping("/api/user/{id}/message")
 //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
-    public ResponseEntity<MessageDto> sendMessage(@PathVariable("id") Long id, @RequestBody MessageDto messageDTO) throws UserNotFoundException, RideNotFoundException {
+    public ResponseEntity<MessageDto> sendMessage(@PathVariable("id") Long id,
+                                                  @Valid @RequestBody MessageDto messageDTO) throws UserNotFoundException, RideNotFoundException {
         LOGGER.info("send messages");
         return userService.sendMessage(id, messageDTO);
     }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    @MessageMapping("/send/message")
+    public Map<String, Object> sendMessage(String message) {
+        Map<String, Object> messageConverted = Constants.parseJsonString(message);
+
+        if (messageConverted != null) {
+            if (messageConverted.containsKey("receiverId") && messageConverted.get("receiverId") != null) {
+                this.simpMessagingTemplate.convertAndSend("/socket-send-message/" + messageConverted.get("receiverId"),
+                        messageConverted);
+                this.simpMessagingTemplate.convertAndSend("/socket-send-message/" + messageConverted.get("senderId"),
+                        messageConverted);
+            } else {
+                this.simpMessagingTemplate.convertAndSend("/socket-send-message", messageConverted);
+            }
+        }
+
+        return messageConverted;
+    }
+
 
     @PutMapping("/api/user/{id}/block")
 //    @PreAuthorize("hasRole('ADMIN')")

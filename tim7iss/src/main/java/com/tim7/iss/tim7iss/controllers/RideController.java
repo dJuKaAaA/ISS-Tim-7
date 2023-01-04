@@ -40,7 +40,7 @@ public class RideController {
     RoutesService routesService;
 
     @PostMapping
-    public ResponseEntity<RideDto> save(@RequestBody RideCreationDto rideRequestDto){
+    public ResponseEntity<RideDto> save(@Valid @RequestBody RideCreationDto rideRequestDto){
         Ride ride = savePassengersAndDrivers(rideRequestDto);
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
