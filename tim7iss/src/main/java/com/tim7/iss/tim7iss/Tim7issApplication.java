@@ -59,7 +59,7 @@ public class Tim7issApplication {
         Random random = new Random();
         return () -> {
             // vehicle type creation
-            VehicleType vehicleType = vehicleTypeRepository.save(new VehicleType(null, 100, "STANDARDNO"));
+            VehicleType vehicleType = vehicleTypeRepository.save(new VehicleType(null, 100, "STANDARD"));
 
             // role creation
             Role adminRole = roleRepository.save(new Role(null, "ROLE_ADMIN"));
@@ -295,7 +295,7 @@ public class Tim7issApplication {
 
             // panic creation
             // TODO: Enter valid date time according to ride start date
-            panicRepository.save(new Panic(null, LocalDateTime.now(),
+            panicRepository.save(new Panic(null, LocalDateTime.now(), false,
                     "Driver is very uncomfortable and is making racist comments", ride7,
                     passenger4));
 

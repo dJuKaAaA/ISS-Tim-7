@@ -151,6 +151,7 @@ public class RideController {
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
+
     public Ride savePassengersAndDrivers(RideCreationDto rideRequestDto){
         Ride ride = new Ride(rideRequestDto);
         ride.setVehicleType(vehicleTypeService.findById(1L));

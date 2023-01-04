@@ -21,4 +21,5 @@ public class PanicService {
     public Long countAll() {
         return panicRepository.count();
     }
+    public Panic findById(Long id) {return panicRepository.findById(id).orElse(null); }
 }

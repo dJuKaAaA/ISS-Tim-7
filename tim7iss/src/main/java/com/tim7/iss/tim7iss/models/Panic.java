@@ -1,13 +1,12 @@
 package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.dto.PanicCreateDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.tim7.iss.tim7iss.dto.PanicDetailsDto;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,6 +21,9 @@ public class Panic {
     private Long id;
 
     private LocalDateTime sentTime;
+
+    @NotNull(message = "Reviewed field must be provided")
+    private Boolean reviewed;
 
     @NotBlank(message = "Panic reason cannot be empty")
     private String reason;
@@ -39,5 +41,14 @@ public class Panic {
         this.ride = ride;
         this.user = user;
         this.sentTime = LocalDateTime.now();
+        this.reviewed = false;
+    }
+
+    public void update(PanicDetailsDto panicDTO, Ride ride, User user) {
+        this.reason = panicDTO.getReason();
+        this.ride = ride;
+        this.user = user;
+        this.sentTime = LocalDateTime.parse(panicDTO.getTime());
+        this.reviewed = panicDTO.getReviewed();
     }
 }
