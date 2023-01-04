@@ -102,6 +102,13 @@ public class TokenUtils {
         return null;
     }
 
+    public String getToken(String authorizationHeader){
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+        return null;
+    }
+
 
     public String getEmailFromToken(String token) {
         String email;

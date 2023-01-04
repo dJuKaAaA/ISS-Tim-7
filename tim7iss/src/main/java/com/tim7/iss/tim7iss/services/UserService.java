@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.services;
 
 import com.tim7.iss.tim7iss.dto.*;
+import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -38,25 +42,72 @@ public class UserService implements UserDetailsService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    PasswordResetCodeRepository passwordResetCodeRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
 
+    @Autowired
+    MailService mailService;
 
-    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(Long id)  {
-        User user = userRepository.findById(id).get();
+    // TODO testirati
+    public ResponseEntity changePassword(Long userId, ChangePasswordDto passwordDto) throws UserNotFoundException, InvalidEmailOrPasswordException {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        // Check if the plaintext password and hashed password match
+        if (!BCrypt.checkpw(passwordDto.oldPassword, user.getPassword())) {
+            throw new InvalidEmailOrPasswordException("Current password is not matching!");
+        }
+
+        user.setPassword(BCrypt.hashpw(passwordDto.newPassword, BCrypt.gensalt()));
+        userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Password successfully changed!");
+    }
+
+    // TODO testirati
+    public ResponseEntity sendResetCodeToMail(Long userId) throws UserNotFoundException, IOException {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        String resetCode = getRandomString();
+
+        PasswordResetCode passwordResetCode = new PasswordResetCode(resetCode, LocalDateTime.now());
+        passwordResetCodeRepository.save(passwordResetCode);
+
+        user.setPasswordResetCode(passwordResetCode);
+        userRepository.save(user);
+
+        mailService.sendTextEmail(user.getEmailAddress(), "Reset Code", resetCode);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Email with reset code has been sent!");
+    }
+
+    // TODO testirati
+    public ResponseEntity changePasswordWithResetCode(Long userId, ResetPasswordViaCodeDto resetPasswordViaCodeDto) throws UserNotFoundException, PasswordResetCodeException {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        PasswordResetCode passwordResetCode = user.getPasswordResetCode();
+
+        if (!passwordResetCode.getCode().equals(resetPasswordViaCodeDto.code)) throw new PasswordResetCodeException();
+        if (passwordResetCode.isExpired()) throw new PasswordResetCodeException();
+
+        user.setPassword(BCrypt.hashpw(resetPasswordViaCodeDto.newPassword, BCrypt.gensalt()));
+        userRepository.save(user);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Password successfully changed!");
+    }
+
+    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(Long id) throws UserNotFoundException {
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        Collection<RideDto> rides = new ArrayList<>();
 
         if (user instanceof Driver driver) {
-            Collection<RideDto> rides = new ArrayList<>();
             rideRepository.findRidesByDriverId(driver.getId()).forEach(ride -> rides.add(new RideDto(ride)));
             return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
 
         } else if (user instanceof Passenger passenger) {
-            Collection<RideDto> rides = new ArrayList<>();
             rideRepository.findRidesByPassengersId(passenger.getId()).forEach(ride -> rides.add(new RideDto(ride)));
             return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
-
         }
-        return null;
-
+        throw new UserNotFoundException();
     }
 
     public ResponseEntity<PaginatedResponseDto<UserDto>> getUsersDetails() {
@@ -65,23 +116,20 @@ public class UserService implements UserDetailsService {
         return new ResponseEntity<>(new PaginatedResponseDto<>(users.size(), users), HttpStatus.OK);
     }
 
-    public ResponseEntity<TokenResponseDto> login(LoginDto loginDTO) {
-        return ResponseEntity.ok(new TokenResponseDto("",""));
-    }
 
-    public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(Long id) {
-        User user = userRepository.findById(id).get();
+    public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(Long id) throws UserNotFoundException {
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         Collection<MessageDto> messages = new ArrayList<>();
         getAllMessages(user).forEach(message -> messages.add(new MessageDto(message)));
         return new ResponseEntity<>(new PaginatedResponseDto<>(messages.size(), messages), HttpStatus.OK);
 
     }
 
-    public ResponseEntity<MessageDto> sendMessage(Long id, MessageDto messageDTO) {
+    public ResponseEntity<MessageDto> sendMessage(Long id, MessageDto messageDTO) throws RideNotFoundException, UserNotFoundException {
 
-        Ride ride = rideRepository.findById(messageDTO.getRideId()).get();
-        User receiver = userRepository.findById(messageDTO.getReceiverId()).get();
-        User sender = userRepository.findById(id).get();
+        Ride ride = rideRepository.findById(messageDTO.getRideId()).orElseThrow(RideNotFoundException::new);
+        User receiver = userRepository.findById(messageDTO.getReceiverId()).orElseThrow(() -> new UserNotFoundException("Receiver not found"));
+        User sender = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("Sender not found"));
 
         Message message = new Message(messageDTO, ride, sender, receiver);
         messageRepository.save(message);
@@ -89,27 +137,31 @@ public class UserService implements UserDetailsService {
 
     }
 
-    public ResponseEntity block(Long id) {
-        User user = userRepository.findById(id).get();
+
+    public ResponseEntity block(Long id) throws UserNotFoundException, UserBlockedException {
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        if (user.isBlocked()) throw new UserBlockedException("User already blocked!");
         changeUserBlockedState(user, true);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User is successfully blocked!");
     }
 
-    public ResponseEntity unblock(Long id) throws Exception {
-        User user = userRepository.findById(id).get();
+    public ResponseEntity unblock(Long id) throws UserNotFoundException, UserBlockedException {
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        if (!user.isBlocked()) throw new UserBlockedException("User is not blocked!");
         changeUserBlockedState(user, false);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User is successfully unblocked");
     }
 
-    public ResponseEntity<NoteDto> addNote(Long userId, NoteDto postNoteDTO) throws Exception {
-        User user = userRepository.findById(userId).get();
+    public ResponseEntity<NoteDto> addNote(Long userId, NoteDto postNoteDTO) throws UserNotFoundException {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Note note = Note.builder().date(LocalDateTime.now()).user(user).message(postNoteDTO.getMessage()).build();
         noteRepository.save(note);
         return new ResponseEntity<>(new NoteDto(note), HttpStatus.OK);
 
     }
 
-    public ResponseEntity<PaginatedResponseDto<NoteDto>> getNotes(Long userId) throws Exception {
+    public ResponseEntity<PaginatedResponseDto<NoteDto>> getNotes(Long userId) throws UserNotFoundException {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Collection<NoteDto> notes = new ArrayList<>();
         noteRepository.findAllByUserId(userId).forEach(note -> notes.add(new NoteDto(note)));
         return new ResponseEntity<>(new PaginatedResponseDto<>(notes.size(), notes), HttpStatus.OK);
@@ -125,22 +177,6 @@ public class UserService implements UserDetailsService {
         return allMessages;
     }
 
-    private User getUser(Long userId) throws Exception {
-
-        Optional<Driver> driverOptional = driverRepository.findById(userId);
-        Optional<Passenger> passengerOptional = passengerRepository.findById(userId);
-        Optional<Admin> adminOptional = adminRepository.findById(userId);
-
-        if (driverOptional.isEmpty() && passengerOptional.isEmpty() && adminOptional.isEmpty()) {
-            throw new Exception("User not found");
-        } else if (driverOptional.isPresent()) {
-            return driverOptional.get();
-        } else if (passengerOptional.isPresent()) {
-            return passengerOptional.get();
-        } else {
-            return adminOptional.get();
-        }
-    }
 
     private void changeUserBlockedState(User user, boolean blockedState) {
         if (user instanceof Passenger passenger) {
@@ -152,13 +188,18 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    private String getRandomString() {
+        Random random = new Random();
+        return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8);
+    }
+
 
     @Override
     // Vrsimo ucitavanje korisnika
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmailAddress(email);
         if (user == null) {
-            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", email));
+            throw new UsernameNotFoundException("Wrong username or password!");
         } else {
             return user;
         }

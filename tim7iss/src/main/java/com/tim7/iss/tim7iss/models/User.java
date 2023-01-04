@@ -39,8 +39,14 @@ public abstract class User implements UserDetails {
     private String password;
     private boolean isBlocked;
     private boolean isActive;
-    private boolean enabled;
+    private boolean enabled = true;
+
+
     private Timestamp lastPasswordResetDate;
+
+    @OneToOne
+    @JoinColumn(name = "password_reset_code_id", referencedColumnName = "id")
+    private PasswordResetCode passwordResetCode;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(name = "user_role",
@@ -78,7 +84,7 @@ public abstract class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }
 
 }
