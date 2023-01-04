@@ -17,12 +17,15 @@ public class PanicDetailsDto {
     private String time;
     private String reason;
 
+    private Boolean reviewed;
+
     public PanicDetailsDto(Panic panic) {
         this.id = panic.getId();
         this.user = new UserDto(panic.getUser());
         this.ride = new RideDto(panic.getRide());
         this.time = panic.getSentTime().format(Constants.customDateTimeFormat);
         this.reason = panic.getReason();
+        this.reviewed = panic.getReviewed();
     }
 
 }

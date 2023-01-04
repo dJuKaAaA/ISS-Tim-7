@@ -3,15 +3,21 @@ package com.tim7.iss.tim7iss.controllers;
 import com.tim7.iss.tim7iss.dto.PaginatedResponseDto;
 import com.tim7.iss.tim7iss.dto.PanicDetailsDto;
 import com.tim7.iss.tim7iss.models.Panic;
+import com.tim7.iss.tim7iss.models.Ride;
+import com.tim7.iss.tim7iss.models.User;
+import com.tim7.iss.tim7iss.repositories.PanicRepository;
 import com.tim7.iss.tim7iss.services.PanicService;
+import com.tim7.iss.tim7iss.services.RideService;
+import com.tim7.iss.tim7iss.services.UserService;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,9 +25,19 @@ import java.util.List;
 @RestController
 @RequestMapping("api/panic")
 @Transactional
+@CrossOrigin
 public class PanicController {
     @Autowired
     PanicService panicService;
+
+    @Autowired
+    RideService rideService;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    private PanicRepository panicRepository;
 
     @GetMapping
     public ResponseEntity<PaginatedResponseDto<PanicDetailsDto>> getPanicInstances(){
@@ -31,5 +47,31 @@ public class PanicController {
             panicList.add(new PanicDetailsDto(panic));
         }
         return new ResponseEntity<>(new PaginatedResponseDto<>(panicList.size(), panicList), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<PanicDetailsDto>findById(@PathVariable Long id){
+        Panic panic = panicService.findById(id);
+        return new ResponseEntity<>(new PanicDetailsDto(panic), HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody PanicDetailsDto panicDTO){
+        Panic panic = panicService.findById(id);
+        Ride ride = rideService.findById(panicDTO.getRide().getId());
+        User user = userService.findById(panicDTO.getUser().getId());
+        panic.update(panicDTO,ride,user);
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        System.out.println(panic.getReviewed());
+        panicService.save(panic);
+        return new ResponseEntity<>("Panic succesfully updated", HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/review/{id}")
+    public ResponseEntity<String> review(@PathVariable Long id){
+        Panic panic = panicService.findById(id);
+        panic.setReviewed(true);
+        panicService.save(panic);
+        return new ResponseEntity<>("Panic succsefully reviewed", HttpStatus.OK);
     }
 }

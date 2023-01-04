@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.dto.*;
+import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.User;
 import com.tim7.iss.tim7iss.services.MailService;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -39,9 +40,28 @@ public class UserController {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
+    // TODO testirati
+    @PutMapping("/api/user/{id}/changePassword")
+    public ResponseEntity changePassword(@PathVariable("id") Long userId, @RequestBody ChangePasswordDto passwordDto) throws UserNotFoundException, InvalidEmailOrPasswordException {
+        return userService.changePassword(userId, passwordDto);
+    }
+
+    // TODO testirati
+    @GetMapping("/api/user/{id}/resetPassword")
+    public ResponseEntity sendResetCodeToMail(@PathVariable("id") Long userId) throws UserNotFoundException, IOException {
+        return userService.sendResetCodeToMail(userId);
+    }
+
+    // TODO testirati
+    @PutMapping("/api/user/{id}/resetPassword")
+    public ResponseEntity changePasswordWithResetCode(@RequestBody ResetPasswordViaCodeDto resetPasswordViaCodeDto,
+                                                      @PathVariable("id") Long userId) throws UserNotFoundException, PasswordResetCodeException {
+        return userService.changePasswordWithResetCode(userId, resetPasswordViaCodeDto);
+    }
+
     @GetMapping("/api/user/{id}/ride")
-//    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('Passenger')")
-    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable("id") Long id) {
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
+    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable("id") Long id) throws UserNotFoundException {
         LOGGER.info("get rides");
         return userService.getRides(id);
     }
@@ -58,16 +78,14 @@ public class UserController {
         LOGGER.info("login");
         //         Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
 //         AuthenticationException
-
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginDTO.getEmail(), loginDTO.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
 
         // Ukoliko je autentifikacija uspesna, ubaci korisnika u trenutni security
         // kontekst
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         // Kreiraj token za tog korisnika
         User user = (User) authentication.getPrincipal();
+
         String jwt = tokenUtils.generateToken(user.getUsername());
         int expiresIn = tokenUtils.getExpiredIn();
 
@@ -77,7 +95,7 @@ public class UserController {
 
     @GetMapping("/api/user/{id}/message")
 //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
-    public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(@PathVariable("id") Long id) {
+    public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(@PathVariable("id") Long id) throws UserNotFoundException {
         LOGGER.info("get messages");
         return userService.getMessages(id);
     }
@@ -85,7 +103,7 @@ public class UserController {
     @PostMapping("/api/user/{id}/message")
 //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity<MessageDto> sendMessage(@PathVariable("id") Long id,
-                                                  @Valid @RequestBody MessageDto messageDTO) {
+                                                  @Valid @RequestBody MessageDto messageDTO) throws UserNotFoundException, RideNotFoundException {
         LOGGER.info("send messages");
         return userService.sendMessage(id, messageDTO);
     }
@@ -105,37 +123,36 @@ public class UserController {
                 this.simpMessagingTemplate.convertAndSend("/socket-send-message", messageConverted);
             }
         }
-        
+
         return messageConverted;
     }
 
 
-//    @PutMapping("/api/user/{id}/block")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity block(@PathVariable("id") Long id) {
+    @PutMapping("/api/user/{id}/block")
+//    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity block(@PathVariable("id") Long id) throws UserNotFoundException, UserBlockedException {
         LOGGER.info("block");
         return userService.block(id);
     }
 
-//    @PutMapping("/api/user/{id}/unblock")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/api/user/{id}/unblock")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity unblock(@PathVariable("id") Long id) throws Exception {
         LOGGER.info("unblock");
         return userService.unblock(id);
     }
 
     // Add note for user to help to decide to ban user
-//    @PostMapping("/api/user/{id}/note")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<NoteDto> addNoteForUser(@PathVariable("id") Long userId,
-                                                  @RequestBody NoteDto noteDTO) throws Exception {
+    @PostMapping("/api/user/{id}/note")
+//    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<NoteDto> addNoteForUser(@PathVariable("id") Long userId, @RequestBody NoteDto noteDTO) throws Exception {
         LOGGER.info("create note");
         return userService.addNote(userId, noteDTO);
     }
 
     // Get note for user to help to decide to ban user
-//    @GetMapping("/api/user/{id}/note")
-    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/api/user/{id}/note")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PaginatedResponseDto<NoteDto>> getNotes(@PathVariable("id") Long userId) throws Exception {
         LOGGER.info("get notes");
         return userService.getNotes(userId);

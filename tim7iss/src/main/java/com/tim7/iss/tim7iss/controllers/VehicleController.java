@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +80,7 @@ public class VehicleController {
     }
 
     @PostMapping
-    public ResponseEntity<VehicleDto> save(@RequestBody VehicleDto vehicleRequest){
+    public ResponseEntity<VehicleDto> save(@Valid @RequestBody VehicleDto vehicleRequest){
         VehicleType vehicleType = vehicleTypeService.getByName(vehicleRequest.getVehicleType());
         Vehicle newVehicle = new Vehicle(vehicleRequest, vehicleType);
         vehicleService.save(newVehicle);

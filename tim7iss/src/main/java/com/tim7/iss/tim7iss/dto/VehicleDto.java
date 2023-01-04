@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tim7.iss.tim7iss.models.Vehicle;
 import lombok.AllArgsConstructor;
