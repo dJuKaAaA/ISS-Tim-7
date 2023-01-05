@@ -6,9 +6,7 @@ import com.tim7.iss.tim7iss.models.Passenger;
 import com.tim7.iss.tim7iss.models.Ride;
 import com.tim7.iss.tim7iss.models.User;
 import com.tim7.iss.tim7iss.models.UserActivation;
-import com.tim7.iss.tim7iss.services.PassengerService;
-import com.tim7.iss.tim7iss.services.RideService;
-import com.tim7.iss.tim7iss.services.UserActivationService;
+import com.tim7.iss.tim7iss.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,6 +20,8 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("api/passenger")
@@ -36,13 +36,21 @@ public class PassengerController {
     private RideService rideService;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private MailService mailService;
+    @Autowired
+    private RoleService roleService;
 
     @PostMapping
     public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto passengerRequestDto) {
         Passenger passenger = new Passenger(passengerRequestDto);
         String encodedPassword = bCryptPasswordEncoder.encode(passengerRequestDto.getPassword());
         passenger.setPassword(encodedPassword);
+        passenger.setRoles(List.of(roleService.getRoleByName("ROLE_PASSENGER")));
         passengerService.save(passenger);
+        UserActivation userActivation = userActivationService.save(new UserActivation(null, LocalDateTime.now(), LocalDateTime.now().plusHours(1), passenger));
+        String activationMailBody = "Click on the link to activate your account: " + "http://localhost:8081/api/passenger/activate/" + userActivation.getId();
+        mailService.sendTextEmail(passenger.getEmailAddress(), "Mail activation for GoGoCarJet", activationMailBody);
         return new ResponseEntity<>(new UserDto(passenger), HttpStatus.OK);
     }
 
@@ -64,7 +72,8 @@ public class PassengerController {
         if (activation.getExpirationDate().isBefore(LocalDateTime.now())) {
             return new ResponseEntity<>("This activation has expired", HttpStatus.BAD_REQUEST);
         }
-        activation.getUser().setActive(true);
+        activation.getPassenger().setEnabled(true);
+        passengerService.save(activation.getPassenger());
         userActivationService.deleteById(activationId);
         return new ResponseEntity<>("Successful account activation", HttpStatus.OK);
     }

@@ -23,7 +23,7 @@ public class UserActivation {
     private LocalDateTime expirationDate;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    @JoinColumn(name = "passenger_id", referencedColumnName = "id")
+    private Passenger passenger;
 
 }
