@@ -8,6 +8,7 @@ import com.tim7.iss.tim7iss.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -151,7 +152,14 @@ public class RideController {
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
-
+    @PutMapping("/setDriver")
+    public ResponseEntity<RideDto> setDriver(@RequestBody RideAddDriverDto rideAddDriverDto){
+        Ride ride = rideService.findById(rideAddDriverDto.getRideId());
+        Driver driver = driverService.findById(rideAddDriverDto.getDriverId());
+        ride.setDriver(driver);
+        rideService.save(ride);
+        return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
+    }
 
 
     public Ride savePassengersAndDrivers(RideCreationDto rideRequestDto){
