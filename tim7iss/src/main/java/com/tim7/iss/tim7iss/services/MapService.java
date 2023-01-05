@@ -19,7 +19,7 @@ public class MapService {
     }
 
     public Integer getDistance(float startLatitude, float startLongitude, float endLatitude, float endLongitude){
-        ResponseEntity<TomTomResponseDto>route = getRoute(startLatitude, startLongitude, endLatitude, endLatitude);
+        ResponseEntity<TomTomResponseDto>route = getRoute(startLatitude, startLongitude, endLatitude, endLongitude);
         TomTomSummaryDto summary = getSummary(route.getBody());
         System.out.println(summary);
         return summary.getLengthInMeters();
@@ -29,7 +29,7 @@ public class MapService {
         return response.getRoutes().get(0).getSummary();
     }
 
-    public ResponseEntity<TomTomResponseDto>getRoute(float startLatitude, float startLongitude, float endLatitude, float endLongitude){
+    public ResponseEntity<TomTomResponseDto> getRoute(float startLatitude, float startLongitude, float endLatitude, float endLongitude){
         String route = String.valueOf(startLatitude) + "," + String.valueOf(startLongitude) + ":" + String.valueOf(endLatitude) + "," + String.valueOf(endLongitude);
         ResponseEntity<TomTomResponseDto> response = restTemplate.exchange(API_URL_FIRST_PART + route + API_URL_SECOND_PART, HttpMethod.GET, null, new ParameterizedTypeReference<TomTomResponseDto>() {});
         return response;

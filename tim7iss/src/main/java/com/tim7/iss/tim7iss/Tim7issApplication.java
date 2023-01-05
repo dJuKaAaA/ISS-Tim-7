@@ -102,22 +102,23 @@ public class Tim7issApplication {
                             "Fakultet tehnickih nauka Univerziteta u Novom Sadu, Trg Dositeja Obradovica, Novi Sad",
                             45.24648813f, 19.8516641f)));
             driver.setWorkHours(Set.of(
-                    new WorkHour(null, null,
+                    new WorkHour(null, driver,
                             LocalDateTime.of(2023, Month.JANUARY, 9, 8, 0),
                             LocalDateTime.of(2023, Month.JANUARY, 9, 16, 0)),
-                    new WorkHour(null, null,
+                    new WorkHour(null, driver,
                             LocalDateTime.of(2023, Month.JANUARY, 10, 8, 0),
                             LocalDateTime.of(2023, Month.JANUARY, 10, 16, 0)),
-                    new WorkHour(null, null,
+                    new WorkHour(null, driver,
                             LocalDateTime.of(2023, Month.JANUARY, 11, 8, 0),
                             LocalDateTime.of(2023, Month.JANUARY, 11, 16, 0)),
-                    new WorkHour(null, null,
+                    new WorkHour(null, driver,
                             LocalDateTime.of(2023, Month.JANUARY, 12, 8, 0),
                             LocalDateTime.of(2023, Month.JANUARY, 12, 16, 0)),
-                    new WorkHour(null, null,
+                    new WorkHour(null, driver,
                             LocalDateTime.of(2023, Month.JANUARY, 13, 8, 0),
                             LocalDateTime.of(2023, Month.JANUARY, 13, 16, 0))));
             driver.setRoles(List.of(driverRole));
+            driver.setActive(true);  // Should only be true while user is logged in
             driverRepository.save(driver);
 
             // passenger creation

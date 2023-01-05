@@ -36,9 +36,6 @@ public class PanicController {
     @Autowired
     UserService userService;
 
-    @Autowired
-    private PanicRepository panicRepository;
-
     @GetMapping
     public ResponseEntity<PaginatedResponseDto<PanicDetailsDto>> getPanicInstances(){
         List<Panic> panics = panicService.findAll();
@@ -53,18 +50,6 @@ public class PanicController {
     public ResponseEntity<PanicDetailsDto>findById(@PathVariable Long id){
         Panic panic = panicService.findById(id);
         return new ResponseEntity<>(new PanicDetailsDto(panic), HttpStatus.OK);
-    }
-
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody PanicDetailsDto panicDTO){
-        Panic panic = panicService.findById(id);
-        Ride ride = rideService.findById(panicDTO.getRide().getId());
-        User user = userService.findById(panicDTO.getUser().getId());
-        panic.update(panicDTO,ride,user);
-        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-        System.out.println(panic.getReviewed());
-        panicService.save(panic);
-        return new ResponseEntity<>("Panic succesfully updated", HttpStatus.OK);
     }
 
     @PutMapping(value = "/review/{id}")

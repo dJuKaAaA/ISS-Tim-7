@@ -68,7 +68,11 @@ public class Ride {
     public Ride(RideCreationDto rideRequestDTO) {
         this.estimatedTimeInMinutes = 0;
         for (LocationsForRideDto location : rideRequestDTO.getLocations()) {
-            Route r = new Route(new Location(location.getDeparture()), new Location(location.getDestination()));
+            Route r = new Route(
+                    new Location(location.getDeparture()),
+                    new Location(location.getDestination()),
+                    location.getDistanceInMeters(),
+                    location.getEstimatedTimeInMinutes());
             this.routes.add(r);
             this.estimatedTimeInMinutes += location.getEstimatedTimeInMinutes();
         }

@@ -72,8 +72,8 @@ public class RideService {
                         LocalDateTime estimatedRideEndTime = ride.getStartTime().plusMinutes(ride.getEstimatedTimeInMinutes());
 
                         // the time window for in which a ride is considered to be taken is between 5 minutes before start date and 5 minutes after end date
-                        return !moment.isBefore(rideStartTime.minusMinutes(Constants.carWaitTimeInMinutes))
-                                && !moment.isAfter(estimatedRideEndTime.plusMinutes(Constants.carWaitTimeInMinutes));
+                        return !moment.isBefore(rideStartTime.minusMinutes(Constants.vehicleWaitTimeInMinutes))
+                                && !moment.isAfter(estimatedRideEndTime.plusMinutes(Constants.vehicleWaitTimeInMinutes));
                     }
                     return false;
                 })

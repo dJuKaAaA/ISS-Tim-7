@@ -226,7 +226,7 @@ public class DriverController {
     }
 
     @GetMapping("{id}/activity")
-public ResponseEntity<ActivityDto> fetchActivity(@PathVariable Long id) throws UserNotFoundException {
+    public ResponseEntity<ActivityDto> fetchActivity(@PathVariable Long id) throws UserNotFoundException {
         Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
         return new ResponseEntity<>(new ActivityDto(driver.isActive()), HttpStatus.OK);
     }

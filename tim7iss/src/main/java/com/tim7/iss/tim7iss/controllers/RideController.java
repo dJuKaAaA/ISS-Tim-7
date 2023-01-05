@@ -3,6 +3,7 @@ package com.tim7.iss.tim7iss.controllers;
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.DriverNotFoundException;
 import com.tim7.iss.tim7iss.exceptions.RideNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.SchedulingRideAtInvalidDateException;
 import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -40,38 +43,30 @@ public class RideController {
     private DriverService driverService;
     @Autowired
     private WorkHourService workHourService;
-
     @Autowired
     MapService mapService;
+    @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @PostMapping
-    public ResponseEntity<RideDto> save(@Valid @RequestBody RideCreationDto rideRequestDto) {
-        Ride ride = savePassengersAndDrivers(rideRequestDto);
-        //TODO ovde ubaciti logiku za trazenje vozaca
-        Driver driver = driverService.findById(2L);
-        float startLatitude = rideRequestDto.getLocations().get(0).getDeparture().getLatitude();
-        float startLongitude = rideRequestDto.getLocations().get(0).getDeparture().getLongitude();
-        float endLatitude = driver.getVehicle().getLocation().getLatitude();
-        float endLongitude = driver.getVehicle().getLocation().getLongitude();
-        Integer distance = mapService.getDistance(startLatitude, startLongitude, endLatitude, endLongitude);
-        return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
-    }
+    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto)
+            throws SchedulingRideAtInvalidDateException, DriverNotFoundException {
 
-    @PostMapping
-    ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws Exception {
         // driver that doesn't have an active ride at the moment
         Driver availablePotentialDriver = null;
+        Integer distanceFromStartLocationAvailableDriver = null;
 
         // driver that has an active ride at the moment but is 5 minutes away from finishing
         Driver currentlyUnavailablePotentialDriver = null;
+        List<Driver> currentlyUnavailablePotentialDrivers = new ArrayList<>();
+        Integer distanceFromStartLocationUnavailableDriver = null;
 
         // initializing the ride according to the ride creation dto
         Ride rideToSchedule = new Ride(rideCreationDto);
 
-        // throwing error if the date is in the past
-        if (rideToSchedule.getStartTime().isBefore(LocalDateTime.now())) {
-            throw new Exception("Cannot schedule ride in the past");
+        // throwing error if the schedule date is invalid
+        if (rideToSchedule.getStartTime().isBefore(LocalDateTime.now().plusMinutes(Constants.vehicleWaitTimeInMinutes))) {
+            throw new SchedulingRideAtInvalidDateException("Ride can only be scheduled " + Constants.vehicleWaitTimeInMinutes + " minutes from now or later");
         }
 
         // additional necessary information
@@ -79,6 +74,12 @@ public class RideController {
         LocalDateTime estimatedRequestedEndTime = rideToSchedule.getStartTime().plusMinutes(rideToSchedule.getEstimatedTimeInMinutes());
 
         for (Driver driver : driverService.getAll()) {
+
+            // if driver is inactive; check next driver
+            if (!driver.isActive()) {
+                continue;
+            }
+
             // checking if the requested ride is requested to be scheduled during the work hours of the driver
             if (workHourService.getBetweenStartDateAndEndDateByDriverId(driver.getId(), rideToSchedule.getStartTime()).size() == 0) {
                 continue;
@@ -90,7 +91,7 @@ public class RideController {
             }
 
             // checking to see if the ride that is about to get scheduled is going to overlap with an already existing ride
-            Ride scheduledRideAtEstimatedEndTime = rideService.driverRideAtMoment(driver.getId(), rideToSchedule.getStartTime());
+            Ride scheduledRideAtEstimatedEndTime = rideService.driverRideAtMoment(driver.getId(), estimatedRequestedEndTime);
 
             // if estimated end time is overlapping with an existing ride; check next driver
             if (scheduledRideAtEstimatedEndTime != null) {
@@ -103,21 +104,12 @@ public class RideController {
             // if there is a ride already scheduled at that date; check next driver
             if (alreadyScheduledRide != null) {
                 /* driver is put into consideration to be given the new scheduled ride
-                 * only if he is 5 minutes away from finishing his currently active ride */
+                 * only if he is Constants.vehicleWaitTimeInMinutes minutes away from finishing his currently active ride */
                 if (alreadyScheduledRide.getStatus() == Enums.RideStatus.ACTIVE) {
                     LocalDateTime estimatedRideEndTime = alreadyScheduledRide.getStartTime().plusMinutes(alreadyScheduledRide.getEstimatedTimeInMinutes());
-                    long minutesUntil = alreadyScheduledRide.getStartTime().until(estimatedRideEndTime, ChronoUnit.MINUTES);
-                    if (minutesUntil <= 5) {
-                        if (currentlyUnavailablePotentialDriver == null) {
-                            currentlyUnavailablePotentialDriver = driver;
-                        } else {
-                            // picking the unavailable driver who is closer to the start point of the ride
-                            long currentPotentialDriverDistance = Constants.calculateDistance(rideStartLocation, currentlyUnavailablePotentialDriver.getVehicle().getLocation());
-                            long nextPotentialDriverDistance = Constants.calculateDistance(rideStartLocation, driver.getVehicle().getLocation());
-                            if (nextPotentialDriverDistance < currentPotentialDriverDistance) {
-                                currentlyUnavailablePotentialDriver = driver;
-                            }
-                        }
+                    long minutesUntil = LocalDateTime.now().until(estimatedRideEndTime, ChronoUnit.MINUTES);
+                    if (minutesUntil >= 0 && minutesUntil <= Constants.vehicleWaitTimeInMinutes) {
+                        currentlyUnavailablePotentialDrivers.add(driver);
                     }
                 }
                 continue;
@@ -125,11 +117,19 @@ public class RideController {
 
             if (availablePotentialDriver == null) {
                 availablePotentialDriver = driver;
+                distanceFromStartLocationAvailableDriver = mapService.getDistance(
+                        rideStartLocation.getLatitude(),
+                        rideStartLocation.getLongitude(),
+                        availablePotentialDriver.getVehicle().getLocation().getLatitude(),
+                        availablePotentialDriver.getVehicle().getLocation().getLongitude());
             } else {
                 // picking the available driver who is closer to the start point of the ride
-                long currentPotentialDriverDistance = Constants.calculateDistance(rideStartLocation, availablePotentialDriver.getVehicle().getLocation());
-                long nextPotentialDriverDistance = Constants.calculateDistance(rideStartLocation, driver.getVehicle().getLocation());
-                if (nextPotentialDriverDistance < currentPotentialDriverDistance) {
+                Integer nextPotentialDriverDistance = mapService.getDistance(
+                        rideStartLocation.getLatitude(),
+                        rideStartLocation.getLongitude(),
+                        driver.getVehicle().getLocation().getLatitude(),
+                        driver.getVehicle().getLocation().getLongitude());
+                if (nextPotentialDriverDistance < distanceFromStartLocationAvailableDriver) {
                     availablePotentialDriver = driver;
                 }
             }
@@ -140,14 +140,43 @@ public class RideController {
         if (availablePotentialDriver != null) {
             rideToSchedule.setDriver(availablePotentialDriver);
         } else {
-            if (currentlyUnavailablePotentialDriver != null) {
-                rideToSchedule.setDriver(currentlyUnavailablePotentialDriver);
+            Driver driver = currentlyUnavailablePotentialDrivers
+                    .stream()
+                    .max(Comparator.comparing((Driver d) -> mapService.getDistance(
+                            rideStartLocation.getLatitude(),
+                            rideStartLocation.getLongitude(),
+                            d.getVehicle().getLocation().getLatitude(),
+                            d.getVehicle().getLocation().getLongitude())))
+                    .orElse(null);
 
-                // if the driver is initially busy then the start ride is moved by 5 minutes
-                rideToSchedule.setStartTime(rideToSchedule.getStartTime().plusMinutes(5));
-            } else {
-                throw new DriverNotFoundException("There are no available drivers at that moment");  // TODO: Create a custom exception for busy drivers
+            if (driver == null) {
+                throw new DriverNotFoundException("There are no available drivers at that moment");
             }
+
+            rideToSchedule.setDriver(driver);
+
+            // if the driver is initially busy then the start ride is moved by 5 minutes
+            rideToSchedule.setStartTime(rideToSchedule.getStartTime().plusMinutes(Constants.vehicleWaitTimeInMinutes));
+        }
+
+        // setting vehicle type for the ride
+        rideToSchedule.setVehicleType(vehicleTypeService.getByName(rideCreationDto.getVehicleType()));
+
+        // setting the price
+        int totalDistance = 0;
+        for (Route r : rideToSchedule.getRoutes()) {
+            totalDistance += r.getDistanceInMeters();
+        }
+        rideToSchedule.setPrice(rideToSchedule.getVehicleType().getPricePerKm() + totalDistance * 120);
+
+        // adding passengers to ride
+        for (UserRefDto passengerRef : rideCreationDto.getPassengers()) {
+            Passenger passenger = passengerService.findById(passengerRef.getId());
+            if (passenger == null) {
+                continue;
+            }
+            passenger.getRides().add(rideToSchedule);
+            rideToSchedule.getPassengers().add(passenger);
         }
 
         // scheduling the ride by sending it to the database

@@ -34,6 +34,13 @@ public class Route implements Cloneable {
         this.endPoint = endPoint;
     }
 
+    public Route(Location startingPoint, Location endPoint, int distanceInMeters, int estimatedTimeInMinutes) {
+        this.startingPoint = startingPoint;
+        this.endPoint = endPoint;
+        this.distanceInMeters = distanceInMeters;
+        this.estimatedTimeInMinutes = estimatedTimeInMinutes;
+    }
+
 //    public Route(Route route) {
 //        this.setId(null);
 //        this.setDistance(route.getDistance());
