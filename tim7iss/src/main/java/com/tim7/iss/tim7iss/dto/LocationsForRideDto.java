@@ -16,10 +16,15 @@ public class LocationsForRideDto {
     private GeoCoordinateDto departure;
     @NotNull(message = "Destination not provided")
     private GeoCoordinateDto destination;
+    private Integer distanceInMeters;
+    private Integer estimatedTimeInMinutes;
+
 
     public LocationsForRideDto(Route route) {
         this.departure = new GeoCoordinateDto(route.getStartingPoint());
         this.destination = new GeoCoordinateDto(route.getEndPoint());
+        this.distanceInMeters = route.getDistanceInMeters();
+        this.estimatedTimeInMinutes = route.getEstimatedTimeInMinutes();
     }
 
 }

@@ -173,27 +173,27 @@ public class Tim7issApplication {
 
 
             // declaring routes that will be saved when the ride that contains them gets created
-            Route route1 = new Route(null, 0.8,
+            Route route1 = new Route(null, 1000, 3,
                     new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija",
                             45.24914205013315f, 19.843100056994654f),
                     new Location(null, "Srpsko narodno pozorište, Pozorišni trg, Novi Sad, Srbija",
                             45.25510777309239f, 19.842949154190308f));
-            Route route2 = new Route(null, 0.5,
+            Route route2 = new Route(null, 1900, 5,
                     new Location(null, "Katolicka Porta 4, Novi Sad",
                             45.25642044682303f, 19.845453240699275f),
                     new Location(null, "Dunavski Park, Dunavska, Novi Sad, Srbija",
                             45.25539880319645f, 19.85058802720829f));
-            Route route3 = new Route(null, 3.0,
+            Route route3 = new Route(null, 3600, 9,
                     new Location(null, "NTP NS, Fruškogorska, Novi Sad, Serbia",
                             45.24475880747688f, 19.84708251359552f),
                     new Location(null, "Knin, Novi Sad, Serbia",
                             45.25433739645546f, 19.820878211862986f));
-            Route route4 = new Route(null, 5.1,
+            Route route4 = new Route(null, 6700, 10,
                     new Location(null, "Prime Training Facility, Svetozara Miletića, Novi Sad, Srbija",
                             45.257847680306085f, 19.843377640699245f),
                     new Location(null, "Police Academy, Železnička, Sremska Kamenica, Srbija",
                             45.22163647056052f, 19.850156546431652f));
-            Route route5 = new Route(null, 5.3,
+            Route route5 = new Route(null, 5400, 11,
                     new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija",
                             45.24914205013315f, 19.843100056994654f),
                     new Location(null, "Sportski Centar “Slana Bara”, Sentandrejski put, Novi Sad, Srbija",
@@ -206,52 +206,52 @@ public class Tim7issApplication {
             Ride ride1 = rideRepository.save(new Ride(null, 1000,
                     LocalDateTime.now().plusMinutes(random.nextInt(60, 1400)),
                     null,
-                    20, false && driver.getVehicle().isBabyAllowed(),
+                    route1.getEstimatedTimeInMinutes(), false && driver.getVehicle().isBabyAllowed(),
                     true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING,
                     driver, driver.getVehicle().getVehicleType(),
-                    Set.of(passenger1, passenger2, passenger3), null, Set.of(route1.clone())));
+                    Set.of(passenger1, passenger2, passenger3), null, List.of(route1.clone())));
             Ride ride2 = rideRepository.save(new Ride(null, 1000,
                     LocalDateTime.now().plusMinutes(random.nextInt(1500, 2800)),
                     null,
-                    20, false && driver.getVehicle().isBabyAllowed(),
+                    route3.getEstimatedTimeInMinutes(), false && driver.getVehicle().isBabyAllowed(),
                     true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING,
                     driver, driver.getVehicle().getVehicleType(),
-                    Set.of(passenger4, passenger5), null, Set.of(route3.clone())));
+                    Set.of(passenger4, passenger5), null, List.of(route3.clone())));
             Ride ride3 = rideRepository.save(new Ride(null, 1000,
                     LocalDateTime.now(),
                     null,
-                    20, false && driver.getVehicle().isBabyAllowed(),
+                    route4.getEstimatedTimeInMinutes(), false && driver.getVehicle().isBabyAllowed(),
                     true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED,
                     driver, driver.getVehicle().getVehicleType(),
-                    Set.of(passenger2, passenger3, passenger5), null, Set.of(route4.clone())));
+                    Set.of(passenger2, passenger3, passenger5), null, List.of(route4.clone())));
             Ride ride4 = rideRepository.save(new Ride(null, 1000,
                     LocalDateTime.of(2022, Month.OCTOBER, 1, 11, 23),
                     LocalDateTime.of(2022, Month.OCTOBER, 1, 12, 1),
-                    20, true && driver.getVehicle().isBabyAllowed(),
+                    route2.getEstimatedTimeInMinutes(), true && driver.getVehicle().isBabyAllowed(),
                     false && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED,
                     driver, driver.getVehicle().getVehicleType(),
-                    Set.of(passenger1, passenger2, passenger4), null, Set.of(route2.clone())));
+                    Set.of(passenger1, passenger2, passenger4), null, List.of(route2.clone())));
             Ride ride5 = rideRepository.save(new Ride(null, 1000,
                     LocalDateTime.now().plusMinutes(random.nextInt(2900, 4200)),
                     null,
-                    20, false && driver.getVehicle().isBabyAllowed(),
+                    route5.getEstimatedTimeInMinutes(), false && driver.getVehicle().isBabyAllowed(),
                     false && driver.getVehicle().isPetsAllowed(), true, Enums.RideStatus.PENDING,
                     driver, driver.getVehicle().getVehicleType(),
-                    Set.of(passenger1, passenger3, passenger5), null, Set.of(route5.clone())));
+                    Set.of(passenger1, passenger3, passenger5), null, List.of(route5.clone())));
             Ride ride6 = rideRepository.save(new Ride(null, 1000,
                     LocalDateTime.of(2022, Month.NOVEMBER, 1, 9, 3),
                     LocalDateTime.of(2022, Month.NOVEMBER, 1, 9, 25),
-                    20, false && driver.getVehicle().isBabyAllowed(),
+                    route5.getEstimatedTimeInMinutes(), false && driver.getVehicle().isBabyAllowed(),
                     true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED,
                     driver, driver.getVehicle().getVehicleType(),
-                    Set.of(passenger5), null, Set.of(route5.clone())));
+                    Set.of(passenger5), null, List.of(route5.clone())));
             Ride ride7 = rideRepository.save(new Ride(null, 1000,
                     LocalDateTime.now().plusMinutes(random.nextInt(4300, 6000)),
                     null,
-                    20, true && driver.getVehicle().isBabyAllowed(),
+                    route3.getEstimatedTimeInMinutes(), true && driver.getVehicle().isBabyAllowed(),
                     true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING,
                     driver, driver.getVehicle().getVehicleType(),
-                    Set.of(passenger4), null, Set.of(route3.clone())));
+                    Set.of(passenger4), null, List.of(route3.clone())));
 
             // creating vehicles
             locationRepository.save(new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f));
