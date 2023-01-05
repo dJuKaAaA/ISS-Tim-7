@@ -24,7 +24,9 @@ public class ValidationErrorHandler {
         return new ResponseEntity<>(new ErrorDto(errorMessage), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({UserNotFoundException.class})
+    @ExceptionHandler({
+            UserNotFoundException.class
+    })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ResponseEntity<ErrorDto> handleUserNotFoundException(UserNotFoundException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
@@ -38,13 +40,13 @@ public class ValidationErrorHandler {
 
     @ExceptionHandler({PassengerNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected ResponseEntity<ErrorDto> handleUserNotFoundException(PassengerNotFoundException e) {
+    protected ResponseEntity<ErrorDto> handlePassengerNotFoundException(PassengerNotFoundException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({EmailAlreadyExistsException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ResponseEntity<ErrorDto> handleDataIntegrityViolationException(EmailAlreadyExistsException e) {
+    protected ResponseEntity<ErrorDto> handleExistingEmailException(EmailAlreadyExistsException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
@@ -81,6 +83,12 @@ public class ValidationErrorHandler {
     @ExceptionHandler({PasswordResetCodeException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<ErrorDto> handelRideNotFoundException(PasswordResetCodeException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({SchedulingRideAtInvalidDateException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleInvalidScheduleDateException(SchedulingRideAtInvalidDateException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }

@@ -181,7 +181,6 @@ public class DriverController {
         return new ResponseEntity<>(new PaginatedResponseDto<>(workHours.size(), workHours), HttpStatus.OK);
     }
 
-
     @PostMapping("/{id}/working-hour")
     public ResponseEntity<WorkingHourDto> addWorkHour(@PathVariable Long id) throws UserNotFoundException {
         Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
@@ -227,7 +226,7 @@ public class DriverController {
     }
 
     @GetMapping("{id}/activity")
-public ResponseEntity<ActivityDto> fetchActivity(@PathVariable Long id) throws UserNotFoundException {
+    public ResponseEntity<ActivityDto> fetchActivity(@PathVariable Long id) throws UserNotFoundException {
         Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
         return new ResponseEntity<>(new ActivityDto(driver.isActive()), HttpStatus.OK);
     }
