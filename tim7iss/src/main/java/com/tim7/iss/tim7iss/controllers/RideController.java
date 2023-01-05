@@ -3,19 +3,21 @@ package com.tim7.iss.tim7iss.controllers;
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.RideNotFoundException;
 import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
+import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/ride")
@@ -42,6 +44,7 @@ public class RideController {
 
     @Autowired
     MapService mapService;
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @PostMapping
     public ResponseEntity<RideDto> save(@Valid @RequestBody RideCreationDto rideRequestDto){
@@ -162,6 +165,7 @@ public class RideController {
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
+
     @PutMapping("/setDriver")
     public ResponseEntity<RideDto> setDriver(@RequestBody RideAddDriverDto rideAddDriverDto){
         Ride ride = rideService.findById(rideAddDriverDto.getRideId());
@@ -174,29 +178,61 @@ public class RideController {
 
     public Ride savePassengersAndDrivers(RideCreationDto rideRequestDto){
         Ride ride = new Ride(rideRequestDto);
-        ride.setVehicleType(vehicleTypeService.findById(1L));
-        for(UserRefDto passengerRef : rideRequestDto.getPassengers()){
+
+        // setting vehicle type for the ride
+        ride.setVehicleType(vehicleTypeService.getByName(rideRequestDto.getVehicleType()));
+
+        // setting the price
+        int totalDistance = 0;
+        for (Route r : ride.getRoutes()) {
+            totalDistance += r.getDistanceInMeters();
+            System.err.println(r);
+        }
+        ride.setPrice(ride.getVehicleType().getPricePerKm() + totalDistance * 120);
+
+        // adding passengers to ride
+        for (UserRefDto passengerRef : rideRequestDto.getPassengers()){
                 Passenger passenger = passengerService.findById(passengerRef.getId());
-                if(passenger == null) {
+                if (passenger == null) {
                     continue;
                 }
                 passenger.getRides().add(ride);
+                ride.getPassengers().add(passenger);
         }
-        Driver driver = driverService.findById(1L);
-        if(driver != null) {
+
+        // adding driver to ride
+        Driver driver = driverService.findById(2L);
+        if (driver != null) {
             ride.setDriver(driver);
         }
 
-        // TODO: Decide how to determine start and end time
-        ride.setStartTime(LocalDateTime.now());  // TODO: Delete later
-        ride.setEndTime(LocalDateTime.now());  // TODO: Delete later
         rideService.save(ride);
 
-        // TODO: Check if route already exists
-        // spring boot throws error if we try to create a new location that already has a combination
-        // of latitude and longitude that are already present in the database
-        routesService.saveRoutes(ride.getRoutes());
         return ride;
+    }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    @MessageMapping("/send/scheduled/ride")
+    public Map<String, Object> sendScheduledRide(String socketMessage) {
+        Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
+
+        if (socketMessageConverted != null) {
+            this.simpMessagingTemplate.convertAndSend("/socket-scheduled-ride", socketMessageConverted);
+        }
+
+        return socketMessageConverted;
+    }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    @MessageMapping("/send/ride/evaluation")
+    public Map<String, Object> sendRide(String socketMessage) {
+        Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
+
+        if (socketMessageConverted != null) {
+            this.simpMessagingTemplate.convertAndSend("/socket-ride-evaluation", socketMessageConverted);
+        }
+
+        return socketMessageConverted;
     }
 
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST)

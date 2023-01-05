@@ -18,6 +18,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Transactional
 @RestController
@@ -248,7 +249,10 @@ public ResponseEntity<ActivityDto> fetchActivity(@PathVariable Long id) throws U
                 .toList();
         Collection<RideDto> acceptedRides = rideService.findByDriverIdAndStatus(id, Enums.RideStatus.ACCEPTED.ordinal())
                 .stream()
-                .map(RideDto::new)
+                .map((Ride ride) -> {
+                    ride.setRoutes(ride.getRoutes().stream().sorted(Comparator.comparing(Route::getId)).toList());
+                    return new RideDto(ride);
+                })
                 .toList();
         Collection<RideDto> rides = new ArrayList<>();
         rides.addAll(pendingRides);
