@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -157,6 +156,17 @@ public class RideController {
         rideService.save(ride);
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
+
+
+    @PutMapping("/setDriver")
+    public ResponseEntity<RideDto> setDriver(@RequestBody RideAddDriverDto rideAddDriverDto){
+        Ride ride = rideService.findById(rideAddDriverDto.getRideId());
+        Driver driver = driverService.findById(rideAddDriverDto.getDriverId());
+        ride.setDriver(driver);
+        rideService.save(ride);
+        return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
+    }
+
 
     public Ride savePassengersAndDrivers(RideCreationDto rideRequestDto){
         Ride ride = new Ride(rideRequestDto);

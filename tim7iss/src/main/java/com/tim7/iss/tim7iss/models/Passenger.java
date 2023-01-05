@@ -22,11 +22,12 @@ public class Passenger extends User {
 
     @ManyToMany
     @JoinTable(
-            name = "favourite_routes",
+            name = "favourite_locations",
             joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "route_id", referencedColumnName = "id")
+            inverseJoinColumns = @JoinColumn(name = "favourite_location_id", referencedColumnName = "id")
     )
-    private Set<Route> favouriteRoutes = new HashSet<>();
+    private Set<FavoriteLocation> favouriteLocations = new HashSet<>();
+
 
     public Passenger(UserDto passengerRequestBodyDto) {
         this.setFirstName(passengerRequestBodyDto.getName());

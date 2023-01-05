@@ -42,20 +42,22 @@ public class UserController {
 
     // TODO testirati
     @PutMapping("/api/user/{id}/changePassword")
-    public ResponseEntity changePassword(@PathVariable("id") Long userId, @RequestBody ChangePasswordDto passwordDto) throws UserNotFoundException, InvalidEmailOrPasswordException {
+    //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
+    public ResponseEntity changePassword(@PathVariable("id") Long userId, @Valid @RequestBody ChangePasswordDto passwordDto) throws UserNotFoundException, InvalidEmailOrPasswordException {
         return userService.changePassword(userId, passwordDto);
     }
 
     // TODO testirati
     @GetMapping("/api/user/{id}/resetPassword")
+    //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity sendResetCodeToMail(@PathVariable("id") Long userId) throws UserNotFoundException, IOException {
         return userService.sendResetCodeToMail(userId);
     }
 
     // TODO testirati
     @PutMapping("/api/user/{id}/resetPassword")
-    public ResponseEntity changePasswordWithResetCode(@RequestBody ResetPasswordViaCodeDto resetPasswordViaCodeDto,
-                                                      @PathVariable("id") Long userId) throws UserNotFoundException, PasswordResetCodeException {
+    //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
+    public ResponseEntity changePasswordWithResetCode(@Valid @RequestBody ResetPasswordViaCodeDto resetPasswordViaCodeDto, @PathVariable("id") Long userId) throws UserNotFoundException, PasswordResetCodeException {
         return userService.changePasswordWithResetCode(userId, resetPasswordViaCodeDto);
     }
 
@@ -74,14 +76,12 @@ public class UserController {
     }
 
     @PostMapping("/api/user/login")
-    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginDto loginDTO) {
+    public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody LoginDto loginDTO) {
         LOGGER.info("login");
-        //         Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
-//         AuthenticationException
+        //Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se AuthenticationException
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
 
-        // Ukoliko je autentifikacija uspesna, ubaci korisnika u trenutni security
-        // kontekst
+        // Ukoliko je autentifikacija uspesna, ubaci korisnika u trenutni security kontekst
         SecurityContextHolder.getContext().setAuthentication(authentication);
         // Kreiraj token za tog korisnika
         User user = (User) authentication.getPrincipal();
@@ -102,8 +102,7 @@ public class UserController {
 
     @PostMapping("/api/user/{id}/message")
 //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
-    public ResponseEntity<MessageDto> sendMessage(@PathVariable("id") Long id,
-                                                  @Valid @RequestBody MessageDto messageDTO) throws UserNotFoundException, RideNotFoundException {
+    public ResponseEntity<MessageDto> sendMessage(@PathVariable("id") Long id, @Valid @RequestBody MessageDto messageDTO) throws UserNotFoundException, RideNotFoundException {
         LOGGER.info("send messages");
         return userService.sendMessage(id, messageDTO);
     }
@@ -115,10 +114,8 @@ public class UserController {
 
         if (messageConverted != null) {
             if (messageConverted.containsKey("receiverId") && messageConverted.get("receiverId") != null) {
-                this.simpMessagingTemplate.convertAndSend("/socket-send-message/" + messageConverted.get("receiverId"),
-                        messageConverted);
-                this.simpMessagingTemplate.convertAndSend("/socket-send-message/" + messageConverted.get("senderId"),
-                        messageConverted);
+                this.simpMessagingTemplate.convertAndSend("/socket-send-message/" + messageConverted.get("receiverId"), messageConverted);
+                this.simpMessagingTemplate.convertAndSend("/socket-send-message/" + messageConverted.get("senderId"), messageConverted);
             } else {
                 this.simpMessagingTemplate.convertAndSend("/socket-send-message", messageConverted);
             }
@@ -145,7 +142,7 @@ public class UserController {
     // Add note for user to help to decide to ban user
     @PostMapping("/api/user/{id}/note")
 //    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<NoteDto> addNoteForUser(@PathVariable("id") Long userId, @RequestBody NoteDto noteDTO) throws Exception {
+    public ResponseEntity<NoteDto> addNoteForUser(@PathVariable("id") Long userId, @Valid @RequestBody NoteDto noteDTO) throws Exception {
         LOGGER.info("create note");
         return userService.addNote(userId, noteDTO);
     }
@@ -157,6 +154,5 @@ public class UserController {
         LOGGER.info("get notes");
         return userService.getNotes(userId);
     }
-
-
+    
 }

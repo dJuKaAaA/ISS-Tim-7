@@ -3,8 +3,6 @@ package com.tim7.iss.tim7iss;
 import com.tim7.iss.tim7iss.dto.UserDto;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
-import com.tim7.iss.tim7iss.services.RoleService;
-import org.hibernate.Session;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -48,6 +46,8 @@ public class Tim7issApplication {
     private VehicleTypeRepository vehicleTypeRepository;
     @Autowired
     private UserActivationRepository userActivationRepository;
+    @Autowired
+    private FavoriteLocationRepository favoriteLocationRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(Tim7issApplication.class, args);
@@ -253,6 +253,7 @@ public class Tim7issApplication {
                     driver, driver.getVehicle().getVehicleType(),
                     Set.of(passenger4), null, List.of(route3.clone())));
 
+
             // creating vehicles
             locationRepository.save(new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f));
             locationRepository.save(new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f));
@@ -315,6 +316,13 @@ public class Tim7issApplication {
             driverReviewRepository.save(driverReview);
             vehicleReviewRepository.save(vehicleReview);
 
+//            FavoriteLocation favoriteLocation = new FavoriteLocation();
+//            favoriteLocation.setPassengers(Set.of(passenger1,passenger2,passenger3));
+//            favoriteLocation.setRoutes(Set.of(route1, route2, route3));
+//            favoriteLocation.setVehicleType(vehicleType);
+//            favoriteLocation.setPetTransport(false);
+//            favoriteLocation.setBabyTransport(false);
+//            favoriteLocationRepository.save(favoriteLocation);
         };
     }
 }
