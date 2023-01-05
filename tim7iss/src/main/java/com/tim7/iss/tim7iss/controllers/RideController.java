@@ -40,9 +40,19 @@ public class RideController {
     @Autowired
     RoutesService routesService;
 
+    @Autowired
+    MapService mapService;
+
     @PostMapping
     public ResponseEntity<RideDto> save(@Valid @RequestBody RideCreationDto rideRequestDto){
         Ride ride = savePassengersAndDrivers(rideRequestDto);
+        //TODO ovde ubaciti logiku za trazenje vozaca
+        Driver driver = driverService.findById(2L);
+        float startLatitude = rideRequestDto.getLocations().get(0).getDeparture().getLatitude();
+        float startLongitude = rideRequestDto.getLocations().get(0).getDeparture().getLongitude();
+        float endLatitude = driver.getVehicle().getLocation().getLatitude();
+        float endLongitude = driver.getVehicle().getLocation().getLongitude();
+        Integer distance = mapService.getDistance(startLatitude, startLongitude, endLatitude, endLongitude);
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
