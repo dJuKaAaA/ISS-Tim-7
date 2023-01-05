@@ -39,6 +39,7 @@ public class Passenger extends User {
         this.setPassword(passengerRequestBodyDto.getPassword());
         this.setActive(false);
         this.setBlocked(false);
+        this.setEnabled(false);
     }
 
 }

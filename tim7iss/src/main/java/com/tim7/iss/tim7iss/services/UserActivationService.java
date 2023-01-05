@@ -14,5 +14,7 @@ public class UserActivationService {
 
     public void deleteById(Long id) {userActivationRepository.deleteById(id);}
 
-    public void save(UserActivation userActivation) {userActivationRepository.save(userActivation);}
+    public UserActivation save(UserActivation userActivation) {
+        return userActivationRepository.save(userActivation);
+    }
 }

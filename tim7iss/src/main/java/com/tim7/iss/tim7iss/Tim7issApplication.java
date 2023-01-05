@@ -132,6 +132,7 @@ public class Tim7issApplication {
                     "Petrova adresa",
                     "$2a$12$lA8WEWzn3E7l53E2HYpX3ee0q.ZOVDjY34jNYTs/n9ucvebpY3v86")); // Petar123
             passenger1.setRoles(List.of(passengerRole));
+            passenger1.setEnabled(true);
             passengerRepository.save(passenger1);
             Passenger passenger2 = new Passenger(new UserDto(
                     null,
@@ -143,6 +144,7 @@ public class Tim7issApplication {
                     "Jovanova adresa",
                     "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
             passenger2.setRoles(List.of(passengerRole));
+            passenger2.setEnabled(true);
             passengerRepository.save(passenger2);
             Passenger passenger3 = new Passenger(new UserDto(
                     null,
@@ -154,6 +156,7 @@ public class Tim7issApplication {
                     "Mirkova adresa",
                     "$2a$12$nYULTJpydL5pFRSxQ30DnOlhu/m/O6U4CoWLqea82PYKNsswHCEsG"));  // Mirko123
             passenger3.setRoles(List.of(passengerRole));
+            passenger3.setEnabled(true);
             passengerRepository.save(passenger3);
             Passenger passenger4 = new Passenger(new UserDto(
                     null,
@@ -165,6 +168,7 @@ public class Tim7issApplication {
                     "Aleksandrova adresa",
                     "$2a$12$yNYY1KoO4DDFSLzqRBXPJ.EJU3us/O8ws5d45pQ856BoiS70mslyu"));  // Aleksandar123
             passenger4.setRoles(List.of(passengerRole));
+            passenger4.setEnabled(true);
             passengerRepository.save(passenger4);
             Passenger passenger5 = new Passenger(new UserDto(
                     null,
@@ -176,6 +180,7 @@ public class Tim7issApplication {
                     "Vukova adresa",
                     "$2a$12$fCHBcs11T5oI78NcRModiuCn5TjFE1QLn9x1awvf0meSO7LqSepc2"));  // Vuk12345
             passenger5.setRoles(List.of(passengerRole));
+            passenger5.setEnabled(true);
             passengerRepository.save(passenger5);
 
 
@@ -272,34 +277,26 @@ public class Tim7issApplication {
                     new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f)));
 
             // creating user activation entities
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, Month.JANUARY, 1, 0, 0),
-                    LocalDateTime.of(2022, Month.DECEMBER, 1, 23, 59),
-                    admin));
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, 12, 21, 21, 0),
-                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-                    driver));
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
-                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-                    passenger1));
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
-                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-                    passenger2));
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
-                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-                    passenger3));
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
-                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-                    passenger4));
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
-                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-                    passenger5));
+//            userActivationRepository.save(new UserActivation(null,
+//                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
+//                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
+//                    passenger1));
+//            userActivationRepository.save(new UserActivation(null,
+//                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
+//                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
+//                    passenger2));
+//            userActivationRepository.save(new UserActivation(null,
+//                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
+//                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
+//                    passenger3));
+//            userActivationRepository.save(new UserActivation(null,
+//                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
+//                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
+//                    passenger4));
+//            userActivationRepository.save(new UserActivation(null,
+//                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
+//                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
+//                    passenger5));
 
             // panic creation
             // TODO: Enter valid date time according to ride start date
