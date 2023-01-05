@@ -2,12 +2,15 @@ package com.tim7.iss.tim7iss.models;
 
 import com.tim7.iss.tim7iss.dto.LocationsForRideDto;
 import com.tim7.iss.tim7iss.dto.RideCreationDto;
+import com.tim7.iss.tim7iss.global.Constants;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -56,19 +59,20 @@ public class Ride {
             joinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "route_id", referencedColumnName = "id")
     )
-    private Set<Route> routes = new HashSet<>();
+    private List<Route> routes = new ArrayList<>();
 
     public Ride(Passenger passenger) {
         this.passengers.add(passenger);
     }
 
     public Ride(RideCreationDto rideRequestDTO) {
+        this.estimatedTimeInMinutes = 0;
         for (LocationsForRideDto location : rideRequestDTO.getLocations()) {
             Route r = new Route(new Location(location.getDeparture()), new Location(location.getDestination()));
             this.routes.add(r);
+            this.estimatedTimeInMinutes += location.getEstimatedTimeInMinutes();
         }
-//        this.vehicleType = new VehicleType();
-//        this.vehicleType.setVehicleName(rideRequestDTO.vehicleType);
+        this.startTime = LocalDateTime.parse(rideRequestDTO.getStartTime(), Constants.customDateTimeFormat);
         this.babyOnBoard = rideRequestDTO.getBabyTransport();
         this.petOnBoard = rideRequestDTO.getPetTransport();
         this.status = Enums.RideStatus.PENDING;
