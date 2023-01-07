@@ -9,6 +9,7 @@ import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -75,25 +77,20 @@ public class RideController {
 
         for (Driver driver : driverService.getAll()) {
 
-            // if driver is inactive; check next driver
+            // if driver is inactive: check next driver
             if (!driver.isActive()) {
                 continue;
             }
 
-            // checking if the requested ride is requested to be scheduled during the work hours of the driver
-            if (workHourService.getBetweenStartDateAndEndDateByDriverId(driver.getId(), rideToSchedule.getStartTime()).size() == 0) {
-                continue;
-            }
-
-            // checking if the requested ride will end during the work hours of the driver
-            if (workHourService.getBetweenStartDateAndEndDateByDriverId(driver.getId(), estimatedRequestedEndTime).size() == 0) {
+            // if the has an ongoing shift but has worked more than 8 hours: check next driver
+            if (workHourService.hoursWorked(driver.getId(), LocalDate.now()) >= 8) {
                 continue;
             }
 
             // checking to see if the ride that is about to get scheduled is going to overlap with an already existing ride
             Ride scheduledRideAtEstimatedEndTime = rideService.driverRideAtMoment(driver.getId(), estimatedRequestedEndTime);
 
-            // if estimated end time is overlapping with an existing ride; check next driver
+            // if estimated end time is overlapping with an existing ride: check next driver
             if (scheduledRideAtEstimatedEndTime != null) {
                 continue;
             }
@@ -101,7 +98,7 @@ public class RideController {
             // getting the ride scheduled at the time this passenger is requesting
             Ride alreadyScheduledRide = rideService.driverRideAtMoment(driver.getId(), rideToSchedule.getStartTime());
 
-            // if there is a ride already scheduled at that date; check next driver
+            // if there is a ride already scheduled at that date: check next driver
             if (alreadyScheduledRide != null) {
                 /* driver is put into consideration to be given the new scheduled ride
                  * only if he is Constants.vehicleWaitTimeInMinutes minutes away from finishing his currently active ride */
@@ -167,7 +164,7 @@ public class RideController {
         for (Route r : rideToSchedule.getRoutes()) {
             totalDistance += r.getDistanceInMeters();
         }
-        rideToSchedule.setPrice(rideToSchedule.getVehicleType().getPricePerKm() + totalDistance * 120);
+        rideToSchedule.setPrice(Math.round(rideToSchedule.getVehicleType().getPricePerKm() + totalDistance / 1000 * 120));
 
         // adding passengers to ride
         for (UserRefDto passengerRef : rideCreationDto.getPassengers()) {
@@ -200,11 +197,11 @@ public class RideController {
     //Delete fixed id
     @GetMapping(value = "/passenger/{passengerId}/active")
     public ResponseEntity<RideDto> getPassengersActiveRide(@PathVariable Long passengerId) {
-        Ride ride = rideService.findByPassengerIdAndStatus(passengerId, Enums.RideStatus.ACTIVE.ordinal());
-        if (ride == null) {
+        List<Ride> rides = rideService.findByPassengerIdAndStatus(passengerId, Enums.RideStatus.ACTIVE.ordinal());
+        if (rides.size() == 0) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
+        return new ResponseEntity<>(new RideDto(rides.get(0)), HttpStatus.OK);
     }
 
 
@@ -301,49 +298,22 @@ public class RideController {
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
-
-    public Ride savePassengersAndDrivers(RideCreationDto rideRequestDto) {
-        Ride ride = new Ride(rideRequestDto);
-
-        // setting vehicle type for the ride
-        ride.setVehicleType(vehicleTypeService.getByName(rideRequestDto.getVehicleType()));
-
-        // setting the price
-        int totalDistance = 0;
-        for (Route r : ride.getRoutes()) {
-            totalDistance += r.getDistanceInMeters();
-            System.err.println(r);
-        }
-        ride.setPrice(ride.getVehicleType().getPricePerKm() + totalDistance * 120);
-
-        // adding passengers to ride
-        for (UserRefDto passengerRef : rideRequestDto.getPassengers()) {
-            Passenger passenger = passengerService.findById(passengerRef.getId());
-            if (passenger == null) {
-                continue;
-            }
-            passenger.getRides().add(ride);
-            ride.getPassengers().add(passenger);
-        }
-
-        // adding driver to ride
-        Driver driver = driverService.findById(2L);
-        if (driver != null) {
-            ride.setDriver(driver);
-        }
-
-        rideService.save(ride);
-
-        return ride;
-    }
-
     @CrossOrigin(origins = "http://localhost:4200")
     @MessageMapping("/send/scheduled/ride")
     public Map<String, Object> sendScheduledRide(String socketMessage) {
         Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
 
         if (socketMessageConverted != null) {
-            this.simpMessagingTemplate.convertAndSend("/socket-scheduled-ride", socketMessageConverted);
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> passengers = (List<Map<String, Object>>)socketMessageConverted.get("passengers");
+            for (Map<String, Object> passenger : passengers) {
+                this.simpMessagingTemplate.convertAndSend("/socket-scheduled-ride/to-passenger/" + passenger.get("id"),
+                        socketMessageConverted);
+            }
+            @SuppressWarnings("unchecked")
+            Map<String, Object> driver = (Map<String, Object>) socketMessageConverted.get("driver");
+            this.simpMessagingTemplate.convertAndSend("/socket-scheduled-ride/to-driver/" + driver.get("id"),
+                    socketMessageConverted);
         }
 
         return socketMessageConverted;
@@ -351,11 +321,33 @@ public class RideController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @MessageMapping("/send/ride/evaluation")
-    public Map<String, Object> sendRide(String socketMessage) {
+    public Map<String, Object> sendRideEvaluation(String socketMessage) {
         Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
 
         if (socketMessageConverted != null) {
-            this.simpMessagingTemplate.convertAndSend("/socket-ride-evaluation", socketMessageConverted);
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> passengers = (List<Map<String, Object>>)socketMessageConverted.get("passengers");
+            for (Map<String, Object> passenger : passengers) {
+                this.simpMessagingTemplate.convertAndSend("/socket-ride-evaluation/" + passenger.get("id"),
+                        socketMessageConverted);
+            }
+        }
+
+        return socketMessageConverted;
+    }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    @MessageMapping("/notify/start/ride")
+    public Map<String, Object> notifyStartRide(String socketMessage) {
+        Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
+
+        if (socketMessageConverted != null) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> passengers = (List<Map<String, Object>>)socketMessageConverted.get("passengers");
+            for (Map<String, Object> passenger : passengers) {
+                this.simpMessagingTemplate.convertAndSend("/socket-notify-start-ride/" + passenger.get("id"),
+                        socketMessageConverted);
+            }
         }
 
         return socketMessageConverted;

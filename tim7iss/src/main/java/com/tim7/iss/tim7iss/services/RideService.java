@@ -48,7 +48,7 @@ public class RideService {
         return rideRepository.findByDriverIdAndStatus(id, status);
     }
 
-    public Ride findByPassengerIdAndStatus(Long id, Integer status){
+    public List<Ride> findByPassengerIdAndStatus(Long id, Integer status){
         return rideRepository.findByPassengersIdAndStatus(id, status);
     }
 

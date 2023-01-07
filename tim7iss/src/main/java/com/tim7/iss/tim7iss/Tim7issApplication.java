@@ -103,22 +103,21 @@ public class Tim7issApplication {
                             45.24648813f, 19.8516641f)));
             driver.setWorkHours(Set.of(
                     new WorkHour(null, driver,
-                            LocalDateTime.of(2023, Month.JANUARY, 9, 8, 0),
-                            LocalDateTime.of(2023, Month.JANUARY, 9, 16, 0)),
+                            LocalDateTime.of(2022, Month.DECEMBER, 19, 8, 0),
+                            LocalDateTime.of(2022, Month.DECEMBER, 19, 16, 0)),
                     new WorkHour(null, driver,
-                            LocalDateTime.of(2023, Month.JANUARY, 10, 8, 0),
-                            LocalDateTime.of(2023, Month.JANUARY, 10, 16, 0)),
+                            LocalDateTime.of(2022, Month.DECEMBER, 20, 8, 0),
+                            LocalDateTime.of(2022, Month.DECEMBER, 20, 16, 0)),
                     new WorkHour(null, driver,
-                            LocalDateTime.of(2023, Month.JANUARY, 11, 8, 0),
-                            LocalDateTime.of(2023, Month.JANUARY, 11, 16, 0)),
+                            LocalDateTime.of(2022, Month.DECEMBER, 21, 8, 0),
+                            LocalDateTime.of(2022, Month.DECEMBER, 21, 16, 0)),
                     new WorkHour(null, driver,
-                            LocalDateTime.of(2023, Month.JANUARY, 12, 8, 0),
-                            LocalDateTime.of(2023, Month.JANUARY, 12, 16, 0)),
+                            LocalDateTime.of(2022, Month.DECEMBER, 22, 8, 0),
+                            LocalDateTime.of(2022, Month.DECEMBER, 22, 16, 0)),
                     new WorkHour(null, driver,
-                            LocalDateTime.of(2023, Month.JANUARY, 13, 8, 0),
-                            LocalDateTime.of(2023, Month.JANUARY, 13, 16, 0))));
+                            LocalDateTime.of(2022, Month.DECEMBER, 23, 8, 0),
+                            LocalDateTime.of(2022, Month.DECEMBER, 23, 16, 0))));
             driver.setRoles(List.of(driverRole));
-            driver.setActive(true);  // Should only be true while user is logged in
             driverRepository.save(driver);
 
             // passenger creation
@@ -230,7 +229,7 @@ public class Tim7issApplication {
                     driver, driver.getVehicle().getVehicleType(),
                     Set.of(passenger4, passenger5), null, List.of(route3.clone())));
             Ride ride3 = rideRepository.save(new Ride(null, 1000,
-                    LocalDateTime.now(),
+                    LocalDateTime.now().plusMinutes(30),
                     null,
                     route4.getEstimatedTimeInMinutes(), false && driver.getVehicle().isBabyAllowed(),
                     true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED,
