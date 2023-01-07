@@ -23,7 +23,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     List<Ride> findAll(Long passenger_id);
 
     @Query(value = "select r.* from ride r left join passenger_rides fr on r.id = fr.ride_id where fr.passenger_id = ?1 and r.status = ?2", nativeQuery = true)
-    Ride findByPassengersIdAndStatus(Long passenger_id, Integer status);
+    List<Ride> findByPassengersIdAndStatus(Long passenger_id, Integer status);
     @Query(value = "select * from ride where driver_id = ?1 and status = ?2", nativeQuery = true)
     List<Ride> findByDriverIdAndStatus(Long driver_id, Integer status);
 

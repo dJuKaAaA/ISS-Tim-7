@@ -66,6 +66,7 @@ public class VehicleController {
             return new ResponseEntity<>("Vehicle does not exist", HttpStatus.NOT_FOUND);
         }
         Location newLocation = new Location(location);
+        newLocation.setId(vehicle.getLocation().getId());
         vehicle.setLocation(newLocation);
         vehicleService.save(vehicle);
         return new ResponseEntity<>("Cordinates successfully updated", HttpStatus.NO_CONTENT);

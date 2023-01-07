@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -178,22 +180,33 @@ public class DriverController {
     public ResponseEntity<PaginatedResponseDto<WorkingHourDto>> getWorkHours(@PathVariable Long id, Pageable page)
             throws DriverNotFoundException {
         driverService.getById(id).orElseThrow(DriverNotFoundException::new);
-        Collection<WorkHour> paginatedWorkHours = workHourService.getByDriverId(id, page);
-        List<WorkingHourDto> workHours = paginatedWorkHours
+        List<WorkingHourDto> workHours = workHourService.getByDriverId(id, page)
                 .stream()
                 .map(WorkingHourDto::new)
                 .toList();
         return new ResponseEntity<>(new PaginatedResponseDto<>(workHours.size(), workHours), HttpStatus.OK);
     }
 
-    // TODO: Figure out how work hours are supposed to work
     @PostMapping("/{id}/working-hour")
     public ResponseEntity<WorkingHourDto> addWorkHour(@PathVariable Long id,
                                                       @Valid @RequestBody WorkingHourDto workingHourDto)
-            throws DriverNotFoundException {
-        Driver driver = driverService.getById(id).orElseThrow(DriverNotFoundException::new);
-        WorkHour newWorkHour = new WorkHour();
+            throws DriverNotFoundException, VehicleNotAssignedException, ShiftAlreadyOngoingException,
+            ShiftExceededException {
 
+        // validations
+        Driver driver = driverService.getById(id).orElseThrow(DriverNotFoundException::new);
+        if (driver.getVehicle() == null) {
+            throw new VehicleNotAssignedException("Cannot start shift because the vehicle is not defined!");
+        }
+        if (workHourService.getOngoingByDriverId(id).isPresent()) {
+            throw new ShiftAlreadyOngoingException();
+        }
+        if (workHourService.hoursWorked(id, LocalDate.now()) >= 8) {
+            throw new ShiftExceededException();
+        }
+
+        WorkHour newWorkHour = new WorkHour();
+        newWorkHour.setStartDate(LocalDateTime.parse(workingHourDto.getStart(), Constants.customDateTimeFormat));
         newWorkHour.setDriver(driver);
         workHourService.save(newWorkHour);
         return new ResponseEntity<>(new WorkingHourDto(newWorkHour), HttpStatus.OK);
@@ -214,13 +227,19 @@ public class DriverController {
         return new ResponseEntity<>(new WorkingHourDto(workHour), HttpStatus.OK);
     }
 
-    // TODO: Figure out how work hours are supposed to work
-    @PutMapping("/working-hour/{workingHourId}")
-    public ResponseEntity<WorkingHourDto> changeWorkHour(@PathVariable Long workingHourId,
+    // working hour id should be driver id
+//    @PutMapping("/working-hour/{workingHourId}")
+    @PutMapping("{id}/working-hour")
+    public ResponseEntity<WorkingHourDto> changeWorkHour(@PathVariable Long id,
                                                          @Valid @RequestBody WorkingHourDto workingHourDto)
-            throws WorkHourNotFoundException {
-        // TODO: Make ShiftNotStartedException
-        WorkHour workHour = workHourService.getById(workingHourId).orElseThrow(WorkHourNotFoundException::new);
+            throws DriverNotFoundException, VehicleNotAssignedException, WorkHourNotFoundException {
+
+        Driver driver = driverService.getById(id).orElseThrow(DriverNotFoundException::new);
+        if (driver.getVehicle() == null) {
+            throw new VehicleNotAssignedException("Cannot end shift because the vehicle is not defined!");
+        }
+        WorkHour workHour = workHourService.getOngoingByDriverId(id).orElseThrow(() -> new WorkHourNotFoundException("No shift is ongoing!"));
+        workHour.setEndDate(LocalDateTime.parse(workingHourDto.getEnd(), Constants.customDateTimeFormat));
         workHourService.save(workHour);
         return new ResponseEntity<>(new WorkingHourDto(workHour), HttpStatus.OK);
     }
@@ -287,8 +306,14 @@ public class DriverController {
 
         if (socketMessageConverted != null) {
             if (socketMessageConverted.containsKey("rideId") && socketMessageConverted.get("rideId") != null) {
-                this.simpMessagingTemplate.convertAndSend("/socket-driver-movement/" + socketMessageConverted.get("rideId"),
+                this.simpMessagingTemplate.convertAndSend("/socket-driver-movement/to-ride/" + socketMessageConverted.get("rideId"),
                         socketMessageConverted);
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> passengers = (List<Map<String, Object>>)socketMessageConverted.get("passengers");
+                for (Map<String, Object> passenger : passengers) {
+                    this.simpMessagingTemplate.convertAndSend("/socket-driver-movement/to-passenger/" + passenger.get("id"),
+                            socketMessageConverted);
+                }
             }
         }
 

@@ -25,8 +25,8 @@ public class WorkingHourDto {
 
     public WorkingHourDto(WorkHour workHour) {
         this.id = workHour.getId();
-        this.start = workHour.getStartDate().format(Constants.customDateTimeFormat);
-        this.end = workHour.getEndDate().format(Constants.customDateTimeFormat);
+        this.start = workHour.getStartDate() == null ? null : workHour.getStartDate().format(Constants.customDateTimeFormat);
+        this.end = workHour.getEndDate() == null ? null : workHour.getEndDate().format(Constants.customDateTimeFormat);
     }
 
 }

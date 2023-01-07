@@ -103,4 +103,23 @@ public class ValidationErrorHandler {
     protected ResponseEntity<ErrorDto> handleVehicleNotAssignedException(VehicleNotAssignedException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler({ShiftAlreadyOngoingException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleShiftAlreadyOngoingException(ShiftAlreadyOngoingException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ShiftExceededException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleShiftExceededException(ShiftExceededException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({WorkHourNotFoundException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleWorkHourNotFoundException(WorkHourNotFoundException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
 }
