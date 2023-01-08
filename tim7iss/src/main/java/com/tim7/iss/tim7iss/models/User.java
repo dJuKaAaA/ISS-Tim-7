@@ -45,10 +45,6 @@ public abstract class User implements UserDetails {
 
     private Timestamp lastPasswordResetDate;
 
-    @OneToOne
-    @JoinColumn(name = "password_reset_code_id", referencedColumnName = "id")
-    private PasswordResetCode passwordResetCode;
-
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),

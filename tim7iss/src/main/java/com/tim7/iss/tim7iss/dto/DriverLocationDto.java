@@ -8,13 +8,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DriverActivityAndLocationDto {
+public class DriverLocationDto {
 
     private Long driverId;
     private GeoCoordinateDto location;
     private Boolean isActive;
 
-    public DriverActivityAndLocationDto(Driver driver) {
+    public DriverLocationDto(Driver driver) {
         this.driverId = driver.getId();
         this.location = new GeoCoordinateDto(driver.getVehicle().getLocation());
         this.isActive = driver.isActive();

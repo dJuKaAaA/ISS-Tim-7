@@ -14,18 +14,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import javax.xml.bind.DatatypeConverter;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Transactional
 @RestController
@@ -312,11 +305,11 @@ public class DriverController {
         return new ResponseEntity<>(rides, HttpStatus.OK);
     }
 
-    @GetMapping("/activity-and-locations")
-    public ResponseEntity<PaginatedResponseDto<DriverActivityAndLocationDto>> fetchActivityAndLocations(Pageable pageable) {
-        Collection<DriverActivityAndLocationDto> drivers = driverService.getAll(pageable)
+    @GetMapping("/locations")
+    public ResponseEntity<PaginatedResponseDto<DriverLocationDto>> fetchActivityAndLocations(Pageable pageable) {
+        Collection<DriverLocationDto> drivers = driverService.getAll(pageable)
                 .stream()
-                .map(DriverActivityAndLocationDto::new)
+                .map(DriverLocationDto::new)
                 .toList();
         return new ResponseEntity<>(new PaginatedResponseDto<>(drivers.size(), drivers), HttpStatus.OK);
     }
