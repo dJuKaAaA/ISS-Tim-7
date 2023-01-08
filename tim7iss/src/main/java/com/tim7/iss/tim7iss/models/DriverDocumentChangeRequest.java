@@ -26,7 +26,7 @@ public class DriverDocumentChangeRequest {
     private Document document; // It will be null if request for adding new document is sent
     private String documentName;
     @Column(length = Constants.imageFieldSize)
-    private byte[] documentImage;
+    private String documentImage;
 
     @ManyToOne()
     @JoinColumn(name = "driver_profile_change_request_id", referencedColumnName = "id")
@@ -34,24 +34,24 @@ public class DriverDocumentChangeRequest {
 
     public DriverDocumentChangeRequest(DriverChangeDocumentRequestDto requestDto, Document document) {
         this.documentName = requestDto.getName();
-        this.documentImage = requestDto.getDocumentImage().getBytes();
+        this.documentImage = requestDto.getDocumentImage();
         this.document = document;
     }
 
     public DriverDocumentChangeRequest(DriverChangeDocumentRequestDto requestDto, Document document, DriverProfileChangeRequest driverProfileChangeRequest) {
         this.documentName = requestDto.getName();
-        this.documentImage = requestDto.getDocumentImage().getBytes();
+        this.documentImage = requestDto.getDocumentImage();
         this.document = document;
         this.driverProfileChangeRequest = driverProfileChangeRequest;
     }
 
-    public DriverDocumentChangeRequest(String documentName, byte[] documentImage, Document document) {
+    public DriverDocumentChangeRequest(String documentName, String documentImage, Document document) {
         this.documentName = documentName;
         this.documentImage = documentImage;
         this.document = document;
     }
 
-    public DriverDocumentChangeRequest(String documentName, byte[] documentImage, Document document,
+    public DriverDocumentChangeRequest(String documentName, String documentImage, Document document,
                                        DriverProfileChangeRequest driverProfileChangeRequest) {
         this.documentName = documentName;
         this.documentImage = documentImage;

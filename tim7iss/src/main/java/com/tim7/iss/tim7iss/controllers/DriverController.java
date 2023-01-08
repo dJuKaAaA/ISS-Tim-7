@@ -14,8 +14,13 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import javax.xml.bind.DatatypeConverter;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -60,6 +65,9 @@ public class DriverController {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+    
+    @Autowired
+    private ImageService imageService;
 
     //-------------------------------------------------------------------------------------------------------------
 
@@ -79,11 +87,20 @@ public class DriverController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto driverRequestBodyDto) throws EmailAlreadyExistsException {
+    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto driverRequestBodyDto)
+            throws EmailAlreadyExistsException, NotAnImageException {
         Optional<Driver> driverByEmail = driverService.getByEmailAddress(driverRequestBodyDto.getEmail());
         if (driverByEmail.isPresent()) {
             throw new EmailAlreadyExistsException();
         }
+
+        // checking the validity of the passed image
+        if (!driverRequestBodyDto.getProfilePicture().isBlank()) {
+            if (!imageService.isImageValid(driverRequestBodyDto.getProfilePicture())) {
+                throw new NotAnImageException();
+            }
+        }
+
         Driver newDriver = new Driver(driverRequestBodyDto);
         String encodedPassword = bCryptPasswordEncoder.encode(driverRequestBodyDto.getPassword());
         newDriver.setPassword(encodedPassword);
@@ -126,10 +143,15 @@ public class DriverController {
                                                          @Valid @RequestBody DriverDocumentDto driverDocumentDto)
             throws UserNotFoundException, NotAnImageException, LargeImageException {
         Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
-        if (driverDocumentDto.getDocumentImage().getBytes().length > 5 * 1024 * 1024) {
+        if (driverDocumentDto.getDocumentImage().getBytes().length > Constants.imageFieldSize) {
             throw new LargeImageException();
         }
-        // TODO: Check if the user passed an image and throw NotAnImageException
+
+        // checking the validity of the passed image
+        if (!imageService.isImageValid(driverDocumentDto.getDocumentImage())) {
+            throw new NotAnImageException();
+        }
+
         Document newDocument = new Document(driverDocumentDto, driver);
         documentService.save(newDocument);
         return new ResponseEntity<>(new DriverDocumentDto(newDocument), HttpStatus.OK);
