@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.global.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,7 @@ public abstract class User implements UserDetails {
 
     private String lastName;
 
-    // TODO promeniti da bude niz bajtova
+    @Column(length = Constants.imageFieldSize)
     private String profilePicture;
 
     private String phoneNumber;
@@ -43,10 +44,6 @@ public abstract class User implements UserDetails {
 
 
     private Timestamp lastPasswordResetDate;
-
-    @OneToOne
-    @JoinColumn(name = "password_reset_code_id", referencedColumnName = "id")
-    private PasswordResetCode passwordResetCode;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(name = "user_role",

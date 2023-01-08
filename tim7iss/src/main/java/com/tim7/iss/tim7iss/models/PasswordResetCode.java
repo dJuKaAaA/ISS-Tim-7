@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,9 +22,13 @@ public class PasswordResetCode {
 
     private Integer resetCodeDurationInMinutes = 30;
 
-    public PasswordResetCode(String code, LocalDateTime creationDate) {
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    public PasswordResetCode(String code) {
         this.code = code;
-        this.creationDate = creationDate;
+        this.creationDate = LocalDateTime.now();
     }
 
     public boolean isExpired() {

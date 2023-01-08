@@ -18,9 +18,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Transactional
 @RestController
@@ -60,6 +58,9 @@ public class DriverController {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+    
+    @Autowired
+    private ImageService imageService;
 
     //-------------------------------------------------------------------------------------------------------------
 
@@ -79,11 +80,20 @@ public class DriverController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto driverRequestBodyDto) throws EmailAlreadyExistsException {
+    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto driverRequestBodyDto)
+            throws EmailAlreadyExistsException, NotAnImageException {
         Optional<Driver> driverByEmail = driverService.getByEmailAddress(driverRequestBodyDto.getEmail());
         if (driverByEmail.isPresent()) {
             throw new EmailAlreadyExistsException();
         }
+
+        // checking the validity of the passed image
+        if (!driverRequestBodyDto.getProfilePicture().isBlank()) {
+            if (!imageService.isImageValid(driverRequestBodyDto.getProfilePicture())) {
+                throw new NotAnImageException();
+            }
+        }
+
         Driver newDriver = new Driver(driverRequestBodyDto);
         String encodedPassword = bCryptPasswordEncoder.encode(driverRequestBodyDto.getPassword());
         newDriver.setPassword(encodedPassword);
@@ -126,10 +136,15 @@ public class DriverController {
                                                          @Valid @RequestBody DriverDocumentDto driverDocumentDto)
             throws UserNotFoundException, NotAnImageException, LargeImageException {
         Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
-        if (driverDocumentDto.getDocumentImage().getBytes().length > 5 * 1024 * 1024) {
+        if (driverDocumentDto.getDocumentImage().getBytes().length > Constants.imageFieldSize) {
             throw new LargeImageException();
         }
-        // TODO: Check if the user passed an image and throw NotAnImageException
+
+        // checking the validity of the passed image
+        if (!imageService.isImageValid(driverDocumentDto.getDocumentImage())) {
+            throw new NotAnImageException();
+        }
+
         Document newDocument = new Document(driverDocumentDto, driver);
         documentService.save(newDocument);
         return new ResponseEntity<>(new DriverDocumentDto(newDocument), HttpStatus.OK);
@@ -290,11 +305,11 @@ public class DriverController {
         return new ResponseEntity<>(rides, HttpStatus.OK);
     }
 
-    @GetMapping("/activity-and-locations")
-    public ResponseEntity<PaginatedResponseDto<DriverActivityAndLocationDto>> fetchActivityAndLocations(Pageable pageable) {
-        Collection<DriverActivityAndLocationDto> drivers = driverService.getAll(pageable)
+    @GetMapping("/locations")
+    public ResponseEntity<PaginatedResponseDto<DriverLocationDto>> fetchActivityAndLocations(Pageable pageable) {
+        Collection<DriverLocationDto> drivers = driverService.getAll(pageable)
                 .stream()
-                .map(DriverActivityAndLocationDto::new)
+                .map(DriverLocationDto::new)
                 .toList();
         return new ResponseEntity<>(new PaginatedResponseDto<>(drivers.size(), drivers), HttpStatus.OK);
     }

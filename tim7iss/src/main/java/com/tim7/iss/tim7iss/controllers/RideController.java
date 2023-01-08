@@ -353,6 +353,23 @@ public class RideController {
         return socketMessageConverted;
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
+    @MessageMapping("/notify/arrived/at/departure")
+    public Map<String, Object> notifyArrivedAtDeparture(String socketMessage) {
+        Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
+
+        if (socketMessageConverted != null) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> passengers = (List<Map<String, Object>>)socketMessageConverted.get("passengers");
+            for (Map<String, Object> passenger : passengers) {
+                this.simpMessagingTemplate.convertAndSend("/socket-notify-arrived-at-departure/" + passenger.get("id"),
+                        socketMessageConverted);
+            }
+        }
+
+        return socketMessageConverted;
+    }
+
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 //    @ExceptionHandler(Exception.class)
 //    public String badRequestException(){

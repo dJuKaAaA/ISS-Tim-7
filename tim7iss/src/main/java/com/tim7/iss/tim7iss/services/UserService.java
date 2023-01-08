@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,13 +47,8 @@ public class UserService implements UserDetailsService {
     PasswordResetCodeRepository passwordResetCodeRepository;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
-
-
-    @Autowired
     MailService mailService;
 
-    // TODO testirati
     public ResponseEntity changePassword(Long userId, ChangePasswordDto passwordDto) throws UserNotFoundException, InvalidEmailOrPasswordException {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
@@ -66,31 +62,35 @@ public class UserService implements UserDetailsService {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Password successfully changed!");
     }
 
-    // TODO testirati
     public ResponseEntity sendResetCodeToMail(Long userId) throws UserNotFoundException, IOException {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         String resetCode = getRandomString();
 
-        PasswordResetCode passwordResetCode = new PasswordResetCode(resetCode, LocalDateTime.now());
+        PasswordResetCode passwordResetCode = passwordResetCodeRepository.findByUserId(userId);
+        if (passwordResetCode == null) {
+            passwordResetCode = new PasswordResetCode();
+            passwordResetCode.setUser(user);
+        }
+        passwordResetCode.setCode(resetCode);
+        passwordResetCode.setCreationDate(LocalDateTime.now());
         passwordResetCodeRepository.save(passwordResetCode);
-
-        user.setPasswordResetCode(passwordResetCode);
-        userRepository.save(user);
 
         mailService.sendTextEmail(user.getEmailAddress(), "Reset Code", resetCode);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Email with reset code has been sent!");
     }
 
-    // TODO testirati
-    public ResponseEntity changePasswordWithResetCode(Long userId, ResetPasswordViaCodeDto resetPasswordViaCodeDto) throws UserNotFoundException, PasswordResetCodeException {
+    public ResponseEntity changePasswordWithResetCode(Long userId, ResetPasswordViaCodeDto resetPasswordViaCodeDto)
+            throws UserNotFoundException, PasswordResetCodeException {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        PasswordResetCode passwordResetCode = user.getPasswordResetCode();
+        PasswordResetCode passwordResetCode = passwordResetCodeRepository.findByUserId(userId);
 
+        if (passwordResetCode == null || passwordResetCode.isExpired()) throw new PasswordResetCodeException();
         if (!passwordResetCode.getCode().equals(resetPasswordViaCodeDto.code)) throw new PasswordResetCodeException();
-        if (passwordResetCode.isExpired()) throw new PasswordResetCodeException();
 
         user.setPassword(BCrypt.hashpw(resetPasswordViaCodeDto.newPassword, BCrypt.gensalt()));
         userRepository.save(user);
+
+        passwordResetCodeRepository.delete(passwordResetCode);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Password successfully changed!");
     }
@@ -189,7 +189,6 @@ public class UserService implements UserDetailsService {
     }
 
     private String getRandomString() {
-        Random random = new Random();
         return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8);
     }
 
@@ -206,4 +205,8 @@ public class UserService implements UserDetailsService {
     }
 
     public User findById(Long id){return userRepository.findById(id).orElse(null); }
+
+    public Optional<User> findByEmailAddress(String emailAddress) {
+        return Optional.of(userRepository.findByEmailAddress(emailAddress));
+    }
 }

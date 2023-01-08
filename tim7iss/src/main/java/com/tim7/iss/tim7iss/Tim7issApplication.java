@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss;
 
 import com.tim7.iss.tim7iss.dto.UserDto;
+import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
 import org.springframework.beans.factory.InitializingBean;
@@ -10,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+import javax.xml.bind.DatatypeConverter;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -77,7 +79,7 @@ public class Tim7issApplication {
             Admin admin = new Admin();
             admin.setFirstName("Adonis");
             admin.setLastName("Adonis");
-            admin.setProfilePicture("something");
+            admin.setProfilePicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
             admin.setPhoneNumber("003814523423");
             admin.setEmailAddress("admin@email.com");
             admin.setPassword("$2a$12$c9cKc9F6WaOKIchi9bWCpOrWRnXTBEKTU4NFtS3azXhJWy4TAcTey");  // Admin123
@@ -90,7 +92,7 @@ public class Tim7issApplication {
                     null,
                     "Mika",
                     "Mikic",
-                    "something",
+                    DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()),
                     "003817372222",
                     "mika.mikic@email.com",
                     "Mikina adresa",
@@ -125,7 +127,7 @@ public class Tim7issApplication {
                     null,
                     "Petar",
                     "Petrovic",
-                    "something",
+                    DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()),
                     "003817372727",
                     "petar.petrovic@email.com",
                     "Petrova adresa",
@@ -137,7 +139,7 @@ public class Tim7issApplication {
                     null,
                     "Jovan",
                     "Jovanovic",
-                    "something",
+                    DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()),
                     "003817379278",
                     "jovan.jovanovic@email.com",
                     "Jovanova adresa",
@@ -149,7 +151,7 @@ public class Tim7issApplication {
                     null,
                     "Mirko",
                     "Mirkovic",
-                    "something",
+                    DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()),
                     "00381737111",
                     "mirko.mirkovic@email.com",
                     "Mirkova adresa",
@@ -161,7 +163,7 @@ public class Tim7issApplication {
                     null,
                     "Aleksandar",
                     "Popovic",
-                    "something",
+                    DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()),
                     "0038173724234",
                     "aleksandar.popovic@email.com",
                     "Aleksandrova adresa",
@@ -173,7 +175,7 @@ public class Tim7issApplication {
                     null,
                     "Vuk",
                     "Perisic",
-                    "something",
+                    DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()),
                     "003817372727",
                     "vuk.perisic@email.com",
                     "Vukova adresa",
