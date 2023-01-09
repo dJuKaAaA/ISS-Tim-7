@@ -9,7 +9,6 @@ import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -38,6 +37,8 @@ public class RideController {
     @Autowired
     RoutesService routesService;
     @Autowired
+    MapService mapService;
+    @Autowired
     private RideService rideService;
     @Autowired
     private PassengerService passengerService;
@@ -45,8 +46,6 @@ public class RideController {
     private DriverService driverService;
     @Autowired
     private WorkHourService workHourService;
-    @Autowired
-    MapService mapService;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
@@ -305,7 +304,7 @@ public class RideController {
 
         if (socketMessageConverted != null) {
             @SuppressWarnings("unchecked")
-            List<Map<String, Object>> passengers = (List<Map<String, Object>>)socketMessageConverted.get("passengers");
+            List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
             for (Map<String, Object> passenger : passengers) {
                 this.simpMessagingTemplate.convertAndSend("/socket-scheduled-ride/to-passenger/" + passenger.get("id"),
                         socketMessageConverted);
@@ -326,7 +325,7 @@ public class RideController {
 
         if (socketMessageConverted != null) {
             @SuppressWarnings("unchecked")
-            List<Map<String, Object>> passengers = (List<Map<String, Object>>)socketMessageConverted.get("passengers");
+            List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
             for (Map<String, Object> passenger : passengers) {
                 this.simpMessagingTemplate.convertAndSend("/socket-ride-evaluation/" + passenger.get("id"),
                         socketMessageConverted);
@@ -343,7 +342,7 @@ public class RideController {
 
         if (socketMessageConverted != null) {
             @SuppressWarnings("unchecked")
-            List<Map<String, Object>> passengers = (List<Map<String, Object>>)socketMessageConverted.get("passengers");
+            List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
             for (Map<String, Object> passenger : passengers) {
                 this.simpMessagingTemplate.convertAndSend("/socket-notify-start-ride/" + passenger.get("id"),
                         socketMessageConverted);
@@ -360,7 +359,7 @@ public class RideController {
 
         if (socketMessageConverted != null) {
             @SuppressWarnings("unchecked")
-            List<Map<String, Object>> passengers = (List<Map<String, Object>>)socketMessageConverted.get("passengers");
+            List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
             for (Map<String, Object> passenger : passengers) {
                 this.simpMessagingTemplate.convertAndSend("/socket-notify-arrived-at-departure/" + passenger.get("id"),
                         socketMessageConverted);
@@ -369,6 +368,7 @@ public class RideController {
 
         return socketMessageConverted;
     }
+
 
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 //    @ExceptionHandler(Exception.class)
