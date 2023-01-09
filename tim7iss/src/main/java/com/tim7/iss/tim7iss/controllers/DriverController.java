@@ -5,17 +5,25 @@ import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -58,7 +66,7 @@ public class DriverController {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
-    
+
     @Autowired
     private ImageService imageService;
 
@@ -242,24 +250,31 @@ public class DriverController {
         return new ResponseEntity<>(new WorkingHourDto(workHour), HttpStatus.OK);
     }
 
-    // working hour id should be driver id
-//    @PutMapping("/working-hour/{workingHourId}")
-    @PutMapping("{id}/working-hour")
-    public ResponseEntity<WorkingHourDto> changeWorkHour(@PathVariable Long id,
+    @PutMapping("/working-hour/{workingHourId}")
+    public ResponseEntity<WorkingHourDto> changeWorkHour(@PathVariable Long workingHourId,
                                                          @Valid @RequestBody WorkingHourDto workingHourDto)
-            throws DriverNotFoundException, VehicleNotAssignedException, WorkHourNotFoundException {
-
-        Driver driver = driverService.getById(id).orElseThrow(DriverNotFoundException::new);
-        if (driver.getVehicle() == null) {
-            throw new VehicleNotAssignedException("Cannot end shift because the vehicle is not defined!");
-        }
-        WorkHour workHour = workHourService.getOngoingByDriverId(id).orElseThrow(() -> new WorkHourNotFoundException("No shift is ongoing!"));
+            throws WorkHourNotFoundException {
+        WorkHour workHour = workHourService.getById(workingHourId).orElseThrow(() -> new WorkHourNotFoundException("No shift is ongoing!"));
         workHour.setEndDate(LocalDateTime.parse(workingHourDto.getEnd(), Constants.customDateTimeFormat));
         workHourService.save(workHour);
         return new ResponseEntity<>(new WorkingHourDto(workHour), HttpStatus.OK);
     }
 
     //-------------------------------------------------------------------------------------------------------------
+
+    @PutMapping("/{id}/working-hour")
+    public ResponseEntity<WorkingHourDto> endShift(@PathVariable Long id,
+                                                    @Valid @RequestBody WorkingHourDto workingHourDto)
+            throws DriverNotFoundException, VehicleNotAssignedException, WorkHourNotFoundException {
+        Driver driver = driverService.getById(id).orElseThrow(DriverNotFoundException::new);
+        if (driver.getVehicle() == null) {
+            throw new VehicleNotAssignedException("Cannot end shift because the vehicle is not defined!");
+        }
+        WorkHour workHour = workHourService.getOngoingByDriverId(driver.getId()).orElseThrow(() -> new WorkHourNotFoundException("No shift is ongoing!"));
+        workHour.setEndDate(LocalDateTime.parse(workingHourDto.getEnd(), Constants.customDateTimeFormat));
+        workHourService.save(workHour);
+        return new ResponseEntity<>(new WorkingHourDto(workHour), HttpStatus.OK);
+    }
 
     @PostMapping("/request/{driverId}")
     public HttpStatus saveRequest(@PathVariable Long driverId,
