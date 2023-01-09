@@ -68,7 +68,7 @@ public class UserController {
 
     @GetMapping("/api/user")
 //    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PaginatedResponseDto<UserDto>> getUserDetails() {
+    public ResponseEntity<PaginatedResponseDto<UserDto>> getUsers() {
         LOGGER.info("get user details");
         return userService.getUsersDetails();
     }
@@ -155,12 +155,13 @@ public class UserController {
 
     // getting user id from mail
     @PostMapping("/api/user/id")
-    public ResponseEntity<UserRefDto> getIdFromMail(@Valid @RequestBody UserRefDto userRefDto)
-            throws UserNotFoundException {
+    public ResponseEntity<UserRefDto> getIdFromMail(@Valid @RequestBody UserRefDto userRefDto) throws UserNotFoundException {
         System.err.println("\n\n\n\n\n\n\n\n" + userRefDto.getEmail() + "\n\n\n\n\n\n\n\n\n");
         User user = userService.findByEmailAddress(userRefDto.getEmail()).orElseThrow(UserNotFoundException::new);
         return new ResponseEntity<>(new UserRefDto(user), HttpStatus.OK);
     }
 
-    
+
+
+
 }
