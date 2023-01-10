@@ -1,10 +1,9 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.dto.LocationsForRideDto;
+import com.tim7.iss.tim7iss.dto.LocationForRideDto;
 import com.tim7.iss.tim7iss.dto.RideCreationDto;
 import com.tim7.iss.tim7iss.global.Constants;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -67,7 +66,7 @@ public class Ride {
 
     public Ride(RideCreationDto rideRequestDTO) {
         this.estimatedTimeInMinutes = 0;
-        for (LocationsForRideDto location : rideRequestDTO.getLocations()) {
+        for (LocationForRideDto location : rideRequestDTO.getLocations()) {
             Route r = new Route(new Location(location.getDeparture()), new Location(location.getDestination()));
             this.routes.add(r);
             this.estimatedTimeInMinutes += location.getEstimatedTimeInMinutes();

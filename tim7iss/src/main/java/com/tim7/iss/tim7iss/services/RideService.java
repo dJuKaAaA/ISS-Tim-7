@@ -57,4 +57,7 @@ public class RideService {
         return rideRepository.findById(id).orElse(null);
     }
 
+    public Ride findByStatus(Integer status) {
+        return rideRepository.findByStatus(status);
+    }
 }

@@ -60,7 +60,7 @@ public class VehicleController {
     }
 
     @PutMapping("/{id}/location")
-    public ResponseEntity<String> changeLocation(@PathVariable Long id, @RequestBody GeoCoordinateDto location){
+    public ResponseEntity<String> changeLocation(@Valid @PathVariable Long id, @RequestBody GeoCoordinateDto location){
         Vehicle vehicle = vehicleService.getById(id);
         if(vehicle == null){
             return new ResponseEntity<>("Vehicle does not exist", HttpStatus.NOT_FOUND);

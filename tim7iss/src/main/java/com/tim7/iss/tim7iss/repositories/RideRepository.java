@@ -1,13 +1,11 @@
 package com.tim7.iss.tim7iss.repositories;
 
-import com.tim7.iss.tim7iss.models.Enums;
 import com.tim7.iss.tim7iss.models.Ride;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface RideRepository extends JpaRepository<Ride, Long> {
@@ -35,5 +33,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     Long countByDriverId(Long driverId);
 
     Long countByPassengersId(Long passengerId);
+
+    Ride findByStatus(Integer status);
 }
 

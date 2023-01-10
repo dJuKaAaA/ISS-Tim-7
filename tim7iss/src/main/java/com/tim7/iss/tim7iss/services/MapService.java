@@ -19,7 +19,7 @@ public class MapService {
     }
 
     public Integer getDistance(float startLatitude, float startLongitude, float endLatitude, float endLongitude){
-        ResponseEntity<TomTomResponseDto>route = getRoute(startLatitude, startLongitude, endLatitude, endLatitude);
+        ResponseEntity<TomTomResponseDto>route = getRoute(startLatitude, startLongitude, endLatitude, endLongitude);
         TomTomSummaryDto summary = getSummary(route.getBody());
         System.out.println(summary);
         return summary.getLengthInMeters();

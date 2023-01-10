@@ -78,7 +78,7 @@ public class PassengerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> save(@RequestBody UserDto passengerRequestDto, @PathVariable Long id) throws UserNotFoundException {
+    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto passengerRequestDto, @PathVariable Long id) throws UserNotFoundException {
         Passenger passenger = passengerService.findById(id);
         if (passenger == null) throw new UserNotFoundException() {
         };
@@ -117,15 +117,4 @@ public class PassengerController {
         return new ResponseEntity<>(new UserRefDto(passengerByEmail), HttpStatus.OK);
     }
 
-//    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-//    @ExceptionHandler(Exception.class)
-//    public String badRequestException(){
-//        return "Invalid data";
-//    }
-//
-//    @ResponseStatus(value = HttpStatus.NOT_FOUND)
-//    @ExceptionHandler(UserNotFoundException.class)
-//    public String userNotFoundException(){
-//        return "User not found";
-//    }
 }

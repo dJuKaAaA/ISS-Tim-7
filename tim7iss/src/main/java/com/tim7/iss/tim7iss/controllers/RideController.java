@@ -1,8 +1,7 @@
 package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.dto.*;
-import com.tim7.iss.tim7iss.exceptions.RideNotFoundException;
-import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
@@ -16,8 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/ride")
@@ -44,12 +42,20 @@ public class RideController {
 
     @Autowired
     MapService mapService;
+
+    @Autowired
+    FavoriteLocationService favoriteLocationService;
+
+    @Autowired
+    LocationService locationService;
+
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @PostMapping
-    public ResponseEntity<RideDto> save(@Valid @RequestBody RideCreationDto rideRequestDto){
+    public ResponseEntity<RideDto> save(@Valid @RequestBody RideCreationDto rideRequestDto) throws RideAlreadyPendingException {
+        if(AnyRidesArePending())
+            throw new RideAlreadyPendingException();
         Ride ride = savePassengersAndDrivers(rideRequestDto);
-        //TODO ovde ubaciti logiku za trazenje vozaca
         Driver driver = driverService.findById(2L);
         float startLatitude = rideRequestDto.getLocations().get(0).getDeparture().getLatitude();
         float startLongitude = rideRequestDto.getLocations().get(0).getDeparture().getLongitude();
@@ -57,6 +63,49 @@ public class RideController {
         float endLongitude = driver.getVehicle().getLocation().getLongitude();
         Integer distance = mapService.getDistance(startLatitude, startLongitude, endLatitude, endLongitude);
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
+    }
+
+    private boolean AnyRidesArePending() {
+        Ride ride = rideService.findByStatus(Enums.RideStatus.PENDING.ordinal());
+        if(ride == null)
+            return false;
+        return true;
+    }
+
+    @PostMapping(value = "/favorites")
+    public ResponseEntity<FavoriteLocationDto>createFavoriteLocation(@RequestBody FavoriteLocationDto favoriteLocationDto) throws TooManyFavoriteRidesException {
+        //privremen id passengera koji salje request
+        Long passengerId = 4L;
+        if(checkIfMoreThan9FavoriteLocations(passengerId)){
+            throw new TooManyFavoriteRidesException();
+        }
+        Set<Passenger>passengers = new HashSet<>();
+        for(UserRefDto pass: favoriteLocationDto.getPassengers()){
+            passengers.add(passengerService.findById(pass.getId()));
+        }
+        VehicleType vehicleType = vehicleTypeService.getByName(favoriteLocationDto.getVehicleType());
+        FavoriteLocation favoriteLocation = new FavoriteLocation(favoriteLocationDto, passengers, vehicleType);
+        favoriteLocation = favoriteLocationService.save(favoriteLocation);
+        favoriteLocationDto.setId(favoriteLocation.getId());
+        return new ResponseEntity<>(favoriteLocationDto, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/favorites")
+    public ResponseEntity<List<FavoriteLocationDto>>getFavoriteLocations(){
+        List<FavoriteLocation>favoriteLocations = favoriteLocationService.getAll();
+        List<FavoriteLocationDto>favoriteLocationsDto = new ArrayList<>();
+        for(FavoriteLocation favoriteLocation : favoriteLocations){
+            favoriteLocationsDto.add(new FavoriteLocationDto(favoriteLocation));
+        }
+        return new ResponseEntity<>(favoriteLocationsDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/favorites/{id}")
+    public ResponseEntity<String>deleteFavoriteLocation(@PathVariable Long id) throws FavoriteLocationNotFoundException {
+        if(favoriteLocationService.findById(id) == null)
+            throw new FavoriteLocationNotFoundException();
+        favoriteLocationService.delete(id);
+        return new ResponseEntity("Successful deletion of favorite location!", HttpStatus.OK);
     }
 
     @GetMapping(value = "/driver/{driverId}/active")
@@ -109,7 +158,7 @@ public class RideController {
     }
 
     @PutMapping(value = "/{rideId}/panic")
-    public ResponseEntity<PanicDetailsDto> creatingPanicProcedure(@RequestBody PanicCreateDto reason, @PathVariable Long rideId){
+    public ResponseEntity<PanicDetailsDto> creatingPanicProcedure(@Valid @RequestBody PanicCreateDto reason, @PathVariable Long rideId){
         User user = passengerService.findById(3L);
         Ride ride = rideService.findById(rideId);
         Panic panic = new Panic(reason,ride,user);
@@ -167,7 +216,7 @@ public class RideController {
 
 
     @PutMapping("/setDriver")
-    public ResponseEntity<RideDto> setDriver(@RequestBody RideAddDriverDto rideAddDriverDto){
+    public ResponseEntity<RideDto> setDriver(@Valid @RequestBody RideAddDriverDto rideAddDriverDto){
         Ride ride = rideService.findById(rideAddDriverDto.getRideId());
         Driver driver = driverService.findById(rideAddDriverDto.getDriverId());
         ride.setDriver(driver);
@@ -211,6 +260,13 @@ public class RideController {
         return ride;
     }
 
+    public boolean checkIfMoreThan9FavoriteLocations(Long id){
+        List<FavoriteLocation> locations = favoriteLocationService.findByPassengerId(id);
+        if(locations.size() > 9)
+            return true;
+        return false;
+    }
+
     @CrossOrigin(origins = "http://localhost:4200")
     @MessageMapping("/send/scheduled/ride")
     public Map<String, Object> sendScheduledRide(String socketMessage) {
@@ -240,6 +296,5 @@ public class RideController {
 //    public String badRequestException(){
 //        return "Invalid data";
 //    }
-
 
 }

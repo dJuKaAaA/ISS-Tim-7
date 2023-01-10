@@ -1,6 +1,5 @@
 package com.tim7.iss.tim7iss.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +19,7 @@ public class RideCreationDto {
             message = "Invalid date format")
     private String startTime;
     @NotEmpty(message = "There must be at least one route for the driver to travel")
-    private List<LocationsForRideDto> locations = new ArrayList<>();
+    private List<LocationForRideDto> locations = new ArrayList<>();
     @NotEmpty(message = "There must be at least one passenger board")
     private List<UserRefDto> passengers = new ArrayList<>();
     @Pattern(regexp = "^STANDARD|LUXURY|VAN$", message = "Invalid vehicle type... Must be STANDARD, LUXURY or VAN")
