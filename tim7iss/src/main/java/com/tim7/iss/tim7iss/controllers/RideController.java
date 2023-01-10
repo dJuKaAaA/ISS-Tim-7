@@ -66,7 +66,7 @@ public class RideController {
     }
 
     private boolean AnyRidesArePending() {
-        Ride ride = rideService.findByStatus(Enums.RideStatus.PENDING.ordinal());
+        Ride ride = rideService.findByStatus(Enums.RideStatus.PENDING);
         if(ride == null)
             return false;
         return true;

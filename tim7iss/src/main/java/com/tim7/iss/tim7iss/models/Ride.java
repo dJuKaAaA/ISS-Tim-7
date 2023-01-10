@@ -69,9 +69,11 @@ public class Ride {
         for (LocationForRideDto location : rideRequestDTO.getLocations()) {
             Route r = new Route(new Location(location.getDeparture()), new Location(location.getDestination()));
             this.routes.add(r);
-            this.estimatedTimeInMinutes += location.getEstimatedTimeInMinutes();
+            if(location.getEstimatedTimeInMinutes()!=null)
+                this.estimatedTimeInMinutes += location.getEstimatedTimeInMinutes();
         }
-        this.startTime = LocalDateTime.parse(rideRequestDTO.getStartTime(), Constants.customDateTimeFormat);
+        if(rideRequestDTO.getStartTime() != null)
+            this.startTime = LocalDateTime.parse(rideRequestDTO.getStartTime(), Constants.customDateTimeFormat);
         this.babyOnBoard = rideRequestDTO.getBabyTransport();
         this.petOnBoard = rideRequestDTO.getPetTransport();
         this.status = Enums.RideStatus.PENDING;

@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.repositories;
 
+import com.tim7.iss.tim7iss.models.Enums;
 import com.tim7.iss.tim7iss.models.Ride;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,6 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 
     Long countByPassengersId(Long passengerId);
 
-    Ride findByStatus(Integer status);
+    Ride findByStatus(Enums.RideStatus status);
 }
 

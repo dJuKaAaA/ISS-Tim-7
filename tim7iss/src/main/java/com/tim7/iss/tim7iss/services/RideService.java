@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.services;
 
+import com.tim7.iss.tim7iss.models.Enums;
 import com.tim7.iss.tim7iss.models.Ride;
 import com.tim7.iss.tim7iss.repositories.RideRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public class RideService {
         return rideRepository.findById(id).orElse(null);
     }
 
-    public Ride findByStatus(Integer status) {
+    public Ride findByStatus(Enums.RideStatus status) {
         return rideRepository.findByStatus(status);
     }
 }

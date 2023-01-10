@@ -213,14 +213,14 @@ public class Tim7issApplication {
                     LocalDateTime.now().plusMinutes(random.nextInt(60, 1400)),
                     null,
                     route1.getEstimatedTimeInMinutes(), false && driver.getVehicle().isBabyAllowed(),
-                    true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING,
+                    true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED,
                     driver, driver.getVehicle().getVehicleType(),
                     Set.of(passenger1, passenger2, passenger3), null, List.of(route1.clone())));
             Ride ride2 = rideRepository.save(new Ride(null, 1000,
                     LocalDateTime.now().plusMinutes(random.nextInt(1500, 2800)),
                     null,
                     route3.getEstimatedTimeInMinutes(), false && driver.getVehicle().isBabyAllowed(),
-                    true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING,
+                    true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED,
                     driver, driver.getVehicle().getVehicleType(),
                     Set.of(passenger4, passenger5), null, List.of(route3.clone())));
             Ride ride3 = rideRepository.save(new Ride(null, 1000,
@@ -234,14 +234,14 @@ public class Tim7issApplication {
                     LocalDateTime.of(2022, Month.OCTOBER, 1, 11, 23),
                     LocalDateTime.of(2022, Month.OCTOBER, 1, 12, 1),
                     route2.getEstimatedTimeInMinutes(), true && driver.getVehicle().isBabyAllowed(),
-                    false && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED,
+                    false && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACTIVE,
                     driver, driver.getVehicle().getVehicleType(),
                     Set.of(passenger1, passenger2, passenger4), null, List.of(route2.clone())));
             Ride ride5 = rideRepository.save(new Ride(null, 1000,
                     LocalDateTime.now().plusMinutes(random.nextInt(2900, 4200)),
                     null,
                     route5.getEstimatedTimeInMinutes(), false && driver.getVehicle().isBabyAllowed(),
-                    false && driver.getVehicle().isPetsAllowed(), true, Enums.RideStatus.PENDING,
+                    false && driver.getVehicle().isPetsAllowed(), true, Enums.RideStatus.FINISHED,
                     driver, driver.getVehicle().getVehicleType(),
                     Set.of(passenger1, passenger3, passenger5), null, List.of(route5.clone())));
             Ride ride6 = rideRepository.save(new Ride(null, 1000,
@@ -255,7 +255,7 @@ public class Tim7issApplication {
                     LocalDateTime.now().plusMinutes(random.nextInt(4300, 6000)),
                     null,
                     route3.getEstimatedTimeInMinutes(), true && driver.getVehicle().isBabyAllowed(),
-                    true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING,
+                    true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED,
                     driver, driver.getVehicle().getVehicleType(),
                     Set.of(passenger4), null, List.of(route3.clone())));
 
