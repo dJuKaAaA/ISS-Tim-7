@@ -43,7 +43,6 @@ public class RideController {
     MapService mapService;
     @Autowired
     FavoriteLocationService favoriteLocationService;
-
     @Autowired
     LocationService locationService;
     @Autowired
@@ -57,15 +56,10 @@ public class RideController {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
-
     @PostMapping
-<<<<<<< HEAD
     public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException {
         if (AnyRidesArePending(rideCreationDto.getPassengers()))
             throw new RideAlreadyPendingException();
-=======
-    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException {
->>>>>>> 3c21b9ff9789bae8b0c907291b0a86751284a819
 
         // driver that doesn't have an active ride at the moment
         Driver availablePotentialDriver = null;
