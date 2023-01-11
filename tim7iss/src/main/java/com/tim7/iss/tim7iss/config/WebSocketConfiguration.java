@@ -24,9 +24,10 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 						"/socket-schedule-ride",
 						"/socket-send-message",
 						"/socket-driver-movement",
-						"/socket-scheduled-ride",
-						"/socket-ride-evaluation",
-						"/socket-notify-start-ride",
-						"/socket-notify-arrived-at-departure");
+						"/socket-scheduled-ride",  // RideDto
+						"/socket-ride-evaluation",   // RideDto
+						"/socket-notify-start-ride",  // RideDto
+						"/socket-notify-arrived-at-departure"  // RideDto
+				);
 	}
 }
