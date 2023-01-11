@@ -252,8 +252,13 @@ public class DriverController {
 
     @PutMapping("/working-hour/{workingHourId}")
     public ResponseEntity<WorkingHourDto> changeWorkHour(@PathVariable Long workingHourId,
-                                                         @Valid @RequestBody WorkingHourDto workingHourDto)
-            throws WorkHourNotFoundException {
+                                                         @Valid @RequestBody WorkingHourDto workingHourDto,
+                                                         Principal user)
+            throws WorkHourNotFoundException, DriverNotFoundException, VehicleNotAssignedException {
+        Driver driver = driverService.getByEmailAddress(user.getName()).orElseThrow(DriverNotFoundException::new);
+        if (driver.getVehicle() == null) {
+            throw new VehicleNotAssignedException();
+        }
         WorkHour workHour = workHourService.getById(workingHourId).orElseThrow(() -> new WorkHourNotFoundException("No shift is ongoing!"));
         workHour.setEndDate(LocalDateTime.parse(workingHourDto.getEnd(), Constants.customDateTimeFormat));
         workHourService.save(workHour);
