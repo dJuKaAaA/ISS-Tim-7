@@ -1,10 +1,9 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.dto.LocationsForRideDto;
+import com.tim7.iss.tim7iss.dto.LocationForRideDto;
 import com.tim7.iss.tim7iss.dto.RideCreationDto;
 import com.tim7.iss.tim7iss.global.Constants;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -67,16 +66,23 @@ public class Ride {
 
     public Ride(RideCreationDto rideRequestDTO) {
         this.estimatedTimeInMinutes = 0;
-        for (LocationsForRideDto location : rideRequestDTO.getLocations()) {
-            Route r = new Route(
+        Route r;
+        for (LocationForRideDto location : rideRequestDTO.getLocations()) {
+            if(location.getEstimatedTimeInMinutes() == null)
+                r = new Route(new Location(location.getDeparture()), new Location(location.getDestination()));
+            else
+                r = new Route(
                     new Location(location.getDeparture()),
                     new Location(location.getDestination()),
                     location.getDistanceInMeters(),
                     location.getEstimatedTimeInMinutes());
+
             this.routes.add(r);
-            this.estimatedTimeInMinutes += location.getEstimatedTimeInMinutes();
+            if(location.getEstimatedTimeInMinutes()!=null)
+                this.estimatedTimeInMinutes += location.getEstimatedTimeInMinutes();
         }
-        this.startTime = LocalDateTime.parse(rideRequestDTO.getStartTime(), Constants.customDateTimeFormat);
+        if(rideRequestDTO.getStartTime() != null)
+            this.startTime = LocalDateTime.parse(rideRequestDTO.getStartTime(), Constants.customDateTimeFormat);
         this.babyOnBoard = rideRequestDTO.getBabyTransport();
         this.petOnBoard = rideRequestDTO.getPetTransport();
         this.status = Enums.RideStatus.PENDING;

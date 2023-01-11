@@ -10,21 +10,14 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LocationsForRideDto {
-
+public class RouteDto {
     @NotNull(message = "Departure not provided")
     private GeoCoordinateDto departure;
     @NotNull(message = "Destination not provided")
     private GeoCoordinateDto destination;
-    private Integer distanceInMeters;
-    private Integer estimatedTimeInMinutes;
 
-
-    public LocationsForRideDto(Route route) {
+    public RouteDto(Route route) {
         this.departure = new GeoCoordinateDto(route.getStartingPoint());
         this.destination = new GeoCoordinateDto(route.getEndPoint());
-        this.distanceInMeters = route.getDistanceInMeters();
-        this.estimatedTimeInMinutes = route.getEstimatedTimeInMinutes();
     }
-
 }

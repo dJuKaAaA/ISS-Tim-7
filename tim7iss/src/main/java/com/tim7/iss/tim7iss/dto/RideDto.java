@@ -36,7 +36,7 @@ public class RideDto {
     private Boolean petTransport;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private RideRejectDto rejection;
-    private List<LocationsForRideDto> locations = new ArrayList<>();
+    private List<LocationForRideDto> locations = new ArrayList<>();
     @Pattern(regexp="^(PENDING|ACCEPTED|REJECTED|ACTIVE|FINISHED)$",
             message = "Invalid status... Must be PENDING, ACCEPTED, REJECTED, ACTIVE or FINISHED")
     private String status;
@@ -58,7 +58,7 @@ public class RideDto {
         this.petTransport = ride.isPetOnBoard();
         this.rejection = ride.getRefusal() == null ? null : new RideRejectDto(ride.getRefusal());
         for (Route route : ride.getRoutes()) {
-            this.locations.add(new LocationsForRideDto(route));
+            this.locations.add(new LocationForRideDto(route));
         }
         this.status = ride.getStatus().toString();
     }

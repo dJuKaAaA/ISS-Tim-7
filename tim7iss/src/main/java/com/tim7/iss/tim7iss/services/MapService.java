@@ -18,6 +18,7 @@ public class MapService {
         this.restTemplate = restTemplate;
     }
 
+
     public Integer getDistance(float startLatitude, float startLongitude, float endLatitude, float endLongitude) {
         ResponseEntity<TomTomResponseDto> route = getRoute(startLatitude, startLongitude, endLatitude, endLongitude);
         TomTomSummaryDto summary = getSummary(route.getBody());

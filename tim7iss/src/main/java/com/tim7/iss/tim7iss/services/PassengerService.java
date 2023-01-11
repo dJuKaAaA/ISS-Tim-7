@@ -42,6 +42,7 @@ public class PassengerService {
         return passengerRepository.count();
     }
 
+
     public Optional<Passenger> findByEmailAddress(String emailAddress) {
         return passengerRepository.findByEmailAddress(emailAddress);
     }

@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class DrivingAssessmentDto {
 
-    private List<LocationsForRideDto> locations;
+    private List<LocationForRideDto> locations;
     private String vehicleType;
     private Boolean babyTransport;
     private Boolean petTransport;

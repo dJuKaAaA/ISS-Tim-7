@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @Transactional
 public class UnregisteredUserController {
@@ -18,7 +20,7 @@ public class UnregisteredUserController {
     UnregisteredUserService unregisteredUserService;
 
     @PostMapping("/api/unregisteredUser")
-    public ResponseEntity<RideEstimationsDto> getAssumedTimeAndCostOfRide(@RequestBody RideCreationDto rideCreationDto) {
+    public ResponseEntity<RideEstimationsDto> getAssumedTimeAndCostOfRide(@Valid @RequestBody RideCreationDto rideCreationDto) {
         return unregisteredUserService.getAssumedRideCost(rideCreationDto);
     }
 
