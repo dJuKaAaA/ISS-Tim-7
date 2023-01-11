@@ -50,8 +50,7 @@ public class RideController {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @PostMapping
-    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto)
-            throws SchedulingRideAtInvalidDateException, DriverNotFoundException {
+    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException {
 
         // driver that doesn't have an active ride at the moment
         Driver availablePotentialDriver = null;
@@ -113,18 +112,10 @@ public class RideController {
 
             if (availablePotentialDriver == null) {
                 availablePotentialDriver = driver;
-                distanceFromStartLocationAvailableDriver = mapService.getDistance(
-                        rideStartLocation.getLatitude(),
-                        rideStartLocation.getLongitude(),
-                        availablePotentialDriver.getVehicle().getLocation().getLatitude(),
-                        availablePotentialDriver.getVehicle().getLocation().getLongitude());
+                distanceFromStartLocationAvailableDriver = mapService.getDistance(rideStartLocation.getLatitude(), rideStartLocation.getLongitude(), availablePotentialDriver.getVehicle().getLocation().getLatitude(), availablePotentialDriver.getVehicle().getLocation().getLongitude());
             } else {
                 // picking the available driver who is closer to the start point of the ride
-                Integer nextPotentialDriverDistance = mapService.getDistance(
-                        rideStartLocation.getLatitude(),
-                        rideStartLocation.getLongitude(),
-                        driver.getVehicle().getLocation().getLatitude(),
-                        driver.getVehicle().getLocation().getLongitude());
+                Integer nextPotentialDriverDistance = mapService.getDistance(rideStartLocation.getLatitude(), rideStartLocation.getLongitude(), driver.getVehicle().getLocation().getLatitude(), driver.getVehicle().getLocation().getLongitude());
                 if (nextPotentialDriverDistance < distanceFromStartLocationAvailableDriver) {
                     availablePotentialDriver = driver;
                 }
@@ -136,14 +127,7 @@ public class RideController {
         if (availablePotentialDriver != null) {
             rideToSchedule.setDriver(availablePotentialDriver);
         } else {
-            Driver driver = currentlyUnavailablePotentialDrivers
-                    .stream()
-                    .max(Comparator.comparing((Driver d) -> mapService.getDistance(
-                            rideStartLocation.getLatitude(),
-                            rideStartLocation.getLongitude(),
-                            d.getVehicle().getLocation().getLatitude(),
-                            d.getVehicle().getLocation().getLongitude())))
-                    .orElse(null);
+            Driver driver = currentlyUnavailablePotentialDrivers.stream().max(Comparator.comparing((Driver d) -> mapService.getDistance(rideStartLocation.getLatitude(), rideStartLocation.getLongitude(), d.getVehicle().getLocation().getLatitude(), d.getVehicle().getLocation().getLongitude()))).orElse(null);
 
             if (driver == null) {
                 throw new DriverNotFoundException("There are no available drivers at that moment");
@@ -183,10 +167,7 @@ public class RideController {
     @GetMapping(value = "/driver/{driverId}/active")
     public ResponseEntity<RideDto> getDriversActiveRide(@PathVariable Long driverId) throws UserNotFoundException, RideNotFoundException {
         driverService.getById(driverId).orElseThrow(() -> new UserNotFoundException("Driver not found"));
-        List<RideDto> rides = rideService.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACTIVE.ordinal())
-                .stream()
-                .map(RideDto::new)
-                .toList();
+        List<RideDto> rides = rideService.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACTIVE.ordinal()).stream().map(RideDto::new).toList();
         if (rides.size() == 0) {
             throw new RideNotFoundException("Driver has no active rides at the moment");
         }
@@ -303,16 +284,12 @@ public class RideController {
         Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
 
         if (socketMessageConverted != null) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
+            @SuppressWarnings("unchecked") List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
             for (Map<String, Object> passenger : passengers) {
-                this.simpMessagingTemplate.convertAndSend("/socket-scheduled-ride/to-passenger/" + passenger.get("id"),
-                        socketMessageConverted);
+                this.simpMessagingTemplate.convertAndSend("/socket-scheduled-ride/to-passenger/" + passenger.get("id"), socketMessageConverted);
             }
-            @SuppressWarnings("unchecked")
-            Map<String, Object> driver = (Map<String, Object>) socketMessageConverted.get("driver");
-            this.simpMessagingTemplate.convertAndSend("/socket-scheduled-ride/to-driver/" + driver.get("id"),
-                    socketMessageConverted);
+            @SuppressWarnings("unchecked") Map<String, Object> driver = (Map<String, Object>) socketMessageConverted.get("driver");
+            this.simpMessagingTemplate.convertAndSend("/socket-scheduled-ride/to-driver/" + driver.get("id"), socketMessageConverted);
         }
 
         return socketMessageConverted;
@@ -324,11 +301,9 @@ public class RideController {
         Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
 
         if (socketMessageConverted != null) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
+            @SuppressWarnings("unchecked") List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
             for (Map<String, Object> passenger : passengers) {
-                this.simpMessagingTemplate.convertAndSend("/socket-ride-evaluation/" + passenger.get("id"),
-                        socketMessageConverted);
+                this.simpMessagingTemplate.convertAndSend("/socket-ride-evaluation/" + passenger.get("id"), socketMessageConverted);
             }
         }
 
@@ -341,11 +316,9 @@ public class RideController {
         Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
 
         if (socketMessageConverted != null) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
+            @SuppressWarnings("unchecked") List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
             for (Map<String, Object> passenger : passengers) {
-                this.simpMessagingTemplate.convertAndSend("/socket-notify-start-ride/" + passenger.get("id"),
-                        socketMessageConverted);
+                this.simpMessagingTemplate.convertAndSend("/socket-notify-start-ride/" + passenger.get("id"), socketMessageConverted);
             }
         }
 
@@ -358,15 +331,21 @@ public class RideController {
         Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
 
         if (socketMessageConverted != null) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
+            @SuppressWarnings("unchecked") List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
             for (Map<String, Object> passenger : passengers) {
-                this.simpMessagingTemplate.convertAndSend("/socket-notify-arrived-at-departure/" + passenger.get("id"),
-                        socketMessageConverted);
+                this.simpMessagingTemplate.convertAndSend("/socket-notify-arrived-at-departure/" + passenger.get("id"), socketMessageConverted);
             }
         }
 
         return socketMessageConverted;
+
+
+    }
+
+    @PostMapping("/api/send/notification")
+    public String sendNotification(@RequestBody String message) {
+        this.simpMessagingTemplate.convertAndSend("/socket-send-notification", message);
+        return message;
     }
 
 
