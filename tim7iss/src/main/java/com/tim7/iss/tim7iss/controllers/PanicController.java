@@ -37,9 +37,6 @@ public class PanicController {
     @Autowired
     UserService userService;
 
-    @Autowired
-    private PanicRepository panicRepository;
-
     @GetMapping
     public ResponseEntity<PaginatedResponseDto<PanicDetailsDto>> getPanicInstances(){
         List<Panic> panics = panicService.findAll();
@@ -55,7 +52,6 @@ public class PanicController {
         Panic panic = panicService.findById(id);
         return new ResponseEntity<>(new PanicDetailsDto(panic), HttpStatus.OK);
     }
-
 
     @PutMapping(value = "/review/{id}")
     public ResponseEntity<String> review(@PathVariable Long id){

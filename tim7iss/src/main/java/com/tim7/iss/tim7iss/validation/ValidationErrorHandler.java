@@ -24,7 +24,9 @@ public class ValidationErrorHandler {
         return new ResponseEntity<>(new ErrorDto(errorMessage), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({UserNotFoundException.class})
+    @ExceptionHandler({
+            UserNotFoundException.class
+    })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ResponseEntity<ErrorDto> handleUserNotFoundException(UserNotFoundException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
@@ -38,25 +40,31 @@ public class ValidationErrorHandler {
 
     @ExceptionHandler({DriverNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected ResponseEntity<ErrorDto> handleUserNotFoundException(DriverNotFoundException e) {
+    protected ResponseEntity<ErrorDto> handleDriverNotFoundException(DriverNotFoundException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({PassengerNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected ResponseEntity<ErrorDto> handleUserNotFoundException(PassengerNotFoundException e) {
+    protected ResponseEntity<ErrorDto> handlePassengerNotFoundException(PassengerNotFoundException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({EmailAlreadyExistsException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ResponseEntity<ErrorDto> handleDataIntegrityViolationException(EmailAlreadyExistsException e) {
+    protected ResponseEntity<ErrorDto> handleExistingEmailException(EmailAlreadyExistsException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({RideAlreadyPendingException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<ErrorDto> handleRideAlreadyPendingException(RideAlreadyPendingException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({RideCancelationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleRideCancelationException(RideCancelationException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
@@ -80,31 +88,80 @@ public class ValidationErrorHandler {
 
     @ExceptionHandler({ForbiddenActionException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    protected ResponseEntity<ErrorDto> handelRideNotFoundException(ForbiddenActionException e) {
+    protected ResponseEntity<ErrorDto> handelForbiddenActionException(ForbiddenActionException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler({VehicleNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected ResponseEntity<ErrorDto> handelRideNotFoundException(VehicleNotFoundException e) {
+    protected ResponseEntity<ErrorDto> handelVehicleNotFoundException(VehicleNotFoundException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({InvalidEmailOrPasswordException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected ResponseEntity<ErrorDto> handelRideNotFoundException(InvalidEmailOrPasswordException e) {
+    protected ResponseEntity<ErrorDto> handelInvalidEmailOrPasswordException(InvalidEmailOrPasswordException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({UserBlockedException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ResponseEntity<ErrorDto> handelRideNotFoundException(UserBlockedException e) {
+    protected ResponseEntity<ErrorDto> handelUserBlockedException(UserBlockedException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({PasswordResetCodeException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ResponseEntity<ErrorDto> handelRideNotFoundException(PasswordResetCodeException e) {
+    protected ResponseEntity<ErrorDto> handelPasswordResetCodeException(PasswordResetCodeException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler({ActivationExpiredException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handelActivationExpiredException(ActivationExpiredException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ActivationNotFoundException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handelActivationNotFoundException(ActivationNotFoundException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({SchedulingRideAtInvalidDateException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleSchedulingRideAtInvalidDateException(SchedulingRideAtInvalidDateException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({NotAnImageException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleNotAnImageException(NotAnImageException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({VehicleNotAssignedException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleVehicleNotAssignedException(VehicleNotAssignedException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ShiftAlreadyOngoingException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleShiftAlreadyOngoingException(ShiftAlreadyOngoingException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ShiftExceededException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleShiftExceededException(ShiftExceededException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({WorkHourNotFoundException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleWorkHourNotFoundException(WorkHourNotFoundException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
 }

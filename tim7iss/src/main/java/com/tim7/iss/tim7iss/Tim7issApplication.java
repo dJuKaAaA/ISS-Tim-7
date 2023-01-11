@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss;
 
 import com.tim7.iss.tim7iss.dto.UserDto;
+import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
 import org.springframework.beans.factory.InitializingBean;
@@ -10,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+import javax.xml.bind.DatatypeConverter;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -77,7 +79,7 @@ public class Tim7issApplication {
             Admin admin = new Admin();
             admin.setFirstName("Adonis");
             admin.setLastName("Adonis");
-            admin.setProfilePicture("something");
+            admin.setProfilePicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
             admin.setPhoneNumber("003814523423");
             admin.setEmailAddress("admin@email.com");
             admin.setPassword("$2a$12$c9cKc9F6WaOKIchi9bWCpOrWRnXTBEKTU4NFtS3azXhJWy4TAcTey");  // Admin123
@@ -90,7 +92,7 @@ public class Tim7issApplication {
                     null,
                     "Mika",
                     "Mikic",
-                    "something",
+                    DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()),
                     "003817372222",
                     "mika.mikic@email.com",
                     "Mikina adresa",
@@ -102,21 +104,21 @@ public class Tim7issApplication {
                             "Fakultet tehnickih nauka Univerziteta u Novom Sadu, Trg Dositeja Obradovica, Novi Sad",
                             45.24648813f, 19.8516641f)));
             driver.setWorkHours(Set.of(
-                    new WorkHour(null, null,
-                            LocalDateTime.of(2023, Month.JANUARY, 9, 8, 0),
-                            LocalDateTime.of(2023, Month.JANUARY, 9, 16, 0)),
-                    new WorkHour(null, null,
-                            LocalDateTime.of(2023, Month.JANUARY, 10, 8, 0),
-                            LocalDateTime.of(2023, Month.JANUARY, 10, 16, 0)),
-                    new WorkHour(null, null,
-                            LocalDateTime.of(2023, Month.JANUARY, 11, 8, 0),
-                            LocalDateTime.of(2023, Month.JANUARY, 11, 16, 0)),
-                    new WorkHour(null, null,
-                            LocalDateTime.of(2023, Month.JANUARY, 12, 8, 0),
-                            LocalDateTime.of(2023, Month.JANUARY, 12, 16, 0)),
-                    new WorkHour(null, null,
-                            LocalDateTime.of(2023, Month.JANUARY, 13, 8, 0),
-                            LocalDateTime.of(2023, Month.JANUARY, 13, 16, 0))));
+                    new WorkHour(null, driver,
+                            LocalDateTime.of(2022, Month.DECEMBER, 19, 8, 0),
+                            LocalDateTime.of(2022, Month.DECEMBER, 19, 16, 0)),
+                    new WorkHour(null, driver,
+                            LocalDateTime.of(2022, Month.DECEMBER, 20, 8, 0),
+                            LocalDateTime.of(2022, Month.DECEMBER, 20, 16, 0)),
+                    new WorkHour(null, driver,
+                            LocalDateTime.of(2022, Month.DECEMBER, 21, 8, 0),
+                            LocalDateTime.of(2022, Month.DECEMBER, 21, 16, 0)),
+                    new WorkHour(null, driver,
+                            LocalDateTime.of(2022, Month.DECEMBER, 22, 8, 0),
+                            LocalDateTime.of(2022, Month.DECEMBER, 22, 16, 0)),
+                    new WorkHour(null, driver,
+                            LocalDateTime.of(2022, Month.DECEMBER, 23, 8, 0),
+                            LocalDateTime.of(2022, Month.DECEMBER, 23, 16, 0))));
             driver.setRoles(List.of(driverRole));
             driverRepository.save(driver);
 
@@ -125,56 +127,61 @@ public class Tim7issApplication {
                     null,
                     "Petar",
                     "Petrovic",
-                    "something",
+                    DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()),
                     "003817372727",
                     "petar.petrovic@email.com",
                     "Petrova adresa",
                     "$2a$12$lA8WEWzn3E7l53E2HYpX3ee0q.ZOVDjY34jNYTs/n9ucvebpY3v86")); // Petar123
             passenger1.setRoles(List.of(passengerRole));
+            passenger1.setEnabled(true);
             passengerRepository.save(passenger1);
             Passenger passenger2 = new Passenger(new UserDto(
                     null,
                     "Jovan",
                     "Jovanovic",
-                    "something",
+                    DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()),
                     "003817379278",
                     "jovan.jovanovic@email.com",
                     "Jovanova adresa",
                     "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
             passenger2.setRoles(List.of(passengerRole));
+            passenger2.setEnabled(true);
             passengerRepository.save(passenger2);
             Passenger passenger3 = new Passenger(new UserDto(
                     null,
                     "Mirko",
                     "Mirkovic",
-                    "something",
+                    DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()),
                     "00381737111",
                     "mirko.mirkovic@email.com",
                     "Mirkova adresa",
                     "$2a$12$nYULTJpydL5pFRSxQ30DnOlhu/m/O6U4CoWLqea82PYKNsswHCEsG"));  // Mirko123
             passenger3.setRoles(List.of(passengerRole));
+            passenger3.setEnabled(true);
             passengerRepository.save(passenger3);
             Passenger passenger4 = new Passenger(new UserDto(
                     null,
                     "Aleksandar",
                     "Popovic",
-                    "something",
+                    DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()),
                     "0038173724234",
                     "aleksandar.popovic@email.com",
                     "Aleksandrova adresa",
                     "$2a$12$yNYY1KoO4DDFSLzqRBXPJ.EJU3us/O8ws5d45pQ856BoiS70mslyu"));  // Aleksandar123
             passenger4.setRoles(List.of(passengerRole));
+            passenger4.setEnabled(true);
             passengerRepository.save(passenger4);
             Passenger passenger5 = new Passenger(new UserDto(
                     null,
                     "Vuk",
                     "Perisic",
-                    "something",
+                    DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()),
                     "003817372727",
                     "vuk.perisic@email.com",
                     "Vukova adresa",
                     "$2a$12$fCHBcs11T5oI78NcRModiuCn5TjFE1QLn9x1awvf0meSO7LqSepc2"));  // Vuk12345
             passenger5.setRoles(List.of(passengerRole));
+            passenger5.setEnabled(true);
             passengerRepository.save(passenger5);
 
 
@@ -224,7 +231,7 @@ public class Tim7issApplication {
                     driver, driver.getVehicle().getVehicleType(),
                     Set.of(passenger4, passenger5), null, List.of(route3.clone())));
             Ride ride3 = rideRepository.save(new Ride(null, 1000,
-                    LocalDateTime.now(),
+                    LocalDateTime.now().plusMinutes(30),
                     null,
                     route4.getEstimatedTimeInMinutes(), false && driver.getVehicle().isBabyAllowed(),
                     true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED,
@@ -271,34 +278,26 @@ public class Tim7issApplication {
                     new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f)));
 
             // creating user activation entities
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, Month.JANUARY, 1, 0, 0),
-                    LocalDateTime.of(2022, Month.DECEMBER, 1, 23, 59),
-                    admin));
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, 12, 21, 21, 0),
-                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-                    driver));
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
-                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-                    passenger1));
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
-                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-                    passenger2));
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
-                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-                    passenger3));
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
-                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-                    passenger4));
-            userActivationRepository.save(new UserActivation(null,
-                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
-                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-                    passenger5));
+//            userActivationRepository.save(new UserActivation(null,
+//                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
+//                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
+//                    passenger1));
+//            userActivationRepository.save(new UserActivation(null,
+//                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
+//                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
+//                    passenger2));
+//            userActivationRepository.save(new UserActivation(null,
+//                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
+//                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
+//                    passenger3));
+//            userActivationRepository.save(new UserActivation(null,
+//                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
+//                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
+//                    passenger4));
+//            userActivationRepository.save(new UserActivation(null,
+//                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
+//                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
+//                    passenger5));
 
             // panic creation
             // TODO: Enter valid date time according to ride start date

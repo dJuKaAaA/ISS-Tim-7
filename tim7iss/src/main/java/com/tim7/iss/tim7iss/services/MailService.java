@@ -15,7 +15,7 @@ public class MailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendTextEmail(String toEmail, String subject, String emailContent) throws IOException {
+    public void sendTextEmail(String toEmail, String subject, String emailContent) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("ubert472@gmail.com"); // TODO NE DIRATI OVO POLJE
         message.setTo(toEmail);

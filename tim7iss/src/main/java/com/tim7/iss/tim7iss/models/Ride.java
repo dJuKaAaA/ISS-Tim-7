@@ -44,8 +44,8 @@ public class Ride {
     @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "passenger_rides",
-            joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id")
+            joinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id")
     )
     private Set<Passenger> passengers = new HashSet<>();
 
@@ -66,8 +66,17 @@ public class Ride {
 
     public Ride(RideCreationDto rideRequestDTO) {
         this.estimatedTimeInMinutes = 0;
+        Route r;
         for (LocationForRideDto location : rideRequestDTO.getLocations()) {
-            Route r = new Route(new Location(location.getDeparture()), new Location(location.getDestination()));
+            if(location.getEstimatedTimeInMinutes() == null)
+                r = new Route(new Location(location.getDeparture()), new Location(location.getDestination()));
+            else
+                r = new Route(
+                    new Location(location.getDeparture()),
+                    new Location(location.getDestination()),
+                    location.getDistanceInMeters(),
+                    location.getEstimatedTimeInMinutes());
+
             this.routes.add(r);
             if(location.getEstimatedTimeInMinutes()!=null)
                 this.estimatedTimeInMinutes += location.getEstimatedTimeInMinutes();
