@@ -19,7 +19,7 @@ public class LocationService {
         return locationRepository.findById(id).orElse(null);
     }
 
-    public Location getByLongitudeAndLatitude(double longitude, double latitude) {
+    public Location getByLongitudeAndLatitude(float longitude, float latitude) {
         return locationRepository.findByLongitudeAndLatitude(longitude, latitude).orElse(null);
     }
 

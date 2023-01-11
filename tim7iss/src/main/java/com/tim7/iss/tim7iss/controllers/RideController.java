@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.controllers;
 
 import com.tim7.iss.tim7iss.dto.*;
+import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.exceptions.DriverNotFoundException;
 import com.tim7.iss.tim7iss.exceptions.RideNotFoundException;
 import com.tim7.iss.tim7iss.exceptions.SchedulingRideAtInvalidDateException;
@@ -9,7 +10,6 @@ import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -18,8 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.*;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -38,6 +40,13 @@ public class RideController {
     @Autowired
     RoutesService routesService;
     @Autowired
+    MapService mapService;
+    @Autowired
+    FavoriteLocationService favoriteLocationService;
+
+    @Autowired
+    LocationService locationService;
+    @Autowired
     private RideService rideService;
     @Autowired
     private PassengerService passengerService;
@@ -46,13 +55,17 @@ public class RideController {
     @Autowired
     private WorkHourService workHourService;
     @Autowired
-    MapService mapService;
-    @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
+
     @PostMapping
-    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto)
-            throws SchedulingRideAtInvalidDateException, DriverNotFoundException {
+<<<<<<< HEAD
+    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException {
+        if (AnyRidesArePending(rideCreationDto.getPassengers()))
+            throw new RideAlreadyPendingException();
+=======
+    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException {
+>>>>>>> 3c21b9ff9789bae8b0c907291b0a86751284a819
 
         // driver that doesn't have an active ride at the moment
         Driver availablePotentialDriver = null;
@@ -114,18 +127,10 @@ public class RideController {
 
             if (availablePotentialDriver == null) {
                 availablePotentialDriver = driver;
-                distanceFromStartLocationAvailableDriver = mapService.getDistance(
-                        rideStartLocation.getLatitude(),
-                        rideStartLocation.getLongitude(),
-                        availablePotentialDriver.getVehicle().getLocation().getLatitude(),
-                        availablePotentialDriver.getVehicle().getLocation().getLongitude());
+                distanceFromStartLocationAvailableDriver = mapService.getDistance(rideStartLocation.getLatitude(), rideStartLocation.getLongitude(), availablePotentialDriver.getVehicle().getLocation().getLatitude(), availablePotentialDriver.getVehicle().getLocation().getLongitude());
             } else {
                 // picking the available driver who is closer to the start point of the ride
-                Integer nextPotentialDriverDistance = mapService.getDistance(
-                        rideStartLocation.getLatitude(),
-                        rideStartLocation.getLongitude(),
-                        driver.getVehicle().getLocation().getLatitude(),
-                        driver.getVehicle().getLocation().getLongitude());
+                Integer nextPotentialDriverDistance = mapService.getDistance(rideStartLocation.getLatitude(), rideStartLocation.getLongitude(), driver.getVehicle().getLocation().getLatitude(), driver.getVehicle().getLocation().getLongitude());
                 if (nextPotentialDriverDistance < distanceFromStartLocationAvailableDriver) {
                     availablePotentialDriver = driver;
                 }
@@ -137,14 +142,7 @@ public class RideController {
         if (availablePotentialDriver != null) {
             rideToSchedule.setDriver(availablePotentialDriver);
         } else {
-            Driver driver = currentlyUnavailablePotentialDrivers
-                    .stream()
-                    .max(Comparator.comparing((Driver d) -> mapService.getDistance(
-                            rideStartLocation.getLatitude(),
-                            rideStartLocation.getLongitude(),
-                            d.getVehicle().getLocation().getLatitude(),
-                            d.getVehicle().getLocation().getLongitude())))
-                    .orElse(null);
+            Driver driver = currentlyUnavailablePotentialDrivers.stream().max(Comparator.comparing((Driver d) -> mapService.getDistance(rideStartLocation.getLatitude(), rideStartLocation.getLongitude(), d.getVehicle().getLocation().getLatitude(), d.getVehicle().getLocation().getLongitude()))).orElse(null);
 
             if (driver == null) {
                 throw new DriverNotFoundException("There are no available drivers at that moment");
@@ -181,35 +179,77 @@ public class RideController {
         return new ResponseEntity<>(new RideDto(rideToSchedule), HttpStatus.OK);
     }
 
+    private boolean AnyRidesArePending(List<UserRefDto> passengers) {
+        for(UserRefDto passenger : passengers) {
+            List<Ride> rides = rideService.findByPassengerIdAndStatus(passenger.getId(),Enums.RideStatus.PENDING.ordinal());
+            if(rides.size() != 0)
+                return true;
+        }
+        return false;
+    }
+
+    @PostMapping(value = "/favorites")
+    public ResponseEntity<FavoriteLocationDto>createFavoriteLocation(@RequestBody FavoriteLocationDto favoriteLocationDto) throws TooManyFavoriteRidesException {
+        //privremen id passengera koji salje request
+        Long passengerId = 4L;
+        if(checkIfMoreThan9FavoriteLocations(passengerId)){
+            throw new TooManyFavoriteRidesException();
+        }
+        Set<Passenger>passengers = new HashSet<>();
+        for(UserRefDto pass: favoriteLocationDto.getPassengers()){
+            passengers.add(passengerService.findById(pass.getId()));
+        }
+        VehicleType vehicleType = vehicleTypeService.getByName(favoriteLocationDto.getVehicleType());
+        FavoriteLocation favoriteLocation = new FavoriteLocation(favoriteLocationDto, passengers, vehicleType);
+        favoriteLocation = favoriteLocationService.save(favoriteLocation);
+        favoriteLocationDto.setId(favoriteLocation.getId());
+        return new ResponseEntity<>(favoriteLocationDto, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/favorites")
+    public ResponseEntity<List<FavoriteLocationDto>>getFavoriteLocations(){
+        List<FavoriteLocation>favoriteLocations = favoriteLocationService.getAll();
+        List<FavoriteLocationDto>favoriteLocationsDto = new ArrayList<>();
+        for(FavoriteLocation favoriteLocation : favoriteLocations){
+            favoriteLocationsDto.add(new FavoriteLocationDto(favoriteLocation));
+        }
+        return new ResponseEntity<>(favoriteLocationsDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/favorites/{id}")
+    public ResponseEntity<String>deleteFavoriteLocation(@PathVariable Long id) throws FavoriteLocationNotFoundException {
+        if(favoriteLocationService.findById(id) == null)
+            throw new FavoriteLocationNotFoundException();
+        favoriteLocationService.delete(id);
+        return new ResponseEntity("Successful deletion of favorite location!", HttpStatus.NO_CONTENT);
+    }
+
     @GetMapping(value = "/driver/{driverId}/active")
     public ResponseEntity<RideDto> getDriversActiveRide(@PathVariable Long driverId) throws UserNotFoundException, RideNotFoundException {
         driverService.getById(driverId).orElseThrow(() -> new UserNotFoundException("Driver not found"));
-        List<RideDto> rides = rideService.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACTIVE.ordinal())
-                .stream()
-                .map(RideDto::new)
-                .toList();
+        List<RideDto> rides = rideService.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACTIVE.ordinal()).stream().map(RideDto::new).toList();
         if (rides.size() == 0) {
-            throw new RideNotFoundException("Driver has no active rides at the moment");
+            throw new RideNotFoundException("Active ride does not exist!");
         }
         return new ResponseEntity<>(rides.get(0), HttpStatus.OK);
     }
 
     //Delete fixed id
     @GetMapping(value = "/passenger/{passengerId}/active")
-    public ResponseEntity<RideDto> getPassengersActiveRide(@PathVariable Long passengerId) {
+    public ResponseEntity<RideDto> getPassengersActiveRide(@PathVariable Long passengerId) throws RideNotFoundException {
         List<Ride> rides = rideService.findByPassengerIdAndStatus(passengerId, Enums.RideStatus.ACTIVE.ordinal());
         if (rides.size() == 0) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            throw new RideNotFoundException("Active ride does not exist!");
         }
         return new ResponseEntity<>(new RideDto(rides.get(0)), HttpStatus.OK);
     }
 
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<RideDto> getRideById(@PathVariable Long id) {
+    public ResponseEntity<RideDto> getRideById(@PathVariable Long id) throws RideNotFoundException {
         Ride ride = rideService.findById(id);
         if (ride == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            throw new RideNotFoundException("Active ride does not exist!");
         }
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
@@ -217,46 +257,52 @@ public class RideController {
     //Voznja moze da se prekine samo ukoliko je stanje voznje pending ili accepted,
     //Radi testiranja validacija stanja je zakomentarisana
     @PutMapping(value = "/{id}/withdraw")
-    public ResponseEntity<RideDto> cancelRideById(@PathVariable Long id) throws RideNotFoundException {
+    public ResponseEntity<RideDto> cancelRideById(@PathVariable Long id) throws RideNotFoundException, RideCancelationException {
         Ride ride = rideService.findById(id);
 //        Ride ride = ridesService.findByIdAndStatus(id, Enums.RideStatus.PENDING.ordinal());
         if (ride == null) {
-            throw new RideNotFoundException();
-//            ride = ridesService.findByIdAndStatus(id, Enums.RideStatus.ACCEPTED.ordinal());
-//            if(ride == null)
-//                return new ResponseEntity<>("Ride does not exist", HttpStatus.NOT_FOUND);
+            throw new RideNotFoundException("Ride does not exist");
         }
+        if(ride.getStatus() != Enums.RideStatus.PENDING && ride.getStatus() != Enums.RideStatus.ACTIVE)
+            throw new RideCancelationException();
         ride.setStatus(Enums.RideStatus.REJECTED);
         rideService.save(ride);
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
     @PutMapping(value = "/{rideId}/panic")
-    public ResponseEntity<PanicDetailsDto> creatingPanicProcedure(@RequestBody PanicCreateDto reason, @PathVariable Long rideId) {
+    public ResponseEntity<PanicDetailsDto> creatingPanicProcedure(@RequestBody PanicCreateDto reason, @PathVariable Long rideId) throws RideNotFoundException {
         User user = passengerService.findById(3L);
         Ride ride = rideService.findById(rideId);
+        if (ride == null) {
+            throw new RideNotFoundException("Ride does not exist");
+        }
         Panic panic = new Panic(reason, ride, user);
         panicService.save(panic);
         return new ResponseEntity<>(new PanicDetailsDto(panic), HttpStatus.OK);
     }
 
     @PutMapping(value = "{id}/accept")
-    public ResponseEntity<RideDto> acceptRide(@PathVariable Long id) {
+    public ResponseEntity<RideDto> acceptRide(@PathVariable Long id) throws RideCancelationException {
         Ride ride = rideService.findById(id);
         if (ride == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+        if(ride.getStatus() != Enums.RideStatus.PENDING)
+            throw new RideCancelationException("Cannot accept a ride that is not in status PENDING!");
         ride.setStatus(Enums.RideStatus.ACCEPTED);
         rideService.save(ride);
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
     @PutMapping(value = "{id}/end")
-    public ResponseEntity<RideDto> endRide(@PathVariable Long id) throws RideNotFoundException {
+    public ResponseEntity<RideDto> endRide(@PathVariable Long id) throws RideNotFoundException, RideCancelationException {
         Ride ride = rideService.findById(id);
         if (ride == null) {
             throw new RideNotFoundException();
         }
+        if(ride.getStatus() != Enums.RideStatus.FINISHED)
+            throw new RideCancelationException("Cannot end a ride that is not in status FINISHED!");
         ride.setStatus(Enums.RideStatus.FINISHED);
         ride.setEndTime(LocalDateTime.now());  // ride finishes as soon as its status is set to finished
         rideService.save(ride);
@@ -264,11 +310,13 @@ public class RideController {
     }
 
     @PutMapping(value = "{id}/cancel")
-    public ResponseEntity<RideDto> rejectRide(@PathVariable Long id, @Valid @RequestBody RideRejectDto rideReject) throws RideNotFoundException {
+    public ResponseEntity<RideDto> rejectRide(@PathVariable Long id, @Valid @RequestBody RideRejectDto rideReject) throws RideNotFoundException, RideCancelationException {
         Ride ride = rideService.findById(id);
         if (ride == null) {
             throw new RideNotFoundException();
         }
+        if(ride.getStatus() != Enums.RideStatus.PENDING)
+            throw new RideCancelationException("Cannot cancel a ride that is not in status PENDING!");
         Refusal refusal = new Refusal(rideReject);
         refusal.setRide(ride);
         ride.setRefusal(refusal);
@@ -278,11 +326,13 @@ public class RideController {
     }
 
     @PutMapping("/{id}/start")
-    public ResponseEntity<RideDto> startRide(@PathVariable Long id) throws RideNotFoundException {
+    public ResponseEntity<RideDto> startRide(@PathVariable Long id) throws RideNotFoundException, RideCancelationException {
         Ride ride = rideService.findById(id);
         if (ride == null) {
             throw new RideNotFoundException();
         }
+        if(ride.getStatus() != Enums.RideStatus.ACCEPTED)
+            throw new RideCancelationException("Cannot start a ride that is not in status ACCEPTED!");
         ride.setStatus(Enums.RideStatus.ACTIVE);
         rideService.save(ride);
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
@@ -290,7 +340,7 @@ public class RideController {
 
 
     @PutMapping("/setDriver")
-    public ResponseEntity<RideDto> setDriver(@RequestBody RideAddDriverDto rideAddDriverDto) {
+    public ResponseEntity<RideDto> setDriver(@Valid @RequestBody RideAddDriverDto rideAddDriverDto){
         Ride ride = rideService.findById(rideAddDriverDto.getRideId());
         Driver driver = driverService.findById(rideAddDriverDto.getDriverId());
         ride.setDriver(driver);
@@ -298,22 +348,61 @@ public class RideController {
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
+    public Ride savePassengersAndDrivers(RideCreationDto rideRequestDto){
+        Ride ride = new Ride(rideRequestDto);
+
+        // setting vehicle type for the ride
+        ride.setVehicleType(vehicleTypeService.getByName(rideRequestDto.getVehicleType()));
+
+        // setting the price
+        int totalDistance = 0;
+        for (Route r : ride.getRoutes()) {
+            totalDistance += r.getDistanceInMeters();
+            System.err.println(r);
+        }
+        ride.setPrice(ride.getVehicleType().getPricePerKm() + totalDistance * 120);
+
+        // adding passengers to ride
+        for (UserRefDto passengerRef : rideRequestDto.getPassengers()){
+                Passenger passenger = passengerService.findById(passengerRef.getId());
+                if (passenger == null) {
+                    continue;
+                }
+                passenger.getRides().add(ride);
+                ride.getPassengers().add(passenger);
+        }
+
+        // adding driver to ride
+        Driver driver = driverService.findById(2L);
+        if (driver != null) {
+            ride.setDriver(driver);
+        }
+
+        rideService.save(ride);
+
+        return ride;
+    }
+
+    public boolean checkIfMoreThan9FavoriteLocations(Long id){
+        List<FavoriteLocation> locations = favoriteLocationService.findByPassengerId(id);
+        if(locations.size() > 9)
+            return true;
+        return false;
+    }
+
+
     @CrossOrigin(origins = "http://localhost:4200")
     @MessageMapping("/send/scheduled/ride")
     public Map<String, Object> sendScheduledRide(String socketMessage) {
         Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
 
         if (socketMessageConverted != null) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> passengers = (List<Map<String, Object>>)socketMessageConverted.get("passengers");
+            @SuppressWarnings("unchecked") List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
             for (Map<String, Object> passenger : passengers) {
-                this.simpMessagingTemplate.convertAndSend("/socket-scheduled-ride/to-passenger/" + passenger.get("id"),
-                        socketMessageConverted);
+                this.simpMessagingTemplate.convertAndSend("/socket-scheduled-ride/to-passenger/" + passenger.get("id"), socketMessageConverted);
             }
-            @SuppressWarnings("unchecked")
-            Map<String, Object> driver = (Map<String, Object>) socketMessageConverted.get("driver");
-            this.simpMessagingTemplate.convertAndSend("/socket-scheduled-ride/to-driver/" + driver.get("id"),
-                    socketMessageConverted);
+            @SuppressWarnings("unchecked") Map<String, Object> driver = (Map<String, Object>) socketMessageConverted.get("driver");
+            this.simpMessagingTemplate.convertAndSend("/socket-scheduled-ride/to-driver/" + driver.get("id"), socketMessageConverted);
         }
 
         return socketMessageConverted;
@@ -325,11 +414,9 @@ public class RideController {
         Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
 
         if (socketMessageConverted != null) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> passengers = (List<Map<String, Object>>)socketMessageConverted.get("passengers");
+            @SuppressWarnings("unchecked") List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
             for (Map<String, Object> passenger : passengers) {
-                this.simpMessagingTemplate.convertAndSend("/socket-ride-evaluation/" + passenger.get("id"),
-                        socketMessageConverted);
+                this.simpMessagingTemplate.convertAndSend("/socket-ride-evaluation/" + passenger.get("id"), socketMessageConverted);
             }
         }
 
@@ -342,11 +429,9 @@ public class RideController {
         Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
 
         if (socketMessageConverted != null) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> passengers = (List<Map<String, Object>>)socketMessageConverted.get("passengers");
+            @SuppressWarnings("unchecked") List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
             for (Map<String, Object> passenger : passengers) {
-                this.simpMessagingTemplate.convertAndSend("/socket-notify-start-ride/" + passenger.get("id"),
-                        socketMessageConverted);
+                this.simpMessagingTemplate.convertAndSend("/socket-notify-start-ride/" + passenger.get("id"), socketMessageConverted);
             }
         }
 
@@ -359,22 +444,28 @@ public class RideController {
         Map<String, Object> socketMessageConverted = Constants.parseJsonString(socketMessage);
 
         if (socketMessageConverted != null) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> passengers = (List<Map<String, Object>>)socketMessageConverted.get("passengers");
+            @SuppressWarnings("unchecked") List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
             for (Map<String, Object> passenger : passengers) {
-                this.simpMessagingTemplate.convertAndSend("/socket-notify-arrived-at-departure/" + passenger.get("id"),
-                        socketMessageConverted);
+                this.simpMessagingTemplate.convertAndSend("/socket-notify-arrived-at-departure/" + passenger.get("id"), socketMessageConverted);
             }
         }
 
         return socketMessageConverted;
+
+
     }
+
+    @PostMapping("/api/send/notification")
+    public String sendNotification(@RequestBody String message) {
+        this.simpMessagingTemplate.convertAndSend("/socket-send-notification", message);
+        return message;
+    }
+
 
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 //    @ExceptionHandler(Exception.class)
 //    public String badRequestException(){
 //        return "Invalid data";
 //    }
-
 
 }

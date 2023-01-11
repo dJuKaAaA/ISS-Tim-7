@@ -11,8 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -204,9 +202,13 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User findById(Long id){return userRepository.findById(id).orElse(null); }
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
 
     public Optional<User> findByEmailAddress(String emailAddress) {
         return Optional.of(userRepository.findByEmailAddress(emailAddress));
     }
+
+
 }

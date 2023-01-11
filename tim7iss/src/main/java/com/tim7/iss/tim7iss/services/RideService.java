@@ -1,5 +1,4 @@
 package com.tim7.iss.tim7iss.services;
-
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.Enums;
 import com.tim7.iss.tim7iss.models.Ride;
@@ -52,14 +51,17 @@ public class RideService {
         return rideRepository.findByPassengersIdAndStatus(id, status);
     }
 
-    public Ride findByIdAndStatus(Long id, Integer status){
-        return rideRepository.findByIdAndStatus(id, status);
-    }
+//    public Ride findByPassengerIdAndStatus(Long id, Enums.RideStatus status){
+//        return rideRepository.findByPassengerIdAndStatus(id, status);
+//    }
 
     public Ride findById(Long id){
         return rideRepository.findById(id).orElse(null);
     }
 
+    public Ride findByStatus(Enums.RideStatus status) {
+        return rideRepository.findByStatus(status);
+    }
     public Ride driverRideAtMoment(Long driverId, LocalDateTime moment) {
         List<Ride> rides = rideRepository.findRidesByDriverId(driverId);
         rides = rides
@@ -80,6 +82,5 @@ public class RideService {
                 .toList();
         return rides.size() == 0 ? null : rides.get(0);
     }
-
 
 }

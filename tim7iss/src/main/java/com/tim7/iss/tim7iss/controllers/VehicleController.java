@@ -3,6 +3,8 @@ package com.tim7.iss.tim7iss.controllers;
 import com.tim7.iss.tim7iss.dto.GeoCoordinateDto;
 import com.tim7.iss.tim7iss.dto.PaginatedResponseDto;
 import com.tim7.iss.tim7iss.dto.VehicleDto;
+import com.tim7.iss.tim7iss.exceptions.VehicleNotAssignedException;
+import com.tim7.iss.tim7iss.exceptions.VehicleNotFoundException;
 import com.tim7.iss.tim7iss.models.Location;
 import com.tim7.iss.tim7iss.models.Vehicle;
 import com.tim7.iss.tim7iss.models.VehicleType;
@@ -60,10 +62,12 @@ public class VehicleController {
     }
 
     @PutMapping("/{id}/location")
-    public ResponseEntity<String> changeLocation(@PathVariable Long id, @RequestBody GeoCoordinateDto location){
+    public ResponseEntity<String> changeLocation(@Valid @PathVariable Long id, @RequestBody GeoCoordinateDto location) throws VehicleNotAssignedException, VehicleNotFoundException {
         Vehicle vehicle = vehicleService.getById(id);
+        if(vehicle.getDriver() == null)
+            throw new VehicleNotAssignedException("Vehicle is not assigned to the specific driver!");
         if(vehicle == null){
-            return new ResponseEntity<>("Vehicle does not exist", HttpStatus.NOT_FOUND);
+            throw new VehicleNotFoundException("Vehicle does not exist!");
         }
         Location newLocation = new Location(location);
         newLocation.setId(vehicle.getLocation().getId());

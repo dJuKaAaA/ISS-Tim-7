@@ -16,4 +16,8 @@ public class RoutesService {
     public void saveRoutes(Set<Route>routes){
         routesRepository.saveAll(routes);
     }
+
+    public Route getRouteByStartingPointIdAndEndPointId(Long startingPointId, Long endPointId){
+        return routesRepository.findByStartingPointIdAndEndPointId(startingPointId, endPointId);
+    }
 }

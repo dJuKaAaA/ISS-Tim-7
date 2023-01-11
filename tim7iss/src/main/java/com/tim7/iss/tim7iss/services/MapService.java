@@ -14,24 +14,34 @@ public class MapService {
     private final String API_URL_SECOND_PART = "/json?key=urES86sMdjoeMbhSLu9EK3ksu0Jjpb91&travelMode=car";
     private final RestTemplate restTemplate;
 
-    public MapService(RestTemplate restTemplate){
+    public MapService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    public Integer getDistance(float startLatitude, float startLongitude, float endLatitude, float endLongitude){
-        ResponseEntity<TomTomResponseDto>route = getRoute(startLatitude, startLongitude, endLatitude, endLongitude);
+
+    public Integer getDistance(float startLatitude, float startLongitude, float endLatitude, float endLongitude) {
+        ResponseEntity<TomTomResponseDto> route = getRoute(startLatitude, startLongitude, endLatitude, endLongitude);
         TomTomSummaryDto summary = getSummary(route.getBody());
         System.out.println(summary);
         return summary.getLengthInMeters();
     }
 
-    public TomTomSummaryDto getSummary(TomTomResponseDto response){
+    public Integer getTravelTimeInSeconds(float startLatitude, float startLongitude, float endLatitude, float endLongitude) {
+        ResponseEntity<TomTomResponseDto> route = getRoute(startLatitude, startLongitude, endLatitude, endLongitude);
+        TomTomSummaryDto summary = getSummary(route.getBody());
+        System.out.println(summary);
+        return summary.getTravelTimeInSeconds() + summary.getTrafficDelayInSeconds();
+
+    }
+
+    public TomTomSummaryDto getSummary(TomTomResponseDto response) {
         return response.getRoutes().get(0).getSummary();
     }
 
-    public ResponseEntity<TomTomResponseDto> getRoute(float startLatitude, float startLongitude, float endLatitude, float endLongitude){
-        String route = String.valueOf(startLatitude) + "," + String.valueOf(startLongitude) + ":" + String.valueOf(endLatitude) + "," + String.valueOf(endLongitude);
-        ResponseEntity<TomTomResponseDto> response = restTemplate.exchange(API_URL_FIRST_PART + route + API_URL_SECOND_PART, HttpMethod.GET, null, new ParameterizedTypeReference<TomTomResponseDto>() {});
+    public ResponseEntity<TomTomResponseDto> getRoute(float startLatitude, float startLongitude, float endLatitude, float endLongitude) {
+        String route = startLatitude + "," + startLongitude + ":" + endLatitude + "," + endLongitude;
+        ResponseEntity<TomTomResponseDto> response = restTemplate.exchange(API_URL_FIRST_PART + route + API_URL_SECOND_PART, HttpMethod.GET, null, new ParameterizedTypeReference<TomTomResponseDto>() {
+        });
         return response;
     }
 }

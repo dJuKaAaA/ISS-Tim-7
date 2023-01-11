@@ -32,6 +32,12 @@ public class ValidationErrorHandler {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler({LocationNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ResponseEntity<ErrorDto> handleLocationNotFoundException(LocationNotFoundException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler({DriverNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ResponseEntity<ErrorDto> handleDriverNotFoundException(DriverNotFoundException e) {
@@ -48,6 +54,30 @@ public class ValidationErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<ErrorDto> handleExistingEmailException(EmailAlreadyExistsException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({RideAlreadyPendingException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleRideAlreadyPendingException(RideAlreadyPendingException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({RideCancelationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleRideCancelationException(RideCancelationException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(TooManyFavoriteRidesException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleTooManyFavoriteRidesException(TooManyFavoriteRidesException e){
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({FavoriteLocationNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ResponseEntity<ErrorDto> handleFavoriteLocationNotFoundException(FavoriteLocationNotFoundException e){
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({RideNotFoundException.class})
@@ -84,6 +114,18 @@ public class ValidationErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<ErrorDto> handelPasswordResetCodeException(PasswordResetCodeException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ActivationExpiredException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handelActivationExpiredException(ActivationExpiredException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ActivationNotFoundException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handelActivationNotFoundException(ActivationNotFoundException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({SchedulingRideAtInvalidDateException.class})

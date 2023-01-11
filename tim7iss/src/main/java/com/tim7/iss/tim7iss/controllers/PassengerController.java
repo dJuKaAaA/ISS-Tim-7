@@ -1,7 +1,8 @@
 package com.tim7.iss.tim7iss.controllers;
 
+import ch.qos.logback.core.joran.spi.ActionException;
 import com.tim7.iss.tim7iss.dto.*;
-import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.models.Passenger;
 import com.tim7.iss.tim7iss.models.Ride;
 import com.tim7.iss.tim7iss.models.User;
@@ -42,7 +43,9 @@ public class PassengerController {
     private RoleService roleService;
 
     @PostMapping
-    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto passengerRequestDto) {
+    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto passengerRequestDto) throws EmailAlreadyExistsException {
+        if(passengerService.findByEmailAddress(passengerRequestDto.getEmail()) == null)
+            throw new EmailAlreadyExistsException("User with that email already exists!");
         Passenger passenger = new Passenger(passengerRequestDto);
         String encodedPassword = bCryptPasswordEncoder.encode(passengerRequestDto.getPassword());
         passenger.setPassword(encodedPassword);
@@ -64,13 +67,13 @@ public class PassengerController {
     }
 
     @GetMapping(value = "/activate/{activationId}")
-    public ResponseEntity<String> activateUser(@PathVariable Long activationId) {
+    public ResponseEntity<String> activateUser(@PathVariable Long activationId) throws ActivationNotFoundException, ActivationExpiredException {
         UserActivation activation = userActivationService.findById(activationId);
         if (activation == null) {
-            return new ResponseEntity<>("Activation with that id doesn't exist", HttpStatus.NOT_FOUND);
+            throw new ActivationNotFoundException();
         }
         if (activation.getExpirationDate().isBefore(LocalDateTime.now())) {
-            return new ResponseEntity<>("This activation has expired", HttpStatus.BAD_REQUEST);
+            throw new ActivationExpiredException();
         }
         activation.getPassenger().setEnabled(true);
         passengerService.save(activation.getPassenger());
@@ -87,7 +90,7 @@ public class PassengerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> save(@RequestBody UserDto passengerRequestDto, @PathVariable Long id) throws UserNotFoundException {
+    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto passengerRequestDto, @PathVariable Long id) throws UserNotFoundException {
         Passenger passenger = passengerService.findById(id);
         if (passenger == null) throw new UserNotFoundException() {
         };
@@ -98,8 +101,10 @@ public class PassengerController {
     }
 
     @GetMapping("/{id}/ride")
-    public ResponseEntity<PaginatedResponseDto<RideDto>> findRidesByPassengerId(@PathVariable Long id, Pageable page) {
+    public ResponseEntity<PaginatedResponseDto<RideDto>> findRidesByPassengerId(@PathVariable Long id, Pageable page) throws UserNotFoundException {
 //        ridesService.findByFilter();
+        if(passengerService.findById(id) == null)
+            throw new UserNotFoundException("Passenger does not exist!");
         Collection<RideDto> rides = new ArrayList<>();
         for (Ride ride : rideService.findRideByPassengerId(id, page)) {
             rides.add(new RideDto(ride));
@@ -124,6 +129,11 @@ public class PassengerController {
     public ResponseEntity<UserRefDto> fetchPassengerByEmail(@Valid @RequestBody UserRefDto passenger) throws UserNotFoundException {
         Passenger passengerByEmail = passengerService.findByEmailAddress(passenger.getEmail()).orElseThrow(() -> new UserNotFoundException("Passenger not found"));
         return new ResponseEntity<>(new UserRefDto(passengerByEmail), HttpStatus.OK);
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserDto> getPassengerByEmail(@PathVariable("email") String email) throws PassengerNotFoundException {
+        return passengerService.getPassengerByEmail(email);
     }
 
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST)

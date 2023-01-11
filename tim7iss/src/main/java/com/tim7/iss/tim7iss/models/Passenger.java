@@ -19,15 +19,7 @@ public class Passenger extends User {
 
     @ManyToMany(mappedBy = "passengers", cascade = {CascadeType.MERGE})
     private Set<Ride> rides = new HashSet<>();
-
-    @ManyToMany
-    @JoinTable(
-            name = "favourite_locations",
-            joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "favourite_location_id", referencedColumnName = "id")
-    )
-    private Set<FavoriteLocation> favouriteLocations = new HashSet<>();
-
+    
 
     public Passenger(UserDto passengerRequestBodyDto) {
         this.setFirstName(passengerRequestBodyDto.getName());
