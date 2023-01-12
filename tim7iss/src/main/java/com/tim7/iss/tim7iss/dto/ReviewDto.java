@@ -23,8 +23,6 @@ public class ReviewDto {
     @NotEmpty
     @NotNull
     private String comment;
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private UserRefDto ride;
     private UserRefDto passenger;
 
     public ReviewDto(Review review) {

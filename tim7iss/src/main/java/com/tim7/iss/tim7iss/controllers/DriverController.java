@@ -5,6 +5,7 @@ import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
+import com.tim7.iss.tim7iss.util.TokenUtils;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,9 @@ public class DriverController {
 
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private TokenUtils tokenUtils;
 
     //-------------------------------------------------------------------------------------------------------------
 
@@ -253,9 +257,11 @@ public class DriverController {
     @PutMapping("/working-hour/{workingHourId}")
     public ResponseEntity<WorkingHourDto> changeWorkHour(@PathVariable Long workingHourId,
                                                          @Valid @RequestBody WorkingHourDto workingHourDto,
-                                                         Principal user)
+                                                         @RequestHeader(value = "Authorization") String authHeader)
             throws WorkHourNotFoundException, DriverNotFoundException, VehicleNotAssignedException {
-        Driver driver = driverService.getByEmailAddress(user.getName()).orElseThrow(DriverNotFoundException::new);
+        String token = tokenUtils.getToken(authHeader);
+        String driverEmail = tokenUtils.getEmailFromToken(token);
+        Driver driver = driverService.getByEmailAddress(driverEmail).orElseThrow(DriverNotFoundException::new);
         if (driver.getVehicle() == null) {
             throw new VehicleNotAssignedException();
         }
@@ -294,11 +300,11 @@ public class DriverController {
     }
 
     @PutMapping("/{id}/activity")
-    public HttpStatus changeActivity(@PathVariable Long id, @Valid @RequestBody ActivityDto activity) throws UserNotFoundException {
+    public ResponseEntity<ActivityDto> changeActivity(@PathVariable Long id, @Valid @RequestBody ActivityDto activity) throws UserNotFoundException {
         Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
         driver.setActive(activity.getIsActive());
         driverService.save(driver);
-        return HttpStatus.NO_CONTENT;
+        return new ResponseEntity<>(activity, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/rides/scheduled")

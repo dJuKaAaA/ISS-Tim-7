@@ -309,7 +309,7 @@ public class RideController {
         if (ride == null) {
             throw new RideNotFoundException();
         }
-        if(ride.getStatus() != Enums.RideStatus.PENDING)
+        if(ride.getStatus() != Enums.RideStatus.PENDING && ride.getStatus() != Enums.RideStatus.ACCEPTED)
             throw new RideCancelationException("Cannot cancel a ride that is not in status PENDING!");
         Refusal refusal = new Refusal(rideReject);
         refusal.setRide(ride);
