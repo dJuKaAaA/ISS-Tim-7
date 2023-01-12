@@ -3,7 +3,7 @@ package com.tim7.iss.tim7iss.exceptions;
 public class EmailAlreadyExistsException extends Exception {
 
     public EmailAlreadyExistsException() {
-        super("Email already exists");
+        super("User with that email already exists!");
     }
 
     public EmailAlreadyExistsException(String message) {

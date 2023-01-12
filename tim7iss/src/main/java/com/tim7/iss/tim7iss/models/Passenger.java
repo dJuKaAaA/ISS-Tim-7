@@ -19,14 +19,7 @@ public class Passenger extends User {
 
     @ManyToMany(mappedBy = "passengers", cascade = {CascadeType.MERGE})
     private Set<Ride> rides = new HashSet<>();
-
-    @ManyToMany
-    @JoinTable(
-            name = "favourite_routes",
-            joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "route_id", referencedColumnName = "id")
-    )
-    private Set<Route> favouriteRoutes = new HashSet<>();
+    
 
     public Passenger(UserDto passengerRequestBodyDto) {
         this.setFirstName(passengerRequestBodyDto.getName());
@@ -38,6 +31,7 @@ public class Passenger extends User {
         this.setPassword(passengerRequestBodyDto.getPassword());
         this.setActive(false);
         this.setBlocked(false);
+        this.setEnabled(false);
     }
 
 }

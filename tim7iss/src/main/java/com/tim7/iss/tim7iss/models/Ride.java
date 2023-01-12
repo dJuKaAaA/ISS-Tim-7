@@ -1,13 +1,15 @@
 package com.tim7.iss.tim7iss.models;
 
-import com.tim7.iss.tim7iss.dto.LocationsForRideDto;
+import com.tim7.iss.tim7iss.dto.LocationForRideDto;
 import com.tim7.iss.tim7iss.dto.RideCreationDto;
+import com.tim7.iss.tim7iss.global.Constants;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -42,8 +44,8 @@ public class Ride {
     @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "passenger_rides",
-            joinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id")
+            joinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "id")
     )
     private Set<Passenger> passengers = new HashSet<>();
 
@@ -56,19 +58,31 @@ public class Ride {
             joinColumns = @JoinColumn(name = "ride_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "route_id", referencedColumnName = "id")
     )
-    private Set<Route> routes = new HashSet<>();
+    private List<Route> routes = new ArrayList<>();
 
     public Ride(Passenger passenger) {
         this.passengers.add(passenger);
     }
 
     public Ride(RideCreationDto rideRequestDTO) {
-        for (LocationsForRideDto location : rideRequestDTO.getLocations()) {
-            Route r = new Route(new Location(location.getDeparture()), new Location(location.getDestination()));
+        this.estimatedTimeInMinutes = 0;
+        Route r;
+        for (LocationForRideDto location : rideRequestDTO.getLocations()) {
+            if(location.getEstimatedTimeInMinutes() == null)
+                r = new Route(new Location(location.getDeparture()), new Location(location.getDestination()));
+            else
+                r = new Route(
+                    new Location(location.getDeparture()),
+                    new Location(location.getDestination()),
+                    location.getDistanceInMeters(),
+                    location.getEstimatedTimeInMinutes());
+
             this.routes.add(r);
+            if(location.getEstimatedTimeInMinutes()!=null)
+                this.estimatedTimeInMinutes += location.getEstimatedTimeInMinutes();
         }
-//        this.vehicleType = new VehicleType();
-//        this.vehicleType.setVehicleName(rideRequestDTO.vehicleType);
+        if(rideRequestDTO.getStartTime() != null)
+            this.startTime = LocalDateTime.parse(rideRequestDTO.getStartTime(), Constants.customDateTimeFormat);
         this.babyOnBoard = rideRequestDTO.getBabyTransport();
         this.petOnBoard = rideRequestDTO.getPetTransport();
         this.status = Enums.RideStatus.PENDING;

@@ -7,8 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+
+import static com.google.common.collect.Streams.stream;
 
 @Service
 public class WorkHourService {
@@ -30,6 +36,28 @@ public class WorkHourService {
 
     public Long countAll() {
         return workHourRepository.count();
+    }
+
+    public int hoursWorked(Long driverId, LocalDate date) {
+        List<WorkHour> workHours = getByDriverIdAndDate(driverId, date);
+        int totalHoursWorked = 0;
+        for (WorkHour workHour : workHours) {
+            if (workHour.getEndDate() != null) {
+                totalHoursWorked += workHour.getStartDate().until(workHour.getEndDate(), ChronoUnit.HOURS);
+            } else {
+                totalHoursWorked += workHour.getStartDate().until(LocalDateTime.now(), ChronoUnit.HOURS);
+            }
+        }
+        return totalHoursWorked;
+
+    }
+
+    public Optional<WorkHour> getOngoingByDriverId(Long driverId) {
+        return this.workHourRepository.findOngoingByDriverId(driverId);
+    }
+
+    public List<WorkHour> getByDriverIdAndDate(Long driverId, LocalDate date) {
+        return this.workHourRepository.findByDriverIdBetweenDates(driverId, date, date.plusDays(1));
     }
 
 }

@@ -16,7 +16,7 @@ public class PassengerNarrowedProfileInfoDto {
 
     public PassengerNarrowedProfileInfoDto(Passenger passenger) {
         this.email = passenger.getEmailAddress();
-        this.profilePicture = passenger.getProfilePicture();
+        this.profilePicture = new String(passenger.getProfilePicture());
         this.fullName = passenger.getFirstName() + " " + passenger.getLastName();
     }
 

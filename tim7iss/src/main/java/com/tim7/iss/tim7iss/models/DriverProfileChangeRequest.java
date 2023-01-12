@@ -25,12 +25,12 @@ public class DriverProfileChangeRequest {
     private String firstName;
     private String lastName;
     @Column(length = Constants.imageFieldSize)
-    private byte[] profilePicture;
+    private String profilePicture;
     private String phoneNumber;
     private String email;
     private String address;
     private boolean isMessageDisplayed; // Is driver seen this message if his status is accepted or rejected
-    private String status; // PADDING ACCEPTED, REJECTED
+    private String status; // PENDING, ACCEPTED, REJECTED
 
     @OneToOne
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
@@ -43,7 +43,7 @@ public class DriverProfileChangeRequest {
                                       Set<DriverDocumentChangeRequest> driverDocumentChangeRequests) {
         this.firstName = requestDto.getFirstName();
         this.lastName = requestDto.getLastName();
-        this.profilePicture = requestDto.getProfilePicture().getBytes();
+        this.profilePicture = requestDto.getProfilePicture();
         this.email = requestDto.getEmail();
         this.phoneNumber = requestDto.getPhoneNumber();
         this.address = requestDto.getAddress();
@@ -60,7 +60,7 @@ public class DriverProfileChangeRequest {
         this.id = id;
         this.firstName = requestDto.getFirstName();
         this.lastName = requestDto.getLastName();
-        this.profilePicture = requestDto.getProfilePicture().getBytes();
+        this.profilePicture = requestDto.getProfilePicture();
         this.email = requestDto.getEmail();
         this.address = requestDto.getAddress();
         this.isMessageDisplayed = requestDto.isMessageDisplayed();

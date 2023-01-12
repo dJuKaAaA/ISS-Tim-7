@@ -10,6 +10,7 @@ import com.tim7.iss.tim7iss.util.TokenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -40,21 +41,18 @@ public class UserController {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
-    // TODO testirati
     @PutMapping("/api/user/{id}/changePassword")
     //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity changePassword(@PathVariable("id") Long userId, @Valid @RequestBody ChangePasswordDto passwordDto) throws UserNotFoundException, InvalidEmailOrPasswordException {
         return userService.changePassword(userId, passwordDto);
     }
 
-    // TODO testirati
     @GetMapping("/api/user/{id}/resetPassword")
     //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity sendResetCodeToMail(@PathVariable("id") Long userId) throws UserNotFoundException, IOException {
         return userService.sendResetCodeToMail(userId);
     }
 
-    // TODO testirati
     @PutMapping("/api/user/{id}/resetPassword")
     //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity changePasswordWithResetCode(@Valid @RequestBody ResetPasswordViaCodeDto resetPasswordViaCodeDto, @PathVariable("id") Long userId) throws UserNotFoundException, PasswordResetCodeException {
@@ -70,7 +68,7 @@ public class UserController {
 
     @GetMapping("/api/user")
 //    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PaginatedResponseDto<UserDto>> getUserDetails() {
+    public ResponseEntity<PaginatedResponseDto<UserDto>> getUsers() {
         LOGGER.info("get user details");
         return userService.getUsersDetails();
     }
@@ -154,5 +152,16 @@ public class UserController {
         LOGGER.info("get notes");
         return userService.getNotes(userId);
     }
-    
+
+    // getting user id from mail
+    @PostMapping("/api/user/id")
+    public ResponseEntity<UserRefDto> getIdFromMail(@Valid @RequestBody UserRefDto userRefDto) throws UserNotFoundException {
+        System.err.println("\n\n\n\n\n\n\n\n" + userRefDto.getEmail() + "\n\n\n\n\n\n\n\n\n");
+        User user = userService.findByEmailAddress(userRefDto.getEmail()).orElseThrow(UserNotFoundException::new);
+        return new ResponseEntity<>(new UserRefDto(user), HttpStatus.OK);
+    }
+
+
+
+
 }

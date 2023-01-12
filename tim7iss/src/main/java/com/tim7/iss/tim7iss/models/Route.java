@@ -18,7 +18,8 @@ public class Route implements Cloneable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private double distance;
+    private int distanceInMeters;
+    private int estimatedTimeInMinutes;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "starting_point_id", referencedColumnName = "id")
@@ -33,6 +34,13 @@ public class Route implements Cloneable {
         this.endPoint = endPoint;
     }
 
+    public Route(Location startingPoint, Location endPoint, int distanceInMeters, int estimatedTimeInMinutes) {
+        this.startingPoint = startingPoint;
+        this.endPoint = endPoint;
+        this.distanceInMeters = distanceInMeters;
+        this.estimatedTimeInMinutes = estimatedTimeInMinutes;
+    }
+
 //    public Route(Route route) {
 //        this.setId(null);
 //        this.setDistance(route.getDistance());
@@ -45,7 +53,8 @@ public class Route implements Cloneable {
         try {
             Route clone = (Route) super.clone();
             clone.setId(null);
-            clone.setDistance(this.distance);
+            clone.setDistanceInMeters(this.distanceInMeters);
+            clone.setEstimatedTimeInMinutes(this.estimatedTimeInMinutes);
             clone.setStartingPoint(this.startingPoint.clone());
             clone.setEndPoint(this.endPoint.clone());
             return clone;

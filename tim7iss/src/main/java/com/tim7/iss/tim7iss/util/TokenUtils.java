@@ -92,7 +92,7 @@ public class TokenUtils {
     }
 
 
-    // Metoda vraca samo token bez Barer
+    // Metoda vraca samo token bez Bearer
     // asdas13sdf3xadxSDAsdafsfdsf3216
     public String getToken(HttpServletRequest request) {
         String authHeader = getAuthHeaderFromHeader(request);
