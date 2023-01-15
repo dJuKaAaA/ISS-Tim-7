@@ -3,13 +3,19 @@ package com.tim7.iss.tim7iss.controllers;
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.global.Constants;
+import com.tim7.iss.tim7iss.models.Message;
+import com.tim7.iss.tim7iss.models.Role;
 import com.tim7.iss.tim7iss.models.User;
+import com.tim7.iss.tim7iss.repositories.MessageRepository;
 import com.tim7.iss.tim7iss.services.MailService;
 import com.tim7.iss.tim7iss.services.UserService;
 import com.tim7.iss.tim7iss.util.TokenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -23,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -40,6 +48,9 @@ public class UserController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    private MessageRepository messageRepository;
 
     @PutMapping("/api/user/{id}/changePassword")
     //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
@@ -63,14 +74,20 @@ public class UserController {
 //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable("id") Long id) throws UserNotFoundException {
         LOGGER.info("get rides");
-        return userService.getRides(id);
+        Integer page = 0;
+        Integer size = 100; // TODO promeniti
+        Pageable pageable = PageRequest.of(page, size, Sort.by("startTime").descending());
+        return userService.getRides(id, pageable);
     }
 
     @GetMapping("/api/user")
 //    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PaginatedResponseDto<UserDto>> getUsers() {
         LOGGER.info("get user details");
-        return userService.getUsersDetails();
+        Integer page = 0;
+        Integer size = 100; // TODO promeniti
+        Pageable pageable = PageRequest.of(page, size);
+        return userService.getUsersDetails(pageable);
     }
 
     @PostMapping("/api/user/login")
@@ -150,7 +167,10 @@ public class UserController {
 //    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PaginatedResponseDto<NoteDto>> getNotes(@PathVariable("id") Long userId) throws Exception {
         LOGGER.info("get notes");
-        return userService.getNotes(userId);
+        Integer page = 0;
+        Integer size = 100; // TODO promeniti
+        Pageable pageable = PageRequest.of(page, size);
+        return userService.getNotes(userId,pageable);
     }
 
     // getting user id from mail
@@ -161,7 +181,25 @@ public class UserController {
         return new ResponseEntity<>(new UserRefDto(user), HttpStatus.OK);
     }
 
+    @GetMapping("/api/user/{id}/messagedUsers")
+    public ResponseEntity<List<UserDto>> fetchMessagedUsers(@PathVariable Long id){
+        List<User> users = userService.getAllUsersByReceivedMessages(id);
+        List<UserDto>userDtos = new ArrayList<>();
+        for(User user: users){
+            userDtos.add(new UserDto(user));
+        }
+        return new ResponseEntity<>(userDtos, HttpStatus.OK);
+    }
 
+    @GetMapping("api/user/{id}/messages")
+    public ResponseEntity<List<MessageDto>> fetchLastMessages(@PathVariable Long id){
+        List<Message> messages = messageRepository.findAllByLastMessagedSent(id);
+        List<MessageDto> messageDtos = new ArrayList<>();
+        for(Message message : messages){
+            messageDtos.add(new MessageDto(message));
+        }
+        return new ResponseEntity<>(messageDtos, HttpStatus.OK);
+    }
 
 
 }

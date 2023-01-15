@@ -22,7 +22,7 @@ public class NotificationDto {
         this.id = notification.getId();
         this.date = notification.getDate().format(Constants.customDateTimeFormat);
         this.content = notification.getContent();
-        this.show = notification.isDisplayed();
+        this.show = notification.isShow();
         this.userId = notification.getUser().getId();
         this.rideId = notification.getRide().getId();
     }

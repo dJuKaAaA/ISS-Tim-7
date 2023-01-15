@@ -32,7 +32,7 @@ public class FavoriteLocation {
     private Set<Route> routes = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "passenger_id", referencedColumnName = "id")
+    @JoinColumn(name = "submited_by", referencedColumnName = "id")
     private Passenger submittedBy;
 
     @ManyToMany
@@ -51,7 +51,8 @@ public class FavoriteLocation {
     private boolean babyTransport;
     private boolean petTransport;
 
-    public FavoriteLocation(FavoriteLocationDto favoriteLocationDto, Set<Passenger> passengers, VehicleType vehicleType){
+    public FavoriteLocation(FavoriteLocationDto favoriteLocationDto, Set<Passenger> passengers, VehicleType vehicleType, Passenger passenger){
+        this.submittedBy = passenger;
         this.favoriteName = favoriteLocationDto.getFavoriteName();
         for(RouteDto routeDto : favoriteLocationDto.getLocations()){
             float departureLatitude = routeDto.getDeparture().getLatitude();
