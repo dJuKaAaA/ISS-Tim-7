@@ -81,8 +81,8 @@ public class Ride {
             if(location.getEstimatedTimeInMinutes()!=null)
                 this.estimatedTimeInMinutes += location.getEstimatedTimeInMinutes();
         }
-        if(rideRequestDTO.getStartTime() != null)
-            this.startTime = LocalDateTime.parse(rideRequestDTO.getStartTime(), Constants.customDateTimeFormat);
+        if(rideRequestDTO.getScheduledTime() != null)
+            this.startTime = LocalDateTime.parse(rideRequestDTO.getScheduledTime(), Constants.customDateTimeFormat);
         this.babyOnBoard = rideRequestDTO.getBabyTransport();
         this.petOnBoard = rideRequestDTO.getPetTransport();
         this.status = Enums.RideStatus.PENDING;

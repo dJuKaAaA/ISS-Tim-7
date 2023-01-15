@@ -23,7 +23,7 @@ public class Notification {
 
     private LocalDateTime date;
     private String content;
-    private boolean isDisplayed;
+    private boolean show;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -37,7 +37,7 @@ public class Notification {
         this.id = notificationDto.getId();
         this.date = LocalDateTime.parse(notificationDto.getDate(), Constants.customDateTimeFormat);
         this.content = notificationDto.getContent();
-        this.isDisplayed = notificationDto.isDisplayed();
+        this.show = notificationDto.isShow();
         this.user = user;
         this.ride = ride;
     }
