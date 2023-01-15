@@ -43,7 +43,6 @@ public class RideController {
     MapService mapService;
     @Autowired
     FavoriteLocationService favoriteLocationService;
-
     @Autowired
     LocationService locationService;
     @Autowired
@@ -57,11 +56,11 @@ public class RideController {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
-
     @PostMapping
     public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException {
         if (AnyRidesArePending(rideCreationDto.getPassengers()))
             throw new RideAlreadyPendingException();
+
         // driver that doesn't have an active ride at the moment
         Driver availablePotentialDriver = null;
         Integer distanceFromStartLocationAvailableDriver = null;
@@ -363,41 +362,6 @@ public class RideController {
         ride.setDriver(driver);
         rideService.save(ride);
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
-    }
-
-    public Ride savePassengersAndDrivers(RideCreationDto rideRequestDto){
-        Ride ride = new Ride(rideRequestDto);
-
-        // setting vehicle type for the ride
-        ride.setVehicleType(vehicleTypeService.getByName(rideRequestDto.getVehicleType()));
-
-        // setting the price
-        int totalDistance = 0;
-        for (Route r : ride.getRoutes()) {
-            totalDistance += r.getDistanceInMeters();
-            System.err.println(r);
-        }
-        ride.setPrice(ride.getVehicleType().getPricePerKm() + totalDistance * 120);
-
-        // adding passengers to ride
-        for (UserRefDto passengerRef : rideRequestDto.getPassengers()){
-                Passenger passenger = passengerService.findById(passengerRef.getId());
-                if (passenger == null) {
-                    continue;
-                }
-                passenger.getRides().add(ride);
-                ride.getPassengers().add(passenger);
-        }
-
-        // adding driver to ride
-        Driver driver = driverService.findById(2L);
-        if (driver != null) {
-            ride.setDriver(driver);
-        }
-
-        rideService.save(ride);
-
-        return ride;
     }
 
     public boolean checkIfMoreThan9FavoriteLocations(Long id){

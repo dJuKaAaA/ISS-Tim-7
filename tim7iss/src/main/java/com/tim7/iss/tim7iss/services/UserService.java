@@ -5,6 +5,7 @@ import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -77,8 +78,7 @@ public class UserService implements UserDetailsService {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Email with reset code has been sent!");
     }
 
-    public ResponseEntity changePasswordWithResetCode(Long userId, ResetPasswordViaCodeDto resetPasswordViaCodeDto)
-            throws UserNotFoundException, PasswordResetCodeException {
+    public ResponseEntity changePasswordWithResetCode(Long userId, ResetPasswordViaCodeDto resetPasswordViaCodeDto) throws UserNotFoundException, PasswordResetCodeException {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         PasswordResetCode passwordResetCode = passwordResetCodeRepository.findByUserId(userId);
 
@@ -93,24 +93,24 @@ public class UserService implements UserDetailsService {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Password successfully changed!");
     }
 
-    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(Long id) throws UserNotFoundException {
+    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(Long id, Pageable pageable) throws UserNotFoundException {
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         Collection<RideDto> rides = new ArrayList<>();
 
         if (user instanceof Driver driver) {
-            rideRepository.findRidesByDriverId(driver.getId()).forEach(ride -> rides.add(new RideDto(ride)));
+            rideRepository.findRidesByDriverId(driver.getId(), pageable).forEach(ride -> rides.add(new RideDto(ride)));
             return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
 
         } else if (user instanceof Passenger passenger) {
-            rideRepository.findRidesByPassengersId(passenger.getId()).forEach(ride -> rides.add(new RideDto(ride)));
+            rideRepository.findRidesByPassengersId(passenger.getId(), pageable).forEach(ride -> rides.add(new RideDto(ride)));
             return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
         }
         throw new UserNotFoundException();
     }
 
-    public ResponseEntity<PaginatedResponseDto<UserDto>> getUsersDetails() {
+    public ResponseEntity<PaginatedResponseDto<UserDto>> getUsersDetails(Pageable pageable) {
         Collection<UserDto> users = new ArrayList<>();
-        userRepository.findAll().forEach(user -> users.add(new UserDto(user)));
+        userRepository.findAll(pageable).forEach(user -> users.add(new UserDto(user)));
         return new ResponseEntity<>(new PaginatedResponseDto<>(users.size(), users), HttpStatus.OK);
     }
 
@@ -158,10 +158,10 @@ public class UserService implements UserDetailsService {
 
     }
 
-    public ResponseEntity<PaginatedResponseDto<NoteDto>> getNotes(Long userId) throws UserNotFoundException {
+    public ResponseEntity<PaginatedResponseDto<NoteDto>> getNotes(Long userId, Pageable pageable) throws UserNotFoundException {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Collection<NoteDto> notes = new ArrayList<>();
-        noteRepository.findAllByUserId(userId).forEach(note -> notes.add(new NoteDto(note)));
+        noteRepository.findAllByUserId(userId, pageable).forEach(note -> notes.add(new NoteDto(note)));
         return new ResponseEntity<>(new PaginatedResponseDto<>(notes.size(), notes), HttpStatus.OK);
     }
 

@@ -13,6 +13,9 @@ import com.tim7.iss.tim7iss.util.TokenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -71,14 +74,20 @@ public class UserController {
 //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable("id") Long id) throws UserNotFoundException {
         LOGGER.info("get rides");
-        return userService.getRides(id);
+        Integer page = 0;
+        Integer size = 100; // TODO promeniti
+        Pageable pageable = PageRequest.of(page, size, Sort.by("startTime").descending());
+        return userService.getRides(id, pageable);
     }
 
     @GetMapping("/api/user")
 //    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PaginatedResponseDto<UserDto>> getUsers() {
         LOGGER.info("get user details");
-        return userService.getUsersDetails();
+        Integer page = 0;
+        Integer size = 100; // TODO promeniti
+        Pageable pageable = PageRequest.of(page, size);
+        return userService.getUsersDetails(pageable);
     }
 
     @PostMapping("/api/user/login")
@@ -158,7 +167,10 @@ public class UserController {
 //    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PaginatedResponseDto<NoteDto>> getNotes(@PathVariable("id") Long userId) throws Exception {
         LOGGER.info("get notes");
-        return userService.getNotes(userId);
+        Integer page = 0;
+        Integer size = 100; // TODO promeniti
+        Pageable pageable = PageRequest.of(page, size);
+        return userService.getNotes(userId,pageable);
     }
 
     // getting user id from mail
@@ -188,8 +200,6 @@ public class UserController {
         }
         return new ResponseEntity<>(messageDtos, HttpStatus.OK);
     }
-
-
 
 
 }

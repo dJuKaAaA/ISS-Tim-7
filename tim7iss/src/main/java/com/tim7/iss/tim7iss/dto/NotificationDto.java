@@ -14,7 +14,7 @@ public class NotificationDto {
     private Long id;
     private String date;
     private String content;
-    private boolean isDisplayed;
+    private boolean show;
     private Long userId;
     private Long rideId;
 
@@ -22,7 +22,7 @@ public class NotificationDto {
         this.id = notification.getId();
         this.date = notification.getDate().format(Constants.customDateTimeFormat);
         this.content = notification.getContent();
-        this.isDisplayed = notification.isDisplayed();
+        this.show = notification.isShow();
         this.userId = notification.getUser().getId();
         this.rideId = notification.getRide().getId();
     }
