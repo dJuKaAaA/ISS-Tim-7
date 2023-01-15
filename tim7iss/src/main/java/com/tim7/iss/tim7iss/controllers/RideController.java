@@ -59,14 +59,9 @@ public class RideController {
 
 
     @PostMapping
-<<<<<<< HEAD
     public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException {
         if (AnyRidesArePending(rideCreationDto.getPassengers()))
             throw new RideAlreadyPendingException();
-=======
-    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException {
->>>>>>> 3c21b9ff9789bae8b0c907291b0a86751284a819
-
         // driver that doesn't have an active ride at the moment
         Driver availablePotentialDriver = null;
         Integer distanceFromStartLocationAvailableDriver = null;
@@ -189,18 +184,22 @@ public class RideController {
     }
 
     @PostMapping(value = "/favorites")
-    public ResponseEntity<FavoriteLocationDto>createFavoriteLocation(@RequestBody FavoriteLocationDto favoriteLocationDto) throws TooManyFavoriteRidesException {
+    public ResponseEntity<FavoriteLocationDto>createFavoriteLocation(@RequestBody FavoriteLocationDto favoriteLocationDto) throws TooManyFavoriteRidesException, UserNotFoundException {
         //privremen id passengera koji salje request
-        Long passengerId = 4L;
+        Long passengerId = 3L;
+        Passenger passengerThatSubmitted = passengerService.findById(passengerId);
         if(checkIfMoreThan9FavoriteLocations(passengerId)){
             throw new TooManyFavoriteRidesException();
         }
         Set<Passenger>passengers = new HashSet<>();
         for(UserRefDto pass: favoriteLocationDto.getPassengers()){
+            Passenger passenger = passengerService.findById(pass.getId());
+            if(passenger == null)
+                throw new UserNotFoundException();
             passengers.add(passengerService.findById(pass.getId()));
         }
         VehicleType vehicleType = vehicleTypeService.getByName(favoriteLocationDto.getVehicleType());
-        FavoriteLocation favoriteLocation = new FavoriteLocation(favoriteLocationDto, passengers, vehicleType);
+        FavoriteLocation favoriteLocation = new FavoriteLocation(favoriteLocationDto, passengers, vehicleType,passengerThatSubmitted);
         favoriteLocation = favoriteLocationService.save(favoriteLocation);
         favoriteLocationDto.setId(favoriteLocation.getId());
         return new ResponseEntity<>(favoriteLocationDto, HttpStatus.OK);
@@ -209,6 +208,24 @@ public class RideController {
     @GetMapping(value = "/favorites")
     public ResponseEntity<List<FavoriteLocationDto>>getFavoriteLocations(){
         List<FavoriteLocation>favoriteLocations = favoriteLocationService.getAll();
+        List<FavoriteLocationDto>favoriteLocationsDto = new ArrayList<>();
+        for(FavoriteLocation favoriteLocation : favoriteLocations){
+            favoriteLocationsDto.add(new FavoriteLocationDto(favoriteLocation));
+        }
+        return new ResponseEntity<>(favoriteLocationsDto, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/favorites/{id}")
+    public ResponseEntity<FavoriteLocationDto>getFavoriteLocationById(@PathVariable Long id) throws FavoriteLocationNotFoundException {
+        FavoriteLocation favoriteLocation = favoriteLocationService.findById(id);
+        if(favoriteLocation == null)
+            throw new FavoriteLocationNotFoundException();
+        return new ResponseEntity<>(new FavoriteLocationDto(favoriteLocation), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/passenger/{id}/favorites")
+    public ResponseEntity<List<FavoriteLocationDto>>getFavoriteLocationsByPassengerId(@PathVariable Long id){
+        List<FavoriteLocation>favoriteLocations = favoriteLocationService.findByPassengerId(id);
         List<FavoriteLocationDto>favoriteLocationsDto = new ArrayList<>();
         for(FavoriteLocation favoriteLocation : favoriteLocations){
             favoriteLocationsDto.add(new FavoriteLocationDto(favoriteLocation));
@@ -301,8 +318,8 @@ public class RideController {
         if (ride == null) {
             throw new RideNotFoundException();
         }
-        if(ride.getStatus() != Enums.RideStatus.FINISHED)
-            throw new RideCancelationException("Cannot end a ride that is not in status FINISHED!");
+        if(ride.getStatus() != Enums.RideStatus.ACTIVE)
+            throw new RideCancelationException("Cannot end a ride that is not in status STARTED!");
         ride.setStatus(Enums.RideStatus.FINISHED);
         ride.setEndTime(LocalDateTime.now());  // ride finishes as soon as its status is set to finished
         rideService.save(ride);
@@ -315,8 +332,8 @@ public class RideController {
         if (ride == null) {
             throw new RideNotFoundException();
         }
-        if(ride.getStatus() != Enums.RideStatus.PENDING)
-            throw new RideCancelationException("Cannot cancel a ride that is not in status PENDING!");
+        if(ride.getStatus() != Enums.RideStatus.PENDING && ride.getStatus() != Enums.RideStatus.ACCEPTED)
+            throw new RideCancelationException("Cannot cancel a ride that is not in status PENDING or ACCEPTED!");
         Refusal refusal = new Refusal(rideReject);
         refusal.setRide(ride);
         ride.setRefusal(refusal);

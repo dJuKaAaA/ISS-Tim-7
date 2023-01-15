@@ -175,6 +175,8 @@ public class UserService implements UserDetailsService {
         return allMessages;
     }
 
+    public List<User> getAllUsersByReceivedMessages(Long id){ return userRepository.findByReceivedMessages(id); }
+
 
     private void changeUserBlockedState(User user, boolean blockedState) {
         if (user instanceof Passenger passenger) {
@@ -209,6 +211,5 @@ public class UserService implements UserDetailsService {
     public Optional<User> findByEmailAddress(String emailAddress) {
         return Optional.of(userRepository.findByEmailAddress(emailAddress));
     }
-
 
 }

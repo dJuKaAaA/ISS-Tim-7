@@ -51,6 +51,8 @@ public class Tim7issApplication {
     private UserActivationRepository userActivationRepository;
     @Autowired
     private FavoriteLocationRepository favoriteLocationRepository;
+    @Autowired
+    private MessageRepository messageRepository;
 
     @Bean
     RestTemplate restTemplate(){
@@ -320,6 +322,8 @@ public class Tim7issApplication {
             vehicleReview.setVehicle(ride4.getDriver().getVehicle());
             driverReviewRepository.save(driverReview);
             vehicleReviewRepository.save(vehicleReview);
+            messageRepository.save(new Message(null,LocalDateTime.now(),"Ride","proba", driver, passenger2,ride4));
+            messageRepository.save(new Message(null,LocalDateTime.now(),"Ride","proba", passenger3, driver,ride4));
 
 //            FavoriteLocation favoriteLocation = new FavoriteLocation();
 //            favoriteLocation.setPassengers(Set.of(passenger1,passenger2,passenger3));

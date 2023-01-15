@@ -53,6 +53,9 @@ public class DriverController {
     private RideService rideService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     RequestService requestService;
 
     @Autowired

@@ -3,7 +3,10 @@ package com.tim7.iss.tim7iss.controllers;
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.global.Constants;
+import com.tim7.iss.tim7iss.models.Message;
+import com.tim7.iss.tim7iss.models.Role;
 import com.tim7.iss.tim7iss.models.User;
+import com.tim7.iss.tim7iss.repositories.MessageRepository;
 import com.tim7.iss.tim7iss.services.MailService;
 import com.tim7.iss.tim7iss.services.UserService;
 import com.tim7.iss.tim7iss.util.TokenUtils;
@@ -23,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -40,6 +45,9 @@ public class UserController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    private MessageRepository messageRepository;
 
     @PutMapping("/api/user/{id}/changePassword")
     //    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
@@ -159,6 +167,26 @@ public class UserController {
         System.err.println("\n\n\n\n\n\n\n\n" + userRefDto.getEmail() + "\n\n\n\n\n\n\n\n\n");
         User user = userService.findByEmailAddress(userRefDto.getEmail()).orElseThrow(UserNotFoundException::new);
         return new ResponseEntity<>(new UserRefDto(user), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/user/{id}/messagedUsers")
+    public ResponseEntity<List<UserDto>> fetchMessagedUsers(@PathVariable Long id){
+        List<User> users = userService.getAllUsersByReceivedMessages(id);
+        List<UserDto>userDtos = new ArrayList<>();
+        for(User user: users){
+            userDtos.add(new UserDto(user));
+        }
+        return new ResponseEntity<>(userDtos, HttpStatus.OK);
+    }
+
+    @GetMapping("api/user/{id}/messages")
+    public ResponseEntity<List<MessageDto>> fetchLastMessages(@PathVariable Long id){
+        List<Message> messages = messageRepository.findAllByLastMessagedSent(id);
+        List<MessageDto> messageDtos = new ArrayList<>();
+        for(Message message : messages){
+            messageDtos.add(new MessageDto(message));
+        }
+        return new ResponseEntity<>(messageDtos, HttpStatus.OK);
     }
 
 
