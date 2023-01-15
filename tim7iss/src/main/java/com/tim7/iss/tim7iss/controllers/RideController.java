@@ -9,6 +9,7 @@ import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
+import com.tim7.iss.tim7iss.util.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,8 @@ public class RideController {
     private WorkHourService workHourService;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+    @Autowired
+    private TokenUtils tokenUtils;
 
     @PostMapping
     public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException {
@@ -183,10 +186,13 @@ public class RideController {
     }
 
     @PostMapping(value = "/favorites")
-    public ResponseEntity<FavoriteLocationDto>createFavoriteLocation(@RequestBody FavoriteLocationDto favoriteLocationDto) throws TooManyFavoriteRidesException {
-        //privremen id passengera koji salje request
-        Long passengerId = 4L;
-        if(checkIfMoreThan9FavoriteLocations(passengerId)){
+    public ResponseEntity<FavoriteLocationDto> createFavoriteLocation(@RequestBody FavoriteLocationDto favoriteLocationDto,
+                                                                     @RequestHeader("Authorization") String authHeader)
+            throws TooManyFavoriteRidesException, PassengerNotFoundException {
+        String token = tokenUtils.getToken(authHeader);
+        String passengerEmail = tokenUtils.getEmailFromToken(token);
+        Passenger passenger = passengerService.findByEmailAddress(passengerEmail).orElseThrow(PassengerNotFoundException::new);
+        if(checkIfMoreThan9FavoriteLocations(passenger.getId())){
             throw new TooManyFavoriteRidesException();
         }
         Set<Passenger>passengers = new HashSet<>();
@@ -201,7 +207,7 @@ public class RideController {
     }
 
     @GetMapping(value = "/favorites")
-    public ResponseEntity<List<FavoriteLocationDto>>getFavoriteLocations(){
+    public ResponseEntity<List<FavoriteLocationDto>> getFavoriteLocations(){
         List<FavoriteLocation>favoriteLocations = favoriteLocationService.getAll();
         List<FavoriteLocationDto>favoriteLocationsDto = new ArrayList<>();
         for(FavoriteLocation favoriteLocation : favoriteLocations){
@@ -211,7 +217,7 @@ public class RideController {
     }
 
     @DeleteMapping(value = "/favorites/{id}")
-    public ResponseEntity<String>deleteFavoriteLocation(@PathVariable Long id) throws FavoriteLocationNotFoundException {
+    public ResponseEntity<String> deleteFavoriteLocation(@PathVariable Long id) throws FavoriteLocationNotFoundException {
         if(favoriteLocationService.findById(id) == null)
             throw new FavoriteLocationNotFoundException();
         favoriteLocationService.delete(id);

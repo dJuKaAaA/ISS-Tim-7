@@ -265,13 +265,6 @@ public class Tim7issApplication {
                     true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED,
                     driver, driver.getVehicle().getVehicleType(),
                     Set.of(passenger4), null, List.of(route3.clone())));
-            Ride ride8 = rideRepository.save(new Ride(null, 1000,
-                    LocalDateTime.now().plusMonths(5),
-                    null,
-                    route3.getEstimatedTimeInMinutes(), true && driver.getVehicle().isBabyAllowed(),
-                    true && driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING,
-                    driver, driver.getVehicle().getVehicleType(),
-                    Set.of(passenger4, passenger1, passenger3, passenger5, passenger2), null, List.of(route3.clone())));
 
             // creating vehicles
             locationRepository.save(new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f));

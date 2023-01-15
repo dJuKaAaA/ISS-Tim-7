@@ -37,7 +37,7 @@ public class Notification {
         this.id = notificationDto.getId();
         this.date = LocalDateTime.parse(notificationDto.getDate(), Constants.customDateTimeFormat);
         this.content = notificationDto.getContent();
-        this.isDisplayed = notificationDto.isDisplayed();
+        this.isDisplayed = notificationDto.isShow();
         this.user = user;
         this.ride = ride;
     }
