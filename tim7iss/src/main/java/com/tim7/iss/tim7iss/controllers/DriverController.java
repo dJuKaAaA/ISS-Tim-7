@@ -96,7 +96,7 @@ public class DriverController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto driverRequestBodyDto)
-            throws EmailAlreadyExistsException, NotAnImageException {
+            throws EmailAlreadyExistsException, NotAnImageException, LargeImageException {
         Optional<Driver> driverByEmail = driverService.getByEmailAddress(driverRequestBodyDto.getEmail());
         if (driverByEmail.isPresent()) {
             throw new EmailAlreadyExistsException();
@@ -106,6 +106,9 @@ public class DriverController {
         if (!driverRequestBodyDto.getProfilePicture().isBlank()) {
             if (!imageService.isImageValid(driverRequestBodyDto.getProfilePicture())) {
                 throw new NotAnImageException();
+            }
+            if (driverRequestBodyDto.getProfilePicture().getBytes().length > Constants.imageFieldSize) {
+                throw new LargeImageException();
             }
         }
 
@@ -143,10 +146,10 @@ public class DriverController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @DeleteMapping("/document/{documentId}")
-    public HttpStatus deleteDocuments(@PathVariable Long documentId) throws DocumentNotFoundException {
+    public ResponseEntity<String> deleteDocuments(@PathVariable Long documentId) throws DocumentNotFoundException {
         Document document = documentService.getById(documentId).orElseThrow(DocumentNotFoundException::new);
         documentService.delete(document);
-        return HttpStatus.NO_CONTENT;
+        return new ResponseEntity<>("Driver document deleted successfully", HttpStatus.NO_CONTENT);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -155,6 +158,7 @@ public class DriverController {
                                                          @Valid @RequestBody DriverDocumentDto driverDocumentDto)
             throws UserNotFoundException, NotAnImageException, LargeImageException {
         Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
+
         if (driverDocumentDto.getDocumentImage().getBytes().length > Constants.imageFieldSize) {
             throw new LargeImageException();
         }
@@ -169,7 +173,7 @@ public class DriverController {
         return new ResponseEntity<>(new DriverDocumentDto(newDocument), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     @GetMapping("/{id}/vehicle")
     public ResponseEntity<VehicleDto> getVehicle(@PathVariable Long id)
             throws DriverNotFoundException, VehicleNotAssignedException {
@@ -184,13 +188,11 @@ public class DriverController {
     @PostMapping("/{id}/vehicle")
     public ResponseEntity<VehicleDto> addVehicle(@PathVariable Long id,
                                                  @Valid @RequestBody VehicleDto vehicleRequestBodyDto)
-            throws DriverNotFoundException, VehicleAlreadyAssignedException {
+            throws DriverNotFoundException {
         Driver driver = driverService.getById(id).orElseThrow(DriverNotFoundException::new);
-        if (driver.getVehicle() == null) {
-            throw new VehicleAlreadyAssignedException();
-        }
         VehicleType vehicleType = vehicleTypeService.getByName(vehicleRequestBodyDto.getVehicleType());
-        Vehicle newVehicle = new Vehicle(vehicleRequestBodyDto, vehicleType, driver, new Location(vehicleRequestBodyDto.getCurrentLocation()));
+        Vehicle newVehicle = new Vehicle(vehicleRequestBodyDto, vehicleType, driver,
+                new Location(vehicleRequestBodyDto.getCurrentLocation()));
         driver.setVehicle(newVehicle);
         vehicleService.save(newVehicle);
         return new ResponseEntity<>(new VehicleDto(newVehicle), HttpStatus.OK);
@@ -206,7 +208,8 @@ public class DriverController {
             throw new VehicleNotAssignedException();
         }
         VehicleType vehicleType = vehicleTypeService.getByName(vehicleRequestBodyDto.getVehicleType());
-        Vehicle updatedVehicle = new Vehicle(vehicleRequestBodyDto, vehicleType, driver, new Location(vehicleRequestBodyDto.getCurrentLocation()));
+        Vehicle updatedVehicle = new Vehicle(vehicleRequestBodyDto, vehicleType, driver,
+                new Location(vehicleRequestBodyDto.getCurrentLocation()));
         updatedVehicle.setId(driver.getVehicle().getId());
         driver.setVehicle(updatedVehicle);
         vehicleService.save(updatedVehicle);
@@ -298,7 +301,8 @@ public class DriverController {
         if (driver.getVehicle() == null) {
             throw new VehicleNotAssignedException("Cannot end shift because the vehicle is not defined!");
         }
-        WorkHour workHour = workHourService.getOngoingByDriverId(driver.getId()).orElseThrow(() -> new WorkHourNotFoundException("No shift is ongoing!"));
+        WorkHour workHour = workHourService.getOngoingByDriverId(driver.getId()).
+                orElseThrow(() -> new WorkHourNotFoundException("No shift is ongoing!"));
         workHour.setEndDate(LocalDateTime.parse(workingHourDto.getEnd(), Constants.customDateTimeFormat));
         workHourService.save(workHour);
         return new ResponseEntity<>(new WorkingHourDto(workHour), HttpStatus.OK);

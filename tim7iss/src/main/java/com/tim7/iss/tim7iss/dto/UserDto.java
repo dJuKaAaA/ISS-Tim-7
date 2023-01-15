@@ -27,7 +27,7 @@ public class UserDto {
             @Pattern(regexp = "^(?=.{7,15}).+", message = "Phone number have between 7 and 15 digits")
     })
     private String telephoneNumber;
-    @Email(message = "Invalid email")
+    @Email(message = "Invalid data. For example bad email format.")
     private String email;
     @NotBlank(message = "Address must be provided")
     private String address;
