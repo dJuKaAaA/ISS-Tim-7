@@ -122,6 +122,7 @@ public class Tim7issApplication {
                             LocalDateTime.of(2022, Month.DECEMBER, 23, 8, 0),
                             LocalDateTime.of(2022, Month.DECEMBER, 23, 16, 0))));
             driver.setRoles(List.of(driverRole));
+            driver.setActive(true);
             driverRepository.save(driver);
 
             // passenger creation

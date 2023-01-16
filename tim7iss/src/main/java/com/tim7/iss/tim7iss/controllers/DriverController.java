@@ -124,7 +124,7 @@ public class DriverController {
         return new ResponseEntity<>(new UserDto(newDriver), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> save(@PathVariable Long id, @Valid @RequestBody UserDto driverRequestBodyDto)
             throws DriverNotFoundException {
@@ -159,8 +159,8 @@ public class DriverController {
     @PostMapping("/{id}/documents")
     public ResponseEntity<DriverDocumentDto> addDocument(@PathVariable Long id,
                                                          @Valid @RequestBody DriverDocumentDto driverDocumentDto)
-            throws UserNotFoundException, NotAnImageException, LargeImageException {
-        Driver driver = driverService.getById(id).orElseThrow(() -> new UserNotFoundException("Driver not found"));
+            throws DriverNotFoundException, NotAnImageException, LargeImageException {
+        Driver driver = driverService.getById(id).orElseThrow(DriverNotFoundException::new);
 
         if (driverDocumentDto.getDocumentImage().getBytes().length > Constants.imageFieldSize) {
             throw new LargeImageException();
@@ -215,7 +215,7 @@ public class DriverController {
                 new Location(vehicleRequestBodyDto.getCurrentLocation()));
         updatedVehicle.setId(driver.getVehicle().getId());
         driver.setVehicle(updatedVehicle);
-        vehicleService.save(updatedVehicle);
+        driverService.save(driver);
         return new ResponseEntity<>(new VehicleDto(updatedVehicle), HttpStatus.OK);
     }
 
@@ -234,7 +234,7 @@ public class DriverController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @PostMapping("/{id}/working-hour")
     public ResponseEntity<WorkingHourDto> addWorkHour(@PathVariable Long id,
-                                                      @Valid @RequestBody WorkingHourDto workingHourDto)
+                                                      @Valid @RequestBody StartShiftDto startShiftDto)
             throws DriverNotFoundException, VehicleNotAssignedException, ShiftAlreadyOngoingException,
             ShiftExceededException {
 
@@ -251,7 +251,7 @@ public class DriverController {
         }
 
         WorkHour newWorkHour = new WorkHour();
-        newWorkHour.setStartDate(LocalDateTime.parse(workingHourDto.getStart(), Constants.customDateTimeFormat));
+        newWorkHour.setStartDate(LocalDateTime.parse(startShiftDto.getStart(), Constants.customDateTimeFormat));
         newWorkHour.setDriver(driver);
         workHourService.save(newWorkHour);
         return new ResponseEntity<>(new WorkingHourDto(newWorkHour), HttpStatus.OK);
@@ -277,7 +277,7 @@ public class DriverController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @PutMapping("/working-hour/{workingHourId}")
     public ResponseEntity<WorkingHourDto> changeWorkHour(@PathVariable Long workingHourId,
-                                                         @Valid @RequestBody WorkingHourDto workingHourDto,
+                                                         @Valid @RequestBody EndShiftDto endShiftDto,
                                                          @RequestHeader(value = "Authorization") String authHeader)
             throws WorkHourNotFoundException, DriverNotFoundException, VehicleNotAssignedException {
         String token = tokenUtils.getToken(authHeader);
@@ -288,7 +288,7 @@ public class DriverController {
         }
         WorkHour workHour = workHourService.getOngoingByDriverId(driver.getId()).
                 orElseThrow(() -> new WorkHourNotFoundException("No shift is ongoing!"));
-        workHour.setEndDate(LocalDateTime.parse(workingHourDto.getEnd(), Constants.customDateTimeFormat));
+        workHour.setEndDate(LocalDateTime.parse(endShiftDto.getEnd(), Constants.customDateTimeFormat));
         workHourService.save(workHour);
         return new ResponseEntity<>(new WorkingHourDto(workHour), HttpStatus.OK);
     }

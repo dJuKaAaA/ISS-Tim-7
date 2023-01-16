@@ -5,6 +5,7 @@ import com.tim7.iss.tim7iss.models.Document;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Null;
@@ -17,6 +18,7 @@ public class DriverDocumentDto {
     @Null(message = "Id should not be provided in body")
     private Long id;
     @NotBlank(message = "Document name must be provided")
+    @Length(min = 5, max = 30)
     private String name;
     @NotBlank(message = "Document image must be provided")
     private String documentImage;
