@@ -3,7 +3,7 @@ package com.tim7.iss.tim7iss.exceptions;
 public class DocumentNotFoundException extends Exception {
 
     public DocumentNotFoundException() {
-        super("Document not found");
+        super("Document does not exist");
     }
 
     public DocumentNotFoundException(String message) {
