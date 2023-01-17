@@ -29,16 +29,16 @@ public class NotificationService {
     RideRepository rideRepository;
 
 
-    public void save(NotificationDto notificationDto) throws UserNotFoundException, RideNotFoundException {
+    public void save(NotificationDto notificationDto) throws UserNotFoundException {
         User user = userRepository.findById(notificationDto.getUserId()).orElseThrow(UserNotFoundException::new);
-        Ride ride = rideRepository.findById(notificationDto.getRideId()).orElseThrow(RideNotFoundException::new);
+        Ride ride = rideRepository.findById(notificationDto.getRideId()).orElse(null);
         Notification notification = new Notification(notificationDto, user, ride);
         notificationRepository.save(notification);
     }
 
-    public void update(NotificationDto notificationDto) throws UserNotFoundException, RideNotFoundException {
+    public void update(NotificationDto notificationDto) throws UserNotFoundException{
         User user = userRepository.findById(notificationDto.getUserId()).orElseThrow(UserNotFoundException::new);
-        Ride ride = rideRepository.findById(notificationDto.getRideId()).orElseThrow(RideNotFoundException::new);
+        Ride ride = rideRepository.findById(notificationDto.getRideId()).orElse(null);
         Notification notification = new Notification(notificationDto, user, ride);
         notificationRepository.save(notification);
     }
