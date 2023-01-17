@@ -18,6 +18,7 @@ public class NotificationDto {
     private Long userId;
     private Long rideId;
 
+
     public NotificationDto(Notification notification) {
         this.id = notification.getId();
         this.date = notification.getDate().format(Constants.customDateTimeFormat);
