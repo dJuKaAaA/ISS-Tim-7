@@ -8,6 +8,7 @@ import com.tim7.iss.tim7iss.exceptions.SchedulingRideAtInvalidDateException;
 import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
+import com.tim7.iss.tim7iss.repositories.PassengerRepository;
 import com.tim7.iss.tim7iss.services.*;
 import com.tim7.iss.tim7iss.util.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,11 +62,20 @@ public class RideController {
     @Autowired
     private TokenUtils tokenUtils;
 
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private PassengerRepository passengerRepository;
+
     @PostMapping
-    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException {
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto, @RequestHeader("Authorization") String authHeader) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException, PassengerNotFoundException {
+        String token = tokenUtils.getToken(authHeader);
+        String passengerEmail = tokenUtils.getEmailFromToken(token);
+        Passenger passengerThatSubmitted = passengerService.findByEmailAddress(passengerEmail).orElseThrow(PassengerNotFoundException::new);
+        rideCreationDto.getPassengers().add(new UserRefDto(passengerThatSubmitted));
         if (AnyRidesArePending(rideCreationDto.getPassengers()))
             throw new RideAlreadyPendingException();
-
         // driver that doesn't have an active ride at the moment
         Driver availablePotentialDriver = null;
         Integer distanceFromStartLocationAvailableDriver = null;
@@ -186,7 +198,8 @@ public class RideController {
     }
 
     @PostMapping(value = "/favorites")
-    public ResponseEntity<FavoriteLocationDto> createFavoriteLocation(@RequestBody FavoriteLocationDto favoriteLocationDto,
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<FavoriteLocationDto> createFavoriteLocation(@Valid @RequestBody FavoriteLocationDto favoriteLocationDto,
                                                                      @RequestHeader("Authorization") String authHeader)
             throws TooManyFavoriteRidesException, PassengerNotFoundException, UserNotFoundException {
         String token = tokenUtils.getToken(authHeader);
@@ -202,15 +215,17 @@ public class RideController {
                 throw new UserNotFoundException();
             passengers.add(passengerService.findById(pass.getId()));
         }
+        passengers.add(passengerThatSubmitted);
         VehicleType vehicleType = vehicleTypeService.getByName(favoriteLocationDto.getVehicleType());
         FavoriteLocation favoriteLocation = new FavoriteLocation(favoriteLocationDto, passengers, vehicleType,passengerThatSubmitted);
         favoriteLocation = favoriteLocationService.save(favoriteLocation);
         favoriteLocationDto.setId(favoriteLocation.getId());
-        return new ResponseEntity<>(favoriteLocationDto, HttpStatus.OK);
+        return new ResponseEntity<>(new FavoriteLocationDto(favoriteLocation), HttpStatus.OK);
     }
 
     @GetMapping(value = "/favorites")
-    public ResponseEntity<List<FavoriteLocationDto>> getFavoriteLocations(){
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<List<FavoriteLocationDto>> getFavoriteLocations(@RequestHeader(value = "Authorization") String authHeader){
         List<FavoriteLocation>favoriteLocations = favoriteLocationService.getAll();
         List<FavoriteLocationDto>favoriteLocationsDto = new ArrayList<>();
         for(FavoriteLocation favoriteLocation : favoriteLocations){
@@ -238,7 +253,8 @@ public class RideController {
     }
 
     @DeleteMapping(value = "/favorites/{id}")
-    public ResponseEntity<String> deleteFavoriteLocation(@PathVariable Long id) throws FavoriteLocationNotFoundException {
+    @PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
+    public ResponseEntity<String> deleteFavoriteLocation(@RequestHeader(value = "Authorization")String authHeader, @PathVariable Long id) throws FavoriteLocationNotFoundException {
         if(favoriteLocationService.findById(id) == null)
             throw new FavoriteLocationNotFoundException();
         favoriteLocationService.delete(id);
@@ -246,7 +262,8 @@ public class RideController {
     }
 
     @GetMapping(value = "/driver/{driverId}/active")
-    public ResponseEntity<RideDto> getDriversActiveRide(@PathVariable Long driverId) throws UserNotFoundException, RideNotFoundException {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<RideDto> getDriversActiveRide(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long driverId) throws UserNotFoundException, RideNotFoundException {
         driverService.getById(driverId).orElseThrow(() -> new UserNotFoundException("Driver not found"));
         List<RideDto> rides = rideService.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACTIVE.ordinal()).stream().map(RideDto::new).toList();
         if (rides.size() == 0) {
@@ -257,7 +274,8 @@ public class RideController {
 
     //Delete fixed id
     @GetMapping(value = "/passenger/{passengerId}/active")
-    public ResponseEntity<RideDto> getPassengersActiveRide(@PathVariable Long passengerId) throws RideNotFoundException {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<RideDto> getPassengersActiveRide(@PathVariable Long passengerId, @RequestHeader(value = "Authorization") String authHeader) throws RideNotFoundException {
         List<Ride> rides = rideService.findByPassengerIdAndStatus(passengerId, Enums.RideStatus.ACTIVE.ordinal());
         if (rides.size() == 0) {
             throw new RideNotFoundException("Active ride does not exist!");
@@ -267,7 +285,8 @@ public class RideController {
 
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<RideDto> getRideById(@PathVariable Long id) throws RideNotFoundException {
+    @PreAuthorize("hasAnyRole('ADMIN', 'PASSENGER')")
+    public ResponseEntity<RideDto> getRideById(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id) throws RideNotFoundException {
         Ride ride = rideService.findById(id);
         if (ride == null) {
             throw new RideNotFoundException("Active ride does not exist!");
@@ -278,7 +297,8 @@ public class RideController {
     //Voznja moze da se prekine samo ukoliko je stanje voznje pending ili accepted,
     //Radi testiranja validacija stanja je zakomentarisana
     @PutMapping(value = "/{id}/withdraw")
-    public ResponseEntity<RideDto> cancelRideById(@PathVariable Long id) throws RideNotFoundException, RideCancelationException {
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<RideDto> cancelRideById(@PathVariable Long id, @RequestHeader(value = "Authorization")String authHeader) throws RideNotFoundException, RideCancelationException {
         Ride ride = rideService.findById(id);
 //        Ride ride = ridesService.findByIdAndStatus(id, Enums.RideStatus.PENDING.ordinal());
         if (ride == null) {
@@ -292,11 +312,14 @@ public class RideController {
     }
 
     @PutMapping(value = "/{rideId}/panic")
-    public ResponseEntity<PanicDetailsDto> creatingPanicProcedure(@RequestBody PanicCreateDto reason, @PathVariable Long rideId) throws RideNotFoundException {
-        User user = passengerService.findById(3L);
+    @PreAuthorize("hasAnyRole('PASSENGER','DRIVER')")
+    public ResponseEntity<PanicDetailsDto> creatingPanicProcedure(@RequestBody PanicCreateDto reason, @PathVariable Long rideId, @RequestHeader("Authorization") String authHeader) throws RideNotFoundException, UserNotFoundException {
+        String token = tokenUtils.getToken(authHeader);
+        String userEmail = tokenUtils.getEmailFromToken(token);
+        User user = userService.findByEmailAddress(userEmail).orElseThrow(UserNotFoundException::new);
         Ride ride = rideService.findById(rideId);
         if (ride == null) {
-            throw new RideNotFoundException("Ride does not exist");
+            throw new RideNotFoundException();
         }
         Panic panic = new Panic(reason, ride, user);
         panicService.save(panic);
@@ -304,11 +327,17 @@ public class RideController {
     }
 
     @PutMapping(value = "{id}/accept")
-    public ResponseEntity<RideDto> acceptRide(@PathVariable Long id) throws RideCancelationException {
+    @PreAuthorize("hasRole('DRIVER')")
+    public ResponseEntity<RideDto> acceptRide(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) throws RideCancelationException, UserNotFoundException, RideNotFoundException {
         Ride ride = rideService.findById(id);
         if (ride == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            throw new RideNotFoundException();
         }
+        String token = tokenUtils.getToken(authHeader);
+        String userEmail = tokenUtils.getEmailFromToken(token);
+        User driver = driverService.getByEmailAddress(userEmail).orElseThrow(UserNotFoundException::new);
+        if(ride.getDriver().getId() != driver.getId())
+            throw new RideNotFoundException();
         if(ride.getStatus() != Enums.RideStatus.PENDING)
             throw new RideCancelationException("Cannot accept a ride that is not in status PENDING!");
         ride.setStatus(Enums.RideStatus.ACCEPTED);
@@ -317,11 +346,17 @@ public class RideController {
     }
 
     @PutMapping(value = "{id}/end")
-    public ResponseEntity<RideDto> endRide(@PathVariable Long id) throws RideNotFoundException, RideCancelationException {
+    @PreAuthorize("hasRole('DRIVER')")
+    public ResponseEntity<RideDto> endRide(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) throws RideNotFoundException, RideCancelationException, UserNotFoundException {
         Ride ride = rideService.findById(id);
         if (ride == null) {
             throw new RideNotFoundException();
         }
+        String token = tokenUtils.getToken(authHeader);
+        String userEmail = tokenUtils.getEmailFromToken(token);
+        User driver = driverService.getByEmailAddress(userEmail).orElseThrow(UserNotFoundException::new);
+        if(ride.getDriver().getId() != driver.getId())
+            throw new RideNotFoundException();
         if(ride.getStatus() != Enums.RideStatus.ACTIVE)
             throw new RideCancelationException("Cannot end a ride that is not in status STARTED!");
         ride.setStatus(Enums.RideStatus.FINISHED);
@@ -331,11 +366,17 @@ public class RideController {
     }
 
     @PutMapping(value = "{id}/cancel")
-    public ResponseEntity<RideDto> rejectRide(@PathVariable Long id, @Valid @RequestBody RideRejectDto rideReject) throws RideNotFoundException, RideCancelationException {
+    @PreAuthorize("hasRole('DRIVER')")
+    public ResponseEntity<RideDto> rejectRide(@PathVariable Long id, @Valid @RequestBody PanicCreateDto rideReject, @RequestHeader("Authorization") String authHeader) throws RideNotFoundException, RideCancelationException, UserNotFoundException {
         Ride ride = rideService.findById(id);
         if (ride == null) {
             throw new RideNotFoundException();
         }
+        String token = tokenUtils.getToken(authHeader);
+        String userEmail = tokenUtils.getEmailFromToken(token);
+        User driver = driverService.getByEmailAddress(userEmail).orElseThrow(UserNotFoundException::new);
+        if(ride.getDriver().getId() != driver.getId())
+            throw new RideNotFoundException();
         if(ride.getStatus() != Enums.RideStatus.PENDING && ride.getStatus() != Enums.RideStatus.ACCEPTED)
             throw new RideCancelationException("Cannot cancel a ride that is not in status PENDING or ACCEPTED!");
         Refusal refusal = new Refusal(rideReject);
@@ -346,12 +387,18 @@ public class RideController {
         return new ResponseEntity<>(new RideDto(ride), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('DRIVER')")
     @PutMapping("/{id}/start")
-    public ResponseEntity<RideDto> startRide(@PathVariable Long id) throws RideNotFoundException, RideCancelationException {
+    public ResponseEntity<RideDto> startRide(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) throws RideNotFoundException, RideCancelationException, UserNotFoundException {
         Ride ride = rideService.findById(id);
         if (ride == null) {
             throw new RideNotFoundException();
         }
+        String token = tokenUtils.getToken(authHeader);
+        String userEmail = tokenUtils.getEmailFromToken(token);
+        User driver = driverService.getByEmailAddress(userEmail).orElseThrow(UserNotFoundException::new);
+        if(ride.getDriver().getId() != driver.getId())
+            throw new RideNotFoundException();
         if(ride.getStatus() != Enums.RideStatus.ACCEPTED)
             throw new RideCancelationException("Cannot start a ride that is not in status ACCEPTED!");
         ride.setStatus(Enums.RideStatus.ACTIVE);

@@ -15,6 +15,7 @@ import com.tim7.iss.tim7iss.services.VehicleTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,13 +63,14 @@ public class VehicleController {
     }
 
     @PutMapping("/{id}/location")
-    public ResponseEntity<String> changeLocation(@Valid @PathVariable Long id, @RequestBody GeoCoordinateDto location) throws VehicleNotAssignedException, VehicleNotFoundException {
+    @PreAuthorize("hasRole('DRIVER')")
+    public ResponseEntity<String> changeLocation(@RequestHeader(value = "Authorization")String authHeader,@PathVariable Long id, @Valid @RequestBody GeoCoordinateDto location) throws VehicleNotAssignedException, VehicleNotFoundException {
         Vehicle vehicle = vehicleService.getById(id);
-        if(vehicle.getDriver() == null)
-            throw new VehicleNotAssignedException("Vehicle is not assigned to the specific driver!");
         if(vehicle == null){
             throw new VehicleNotFoundException("Vehicle does not exist!");
         }
+        if(vehicle.getDriver() == null)
+            throw new VehicleNotAssignedException("Vehicle is not assigned to the specific driver!");
         Location newLocation = new Location(location);
         newLocation.setId(vehicle.getLocation().getId());
         vehicle.setLocation(newLocation);

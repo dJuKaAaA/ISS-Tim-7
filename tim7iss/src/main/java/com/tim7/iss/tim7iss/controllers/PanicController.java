@@ -13,6 +13,7 @@ import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +39,8 @@ public class PanicController {
     UserService userService;
 
     @GetMapping
-    public ResponseEntity<PaginatedResponseDto<PanicDetailsDto>> getPanicInstances(){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PaginatedResponseDto<PanicDetailsDto>> getPanicInstances(@RequestHeader(value = "Authorization")String authHeader){
         List<Panic> panics = panicService.findAll();
         Collection<PanicDetailsDto> panicList = new ArrayList<>();
         for(Panic panic : panics){

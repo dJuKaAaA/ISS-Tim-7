@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,10 +20,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/passenger")
@@ -44,8 +42,10 @@ public class PassengerController {
 
     @PostMapping
     public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto passengerRequestDto) throws EmailAlreadyExistsException {
-        if(passengerService.findByEmailAddress(passengerRequestDto.getEmail()) == null)
-            throw new EmailAlreadyExistsException("User with that email already exists!");
+        Optional p = passengerService.findByEmailAddress(passengerRequestDto.getEmail());
+        if(!p.isEmpty()){
+            throw new EmailAlreadyExistsException();
+        }
         Passenger passenger = new Passenger(passengerRequestDto);
         String encodedPassword = bCryptPasswordEncoder.encode(passengerRequestDto.getPassword());
         passenger.setPassword(encodedPassword);
@@ -58,7 +58,10 @@ public class PassengerController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginatedResponseDto<UserDto>> load(Pageable page) {
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<PaginatedResponseDto<UserDto>> load(@RequestHeader(value = "Authorization") String authHeader, Pageable page) throws UnauthorizedException {
+//        if(authHeader == null)
+//            throw new UnauthorizedException();
         Collection<UserDto> passengers = new ArrayList<>();
         for (Passenger passenger : passengerService.findAll(page)) {
             passengers.add(new UserDto(passenger));
@@ -67,7 +70,7 @@ public class PassengerController {
     }
 
     @GetMapping(value = "/activate/{activationId}")
-    public ResponseEntity<String> activateUser(@PathVariable Long activationId) throws ActivationNotFoundException, ActivationExpiredException {
+    public ResponseEntity<ErrorDto> activateUser(@PathVariable Long activationId) throws ActivationNotFoundException, ActivationExpiredException {
         UserActivation activation = userActivationService.findById(activationId);
         if (activation == null) {
             throw new ActivationNotFoundException();
@@ -78,21 +81,23 @@ public class PassengerController {
         activation.getPassenger().setEnabled(true);
         passengerService.save(activation.getPassenger());
         userActivationService.deleteById(activationId);
-        return new ResponseEntity<>("Successful account activation", HttpStatus.OK);
+        return new ResponseEntity<>(new ErrorDto("Successful account activation!"), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<UserDto> findPassengerByID(@PathVariable Long id) throws UserNotFoundException {
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<UserDto> findPassengerByID(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id) throws UserNotFoundException {
         Passenger passenger = passengerService.findById(id);
-        if (passenger == null) throw new UserNotFoundException() {
+        if (passenger == null) throw new UserNotFoundException("Passenger does not exist!") {
         };
         return new ResponseEntity<>(new UserDto(passenger), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto passengerRequestDto, @PathVariable Long id) throws UserNotFoundException {
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<UserDto> save(@RequestHeader(value = "Authorization") String authHeader, @Valid @RequestBody UserDto passengerRequestDto, @PathVariable Long id) throws UserNotFoundException {
         Passenger passenger = passengerService.findById(id);
-        if (passenger == null) throw new UserNotFoundException() {
+        if (passenger == null) throw new UserNotFoundException("Passenger does not exist!") {
         };
         Passenger updatedPassenger = new Passenger(passengerRequestDto);
         updatedPassenger.setId(passenger.getId());
@@ -101,7 +106,8 @@ public class PassengerController {
     }
 
     @GetMapping("/{id}/ride")
-    public ResponseEntity<PaginatedResponseDto<RideDto>> findRidesByPassengerId(@PathVariable Long id, Pageable page) throws UserNotFoundException {
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<PaginatedResponseDto<RideDto>> findRidesByPassengerId(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id, Pageable page) throws UserNotFoundException {
 //        ridesService.findByFilter();
         if(passengerService.findById(id) == null)
             throw new UserNotFoundException("Passenger does not exist!");
