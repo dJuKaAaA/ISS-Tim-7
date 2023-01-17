@@ -23,11 +23,11 @@ public class UserDto {
     private String surname;
     private String profilePicture;
     @Pattern.List({
-            @Pattern(regexp = "\\d+", message = "Phone number must contain only numbers"),
+            @Pattern(regexp = "^([+]?\\d+)$", message = "Invalid telephone number"),
             @Pattern(regexp = "^(?=.{7,15}).+", message = "Phone number have between 7 and 15 digits")
     })
     private String telephoneNumber;
-    @Email(message = "Invalid email")
+    @Email(message = "Invalid data. For example bad email format.")
     private String email;
     @NotBlank(message = "Address must be provided")
     private String address;
@@ -38,7 +38,6 @@ public class UserDto {
             @Pattern(regexp = "^(?=.*[A-Z]).+", message = "Password must contain at least one uppercase letter"),
             @Pattern(regexp = "^(?=.{8,20}).+", message = "Password must be between 8 and 20 characters")
     })
-
     private String password;
 
     public UserDto(User user) {

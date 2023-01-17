@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface FavoriteLocationRepository extends JpaRepository<FavoriteLocation, Long> {
-    List<FavoriteLocation> findByPassengersId(Long id);
+    List<FavoriteLocation> findBySubmittedById(Long id);
 }

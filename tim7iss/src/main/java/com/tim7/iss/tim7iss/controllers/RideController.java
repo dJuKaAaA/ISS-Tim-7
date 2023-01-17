@@ -9,6 +9,7 @@ import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.services.*;
+import com.tim7.iss.tim7iss.util.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,8 @@ public class RideController {
     private WorkHourService workHourService;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+    @Autowired
+    private TokenUtils tokenUtils;
 
     @PostMapping
     public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException {
@@ -183,25 +186,31 @@ public class RideController {
     }
 
     @PostMapping(value = "/favorites")
-    public ResponseEntity<FavoriteLocationDto>createFavoriteLocation(@RequestBody FavoriteLocationDto favoriteLocationDto) throws TooManyFavoriteRidesException {
-        //privremen id passengera koji salje request
-        Long passengerId = 4L;
-        if(checkIfMoreThan9FavoriteLocations(passengerId)){
+    public ResponseEntity<FavoriteLocationDto> createFavoriteLocation(@RequestBody FavoriteLocationDto favoriteLocationDto,
+                                                                     @RequestHeader("Authorization") String authHeader)
+            throws TooManyFavoriteRidesException, PassengerNotFoundException, UserNotFoundException {
+        String token = tokenUtils.getToken(authHeader);
+        String passengerEmail = tokenUtils.getEmailFromToken(token);
+        Passenger passengerThatSubmitted = passengerService.findByEmailAddress(passengerEmail).orElseThrow(PassengerNotFoundException::new);
+        if(checkIfMoreThan9FavoriteLocations(passengerThatSubmitted.getId())){
             throw new TooManyFavoriteRidesException();
         }
         Set<Passenger>passengers = new HashSet<>();
         for(UserRefDto pass: favoriteLocationDto.getPassengers()){
+            Passenger passenger = passengerService.findById(pass.getId());
+            if(passenger == null)
+                throw new UserNotFoundException();
             passengers.add(passengerService.findById(pass.getId()));
         }
         VehicleType vehicleType = vehicleTypeService.getByName(favoriteLocationDto.getVehicleType());
-        FavoriteLocation favoriteLocation = new FavoriteLocation(favoriteLocationDto, passengers, vehicleType);
+        FavoriteLocation favoriteLocation = new FavoriteLocation(favoriteLocationDto, passengers, vehicleType,passengerThatSubmitted);
         favoriteLocation = favoriteLocationService.save(favoriteLocation);
         favoriteLocationDto.setId(favoriteLocation.getId());
         return new ResponseEntity<>(favoriteLocationDto, HttpStatus.OK);
     }
 
     @GetMapping(value = "/favorites")
-    public ResponseEntity<List<FavoriteLocationDto>>getFavoriteLocations(){
+    public ResponseEntity<List<FavoriteLocationDto>> getFavoriteLocations(){
         List<FavoriteLocation>favoriteLocations = favoriteLocationService.getAll();
         List<FavoriteLocationDto>favoriteLocationsDto = new ArrayList<>();
         for(FavoriteLocation favoriteLocation : favoriteLocations){
@@ -210,8 +219,26 @@ public class RideController {
         return new ResponseEntity<>(favoriteLocationsDto, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/favorites/{id}")
+    public ResponseEntity<FavoriteLocationDto>getFavoriteLocationById(@PathVariable Long id) throws FavoriteLocationNotFoundException {
+        FavoriteLocation favoriteLocation = favoriteLocationService.findById(id);
+        if(favoriteLocation == null)
+            throw new FavoriteLocationNotFoundException();
+        return new ResponseEntity<>(new FavoriteLocationDto(favoriteLocation), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/passenger/{id}/favorites")
+    public ResponseEntity<List<FavoriteLocationDto>>getFavoriteLocationsByPassengerId(@PathVariable Long id){
+        List<FavoriteLocation>favoriteLocations = favoriteLocationService.findByPassengerId(id);
+        List<FavoriteLocationDto>favoriteLocationsDto = new ArrayList<>();
+        for(FavoriteLocation favoriteLocation : favoriteLocations){
+            favoriteLocationsDto.add(new FavoriteLocationDto(favoriteLocation));
+        }
+        return new ResponseEntity<>(favoriteLocationsDto, HttpStatus.OK);
+    }
+
     @DeleteMapping(value = "/favorites/{id}")
-    public ResponseEntity<String>deleteFavoriteLocation(@PathVariable Long id) throws FavoriteLocationNotFoundException {
+    public ResponseEntity<String> deleteFavoriteLocation(@PathVariable Long id) throws FavoriteLocationNotFoundException {
         if(favoriteLocationService.findById(id) == null)
             throw new FavoriteLocationNotFoundException();
         favoriteLocationService.delete(id);
@@ -295,8 +322,8 @@ public class RideController {
         if (ride == null) {
             throw new RideNotFoundException();
         }
-        if(ride.getStatus() != Enums.RideStatus.FINISHED)
-            throw new RideCancelationException("Cannot end a ride that is not in status FINISHED!");
+        if(ride.getStatus() != Enums.RideStatus.ACTIVE)
+            throw new RideCancelationException("Cannot end a ride that is not in status STARTED!");
         ride.setStatus(Enums.RideStatus.FINISHED);
         ride.setEndTime(LocalDateTime.now());  // ride finishes as soon as its status is set to finished
         rideService.save(ride);
@@ -310,7 +337,7 @@ public class RideController {
             throw new RideNotFoundException();
         }
         if(ride.getStatus() != Enums.RideStatus.PENDING && ride.getStatus() != Enums.RideStatus.ACCEPTED)
-            throw new RideCancelationException("Cannot cancel a ride that is not in status PENDING!");
+            throw new RideCancelationException("Cannot cancel a ride that is not in status PENDING or ACCEPTED!");
         Refusal refusal = new Refusal(rideReject);
         refusal.setRide(ride);
         ride.setRefusal(refusal);

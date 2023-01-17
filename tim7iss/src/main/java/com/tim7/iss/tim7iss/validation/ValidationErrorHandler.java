@@ -159,9 +159,20 @@ public class ValidationErrorHandler {
     }
 
     @ExceptionHandler({WorkHourNotFoundException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ResponseEntity<ErrorDto> handleWorkHourNotFoundException(WorkHourNotFoundException e) {
-        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler({DocumentNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ResponseEntity<ErrorDto> handleDocumentNotFoundException(DocumentNotFoundException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({NoShiftOngoingException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleNoShiftOngoingException(NoShiftOngoingException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
 }

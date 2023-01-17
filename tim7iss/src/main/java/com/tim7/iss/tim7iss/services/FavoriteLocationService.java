@@ -30,6 +30,7 @@ public class FavoriteLocationService {
     }
 
     public List<FavoriteLocation> findByPassengerId(Long id){
-        return favoriteLocationRepository.findByPassengersId(id);
+        return favoriteLocationRepository.findBySubmittedById(id);
     }
+
 }
