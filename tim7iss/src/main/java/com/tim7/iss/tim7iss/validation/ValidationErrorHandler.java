@@ -24,6 +24,12 @@ public class ValidationErrorHandler {
         return new ResponseEntity<>(new ErrorDto(errorMessage), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler({UnauthorizedException.class})
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    protected ResponseEntity<ErrorDto> UnauthorizedException(UnauthorizedException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler({
             UserNotFoundException.class
     })

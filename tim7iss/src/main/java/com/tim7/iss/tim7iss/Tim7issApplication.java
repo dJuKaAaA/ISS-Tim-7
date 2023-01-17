@@ -280,14 +280,14 @@ public class Tim7issApplication {
                     new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f)));
 
             // creating user activation entities
-//            userActivationRepository.save(new UserActivation(null,
-//                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
-//                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-//                    passenger1));
-//            userActivationRepository.save(new UserActivation(null,
-//                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
-//                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
-//                    passenger2));
+            userActivationRepository.save(new UserActivation(null,
+                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
+                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),
+                    passenger1));
+            userActivationRepository.save(new UserActivation(null,
+                    LocalDateTime.of(2021, Month.DECEMBER, 21, 21, 0),
+                    LocalDateTime.of(2022, Month.FEBRUARY, 1, 23, 59),
+                    passenger2));
 //            userActivationRepository.save(new UserActivation(null,
 //                    LocalDateTime.of(2022, Month.DECEMBER, 21, 21, 0),
 //                    LocalDateTime.of(2023, Month.FEBRUARY, 1, 23, 59),

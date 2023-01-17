@@ -23,7 +23,7 @@ public class UserDto {
     private String surname;
     private String profilePicture;
     @Pattern.List({
-            @Pattern(regexp = "\\d+", message = "Phone number must contain only numbers"),
+            @Pattern(regexp = "^([+]?\\d+)$", message = "Invalid telephone number"),
             @Pattern(regexp = "^(?=.{7,15}).+", message = "Phone number have between 7 and 15 digits")
     })
     private String telephoneNumber;

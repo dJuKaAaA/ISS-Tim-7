@@ -20,7 +20,7 @@ public class RideCreationDto {
     private String scheduledTime;
     @NotEmpty(message = "There must be at least one route for the driver to travel")
     private List<LocationForRideDto> locations = new ArrayList<>();
-    @NotEmpty(message = "There must be at least one passenger board")
+//    @NotEmpty(message = "There must be at least one passenger board")
     private List<UserRefDto> passengers = new ArrayList<>();
     @Pattern(regexp = "^STANDARD|LUXURY|VAN$", message = "Invalid vehicle type... Must be STANDARD, LUXURY or VAN")
     private String vehicleType;
