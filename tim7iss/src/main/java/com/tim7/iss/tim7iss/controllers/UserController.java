@@ -157,7 +157,7 @@ public class UserController {
 
     // Add note for user to help to decide to ban user
     @PostMapping("/api/user/{id}/note")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<NoteDto> addNoteForUser(@PathVariable("id") Long userId, @Valid @RequestBody NoteDto noteDTO) throws Exception {
         LOGGER.info("create note");
         return userService.addNote(userId, noteDTO);
