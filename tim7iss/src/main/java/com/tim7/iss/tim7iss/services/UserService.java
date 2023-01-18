@@ -123,11 +123,14 @@ public class UserService implements UserDetailsService {
 
     }
 
-    public ResponseEntity<MessageDto> sendMessage(Long id, MessageDto messageDTO) throws RideNotFoundException, UserNotFoundException {
+    public ResponseEntity<MessageDto> sendMessage(Long id, String senderEmail, CreateMessageDto messageDTO) throws RideNotFoundException, UserNotFoundException {
 
         Ride ride = rideRepository.findById(messageDTO.getRideId()).orElseThrow(RideNotFoundException::new);
-        User receiver = userRepository.findById(messageDTO.getReceiverId()).orElseThrow(() -> new UserNotFoundException("Receiver not found"));
-        User sender = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("Sender not found"));
+        User receiver = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("Receiver not found"));
+        User sender = userRepository.findByEmailAddress(senderEmail);
+        if (sender == null) {
+            throw new UserNotFoundException("Sender not found");
+        }
 
         Message message = new Message(messageDTO, ride, sender, receiver);
         messageRepository.save(message);
@@ -175,7 +178,9 @@ public class UserService implements UserDetailsService {
         return allMessages;
     }
 
-    public List<User> getAllUsersByReceivedMessages(Long id){ return userRepository.findByReceivedMessages(id); }
+    public List<User> getAllUsersByReceivedMessages(Long id) {
+        return userRepository.findByReceivedMessages(id);
+    }
 
 
     private void changeUserBlockedState(User user, boolean blockedState) {
