@@ -61,11 +61,14 @@ public class UserService implements UserDetailsService {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Password successfully changed!");
     }
 
-    public ResponseEntity sendResetCodeToMail(Long userId) throws UserNotFoundException, IOException {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    public ResponseEntity sendResetCodeToMail(String email) throws UserNotFoundException, IOException {
+        User user = userRepository.findByEmailAddress(email);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
         String resetCode = getRandomString();
 
-        PasswordResetCode passwordResetCode = passwordResetCodeRepository.findByUserId(userId);
+        PasswordResetCode passwordResetCode = passwordResetCodeRepository.findByUserId(user.getId());
         if (passwordResetCode == null) {
             passwordResetCode = new PasswordResetCode();
             passwordResetCode.setUser(user);
@@ -78,9 +81,12 @@ public class UserService implements UserDetailsService {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Email with reset code has been sent!");
     }
 
-    public ResponseEntity changePasswordWithResetCode(Long userId, ResetPasswordViaCodeDto resetPasswordViaCodeDto) throws UserNotFoundException, PasswordResetCodeException {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        PasswordResetCode passwordResetCode = passwordResetCodeRepository.findByUserId(userId);
+    public ResponseEntity changePasswordWithResetCode(String email, ResetPasswordViaCodeDto resetPasswordViaCodeDto) throws UserNotFoundException, PasswordResetCodeException {
+        User user = userRepository.findByEmailAddress(email);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        PasswordResetCode passwordResetCode = passwordResetCodeRepository.findByUserId(user.getId());
 
         if (passwordResetCode == null || passwordResetCode.isExpired()) throw new PasswordResetCodeException();
         if (!passwordResetCode.getCode().equals(resetPasswordViaCodeDto.code)) throw new PasswordResetCodeException();

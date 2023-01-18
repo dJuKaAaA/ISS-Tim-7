@@ -60,7 +60,6 @@ public class ReviewController {
         return reviewService.addDriverReview(rideId, email, craCreateReviewDto);
     }
 
-    //
     @GetMapping("/api/review/driver/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     public ResponseEntity<PaginatedResponseDto<ReviewDto>> getDriverReviews(@PathVariable("id") Long driveId) throws RideNotFoundException, DriverNotFoundException {
