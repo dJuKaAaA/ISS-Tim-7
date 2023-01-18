@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.dto.CreateMessageDto;
 import com.tim7.iss.tim7iss.dto.MessageDto;
 import com.tim7.iss.tim7iss.global.Constants;
 import lombok.*;
@@ -41,6 +42,15 @@ public class Message {
     public Message(MessageDto messageDto, Ride ride, User sender, User receiver) {
         this.id = messageDto.getId();
         this.sentDate = LocalDateTime.parse(messageDto.getTimeOfSending(), Constants.customDateTimeFormat);
+        this.type = messageDto.getType();
+        this.content = messageDto.getMessage();
+        this.ride = ride;
+        this.sender = sender;
+        this.receiver = receiver;
+    }
+
+    public Message(CreateMessageDto messageDto, Ride ride, User sender, User receiver){
+        this.sentDate = LocalDateTime.parse(LocalDateTime.now().format(Constants.customDateTimeFormat), Constants.customDateTimeFormat);
         this.type = messageDto.getType();
         this.content = messageDto.getMessage();
         this.ride = ride;

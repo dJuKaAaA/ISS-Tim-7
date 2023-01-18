@@ -99,9 +99,9 @@ public class ValidationErrorHandler {
     }
 
     @ExceptionHandler({InvalidEmailOrPasswordException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<ErrorDto> handelInvalidEmailOrPasswordException(InvalidEmailOrPasswordException e) {
-        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({UserBlockedException.class})
@@ -173,6 +173,12 @@ public class ValidationErrorHandler {
     @ExceptionHandler({NoShiftOngoingException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<ErrorDto> handleNoShiftOngoingException(NoShiftOngoingException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({WrongPasswordOrEmailException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ErrorDto> handleNoShiftOngoingException(WrongPasswordOrEmailException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }
