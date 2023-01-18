@@ -20,11 +20,11 @@ public class RideRejectDto {
     private String reason;
     @Pattern(regexp = "^([1-9]|([012][0-9])|(3[01]))\\.([0]{0,1}[1-9]|1[012])\\.\\d\\d\\d\\d\\s([0-1]?[0-9]|2?[0-3]):([0-5]\\d):([0-5]\\d)$",
             message = "Invalid date format")
-    private String time;
+    private String timeOfRejection;
 
     public RideRejectDto(Refusal refusal) {
         this.reason = refusal.getReason();
-        this.time = refusal.getTime().format(Constants.customDateTimeFormat);
+        this.timeOfRejection = refusal.getTime().format(Constants.customDateTimeFormat);
     }
 
 }

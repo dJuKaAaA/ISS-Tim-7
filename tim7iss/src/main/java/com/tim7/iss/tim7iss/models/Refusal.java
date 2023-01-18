@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.dto.PanicCreateDto;
 import com.tim7.iss.tim7iss.dto.RideRejectDto;
 import com.tim7.iss.tim7iss.global.Constants;
 import lombok.AllArgsConstructor;
@@ -35,7 +36,12 @@ public class Refusal {
 
     public Refusal(RideRejectDto rideRejectDto) {
         this.reason = rideRejectDto.getReason();
-        this.time = LocalDateTime.parse(rideRejectDto.getTime(), Constants.customDateTimeFormat);
+        this.time = LocalDateTime.parse(rideRejectDto.getTimeOfRejection(), Constants.customDateTimeFormat);
+    }
+
+    public Refusal(PanicCreateDto panicCreateDto){
+        this.reason = panicCreateDto.getReason();
+        this.time = LocalDateTime.now();
     }
 
 }

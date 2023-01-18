@@ -34,8 +34,10 @@ public class RideDto {
     private String vehicleType;
     private Boolean babyTransport;
     private Boolean petTransport;
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+//    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private RideRejectDto rejection;
+
+    private String scheduledTime;
     private List<LocationForRideDto> locations = new ArrayList<>();
     @Pattern(regexp="^(PENDING|ACCEPTED|REJECTED|ACTIVE|FINISHED)$",
             message = "Invalid status... Must be PENDING, ACCEPTED, REJECTED, ACTIVE or FINISHED")
