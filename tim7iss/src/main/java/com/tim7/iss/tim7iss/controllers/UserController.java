@@ -61,14 +61,15 @@ public class UserController {
         return userService.changePassword(userId, passwordDto);
     }
 
-    @GetMapping("/api/user/{id}/resetPassword")
-    public ResponseEntity sendResetCodeToMail(@PathVariable("id") Long userId) throws UserNotFoundException, IOException {
-        return userService.sendResetCodeToMail(userId);
+    @GetMapping("/api/user/{email}/resetPassword")
+    public ResponseEntity sendResetCodeToMail(@PathVariable("email") String email) throws UserNotFoundException,
+            IOException {
+        return userService.sendResetCodeToMail(email);
     }
 
-    @PutMapping("/api/user/{id}/resetPassword")
-    public ResponseEntity changePasswordWithResetCode(@Valid @RequestBody ResetPasswordViaCodeDto resetPasswordViaCodeDto, @PathVariable("id") Long userId) throws UserNotFoundException, PasswordResetCodeException {
-        return userService.changePasswordWithResetCode(userId, resetPasswordViaCodeDto);
+    @PutMapping("/api/user/{email}/resetPassword")
+    public ResponseEntity changePasswordWithResetCode(@Valid @RequestBody ResetPasswordViaCodeDto resetPasswordViaCodeDto, @PathVariable("email") String email) throws UserNotFoundException, PasswordResetCodeException {
+        return userService.changePasswordWithResetCode(email, resetPasswordViaCodeDto);
     }
 
     @GetMapping("/api/user/{id}/ride")

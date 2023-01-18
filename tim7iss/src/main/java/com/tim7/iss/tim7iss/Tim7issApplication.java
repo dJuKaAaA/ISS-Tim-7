@@ -108,6 +108,15 @@ public class Tim7issApplication {
             passenger1.setEnabled(true);
             passengerRepository.save(passenger1);
 
+            // passenger creation
+            Passenger passenger2 = new Passenger(new UserDto(null, "Petar", "Petrovic",
+                    DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372727",
+                    "ivanmartic311@gmail.com", "Petrova adresa",
+                    "$2a$12$lA8WEWzn3E7l53E2HYpX3ee0q.ZOVDjY34jNYTs/n9ucvebpY3v86")); // Petar123
+            passenger2.setRoles(List.of(passengerRole));
+            passenger2.setEnabled(true);
+            passengerRepository.save(passenger2);
+
 //
 //<<<<<<< HEAD
 //=======
