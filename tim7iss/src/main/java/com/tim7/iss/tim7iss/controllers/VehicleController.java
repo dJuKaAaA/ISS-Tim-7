@@ -8,6 +8,8 @@ import com.tim7.iss.tim7iss.exceptions.VehicleNotFoundException;
 import com.tim7.iss.tim7iss.models.Location;
 import com.tim7.iss.tim7iss.models.Vehicle;
 import com.tim7.iss.tim7iss.models.VehicleType;
+import com.tim7.iss.tim7iss.repositories.VehicleRepository;
+import com.tim7.iss.tim7iss.repositories.VehicleTypeRepository;
 import com.tim7.iss.tim7iss.services.DriverService;
 import com.tim7.iss.tim7iss.services.LocationService;
 import com.tim7.iss.tim7iss.services.VehicleService;
@@ -30,21 +32,20 @@ import java.util.List;
 public class VehicleController {
 
     @Autowired
-    private VehicleService vehicleService;
-
-    @Autowired
     private LocationService locationService;
 
     @Autowired
     private DriverService driverService;
 
     @Autowired
-    private VehicleTypeService vehicleTypeService;
+    private VehicleRepository vehicleRepository;
+    @Autowired
+    private VehicleTypeRepository vehicleTypeRepository;
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<VehicleDto> getById(@PathVariable Long id) {
 
-        Vehicle vehicle = vehicleService.getById(id);
+        Vehicle vehicle = vehicleRepository.findById(id).get();  // TODO: Refactor (put the logic in the service class)
 
         // course must exist
         if (vehicle == null) {
@@ -56,7 +57,7 @@ public class VehicleController {
     @GetMapping
     public ResponseEntity<PaginatedResponseDto<VehicleDto>> getAll() {
         List<VehicleDto> vehicles = new ArrayList<>();
-        for(Vehicle vehicle : vehicleService.getAll()){
+        for(Vehicle vehicle : vehicleRepository.findAll()){
             vehicles.add(new VehicleDto(vehicle));
         }
         return new ResponseEntity<>(new PaginatedResponseDto<>(vehicles.size(), vehicles), HttpStatus.OK);
@@ -65,7 +66,7 @@ public class VehicleController {
     @PutMapping("/{id}/location")
     @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<String> changeLocation(@RequestHeader(value = "Authorization")String authHeader,@PathVariable Long id, @Valid @RequestBody GeoCoordinateDto location) throws VehicleNotAssignedException, VehicleNotFoundException {
-        Vehicle vehicle = vehicleService.getById(id);
+        Vehicle vehicle = vehicleRepository.findById(id).get();  // TODO: Refactor (put the logic in the service class)
         if(vehicle == null){
             throw new VehicleNotFoundException("Vehicle does not exist!");
         }
@@ -74,23 +75,23 @@ public class VehicleController {
         Location newLocation = new Location(location);
         newLocation.setId(vehicle.getLocation().getId());
         vehicle.setLocation(newLocation);
-        vehicleService.save(vehicle);
+        vehicleRepository.save(vehicle);
         return new ResponseEntity<>("Cordinates successfully updated", HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/{id}/driver/{driver_id}")
     public ResponseEntity<VehicleDto> setDriver(@PathVariable Long id, @PathVariable Long driver_id){
-        Vehicle vehicle = vehicleService.getById(id);
+        Vehicle vehicle = vehicleRepository.findById(id).get();  // TODO: Refactor (put the logic in the service class)
         vehicle.setDriver(driverService.findById(driver_id));
-        vehicleService.save(vehicle);
+        vehicleRepository.save(vehicle);
         return new ResponseEntity<>(new VehicleDto(vehicle), HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<VehicleDto> save(@Valid @RequestBody VehicleDto vehicleRequest){
-        VehicleType vehicleType = vehicleTypeService.getByName(vehicleRequest.getVehicleType());
+        VehicleType vehicleType = vehicleTypeRepository.findByName(vehicleRequest.getVehicleType()).get();
         Vehicle newVehicle = new Vehicle(vehicleRequest, vehicleType);
-        vehicleService.save(newVehicle);
+        vehicleRepository.save(newVehicle);
         return new ResponseEntity<>(new VehicleDto(newVehicle), HttpStatus.OK);
     }
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
