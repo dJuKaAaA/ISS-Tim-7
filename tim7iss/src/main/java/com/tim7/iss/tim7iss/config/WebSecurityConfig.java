@@ -72,12 +72,12 @@ public class WebSecurityConfig {
         http.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint);
         http.authorizeRequests()
                 .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/api/socket/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/unregisteredUser").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/user/{id}/resetPassword").permitAll()
                 .antMatchers(HttpMethod.PUT, "/api/user/{id}/resetPassword").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/user/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/driver/locations").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/socket").permitAll()
                 .anyRequest().authenticated().and()
                 .cors().and()
 

@@ -73,6 +73,10 @@ public class WorkHourService {
             throw new ShiftExceededException();
         }
 
+        // starting the shift means the driver becomes active
+        driver.setActive(true);
+        driverRepository.save(driver);
+
         WorkHour newWorkHour = new WorkHour();
         newWorkHour.setStartDate(LocalDateTime.parse(startShiftDto.getStart(), Constants.customDateTimeFormat));
         newWorkHour.setDriver(driver);
@@ -87,6 +91,11 @@ public class WorkHourService {
         }
         WorkHour workHour = workHourRepository.findOngoingByDriverId(driver.getId()).
                 orElseThrow(NoShiftOngoingException::new);
+
+        // ending the shift means the driver becomes inactive
+        driver.setActive(false);
+        driverRepository.save(driver);
+
         workHour.setEndDate(LocalDateTime.parse(endShiftDto.getEnd(), Constants.customDateTimeFormat));
         return workHourRepository.save(workHour);
     }
@@ -99,6 +108,11 @@ public class WorkHourService {
         }
         WorkHour workHour = workHourRepository.findOngoingByDriverId(driver.getId()).
                 orElseThrow(NoShiftOngoingException::new);
+
+        // ending the shift means the driver becomes inactive
+        driver.setActive(false);
+        driverRepository.save(driver);
+
         workHour.setEndDate(LocalDateTime.parse(endShiftDto.getEnd(), Constants.customDateTimeFormat));
         return workHourRepository.save(workHour);
     }

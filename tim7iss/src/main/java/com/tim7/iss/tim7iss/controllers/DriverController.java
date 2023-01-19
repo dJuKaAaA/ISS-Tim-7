@@ -208,6 +208,7 @@ public class DriverController {
         return new ResponseEntity<>(new WorkingHourDto(completedShift), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('DRIVER') or hasRole('ADMIN')")
     @PostMapping("/request/{driverId}")
     public HttpStatus saveRequest(@PathVariable Long driverId,
                                   @RequestBody DriverChangeProfileRequestDto requestDto) {
