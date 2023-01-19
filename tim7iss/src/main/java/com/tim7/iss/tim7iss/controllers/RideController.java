@@ -88,6 +88,11 @@ public class RideController {
         // initializing the ride according to the ride creation dto
         Ride rideToSchedule = new Ride(rideCreationDto);
 
+        // if the ride is null; that means an immediate order
+        if (rideToSchedule.getStartTime() == null) {
+            rideToSchedule.setStartTime(LocalDateTime.now().plusMinutes(Constants.vehicleWaitTimeInMinutes + 1));
+        }
+
         // throwing error if the schedule date is invalid
         if (rideToSchedule.getStartTime().isBefore(LocalDateTime.now().plusMinutes(Constants.vehicleWaitTimeInMinutes))) {
             throw new SchedulingRideAtInvalidDateException("Ride can only be scheduled " + Constants.vehicleWaitTimeInMinutes + " minutes from now or later");
