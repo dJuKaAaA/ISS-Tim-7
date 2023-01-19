@@ -99,9 +99,13 @@ public class PassengerController {
         Passenger passenger = passengerService.findById(id);
         if (passenger == null) throw new UserNotFoundException("Passenger does not exist!") {
         };
-        Passenger updatedPassenger = new Passenger(passengerRequestDto);
-        updatedPassenger.setId(passenger.getId());
-        passengerService.save(updatedPassenger);
+        passenger.setFirstName(passengerRequestDto.getName());
+        passenger.setLastName(passengerRequestDto.getSurname());
+        passenger.setProfilePicture(passengerRequestDto.getProfilePicture());
+        passenger.setPhoneNumber(passengerRequestDto.getTelephoneNumber());
+        passenger.setEmailAddress(passengerRequestDto.getEmail());
+        passenger.setAddress(passengerRequestDto.getAddress());
+        passengerService.save(passenger);
         return new ResponseEntity<>(new UserDto(passenger), HttpStatus.OK);
     }
 
