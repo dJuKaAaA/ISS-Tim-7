@@ -76,6 +76,8 @@ public class WebSecurityConfig {
                 .antMatchers(HttpMethod.GET, "/api/user/{id}/resetPassword").permitAll()
                 .antMatchers(HttpMethod.PUT, "/api/user/{id}/resetPassword").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/user/login").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/driver/locations").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/socket").permitAll()
                 .anyRequest().authenticated().and()
                 .cors().and()
 

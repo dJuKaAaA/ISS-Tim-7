@@ -129,7 +129,6 @@ public class Tim7issApplication {
                         LocalDateTime.of(2022, Month.DECEMBER, 23, 8, 0),
                         LocalDateTime.of(2022, Month.DECEMBER, 23, 16, 0))));
         driver.setRoles(List.of(driverRole));
-        driver.setActive(true);
         driverRepository.save(driver);
 
         // passenger creation
@@ -309,6 +308,25 @@ public class Tim7issApplication {
         vehicleReviewRepository.save(vehicleReview);
         messageRepository.save(new Message(null,LocalDateTime.now(),"Ride","proba", driver, passenger2,ride4));
         messageRepository.save(new Message(null,LocalDateTime.now(),"Ride","proba", passenger3, driver,ride4));
+
+        // aditional driver
+        Driver driver2 = new Driver(new UserDto(
+                null,
+                "Pera",
+                "Peric",
+                DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()),
+                "003817372222",
+                "pera.peric@email.com",
+                "Perina adresa",
+                "$2a$12$YzM..B5oG29ezUdF3pC6qexJQpw4UJSxdoaQD9Y.aiURFBuU4/3Qe"));  // Pera1234
+        driver2.setEnabled(true);
+        driver2.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5,
+                false, true, vehicleType, driver2,
+                new Location(null,
+                        "Bistrica, Novi Sad",
+                        45.25207768500065f, 19.799845506488243f)));
+        driver2.setRoles(List.of(driverRole));
+        driverRepository.save(driver2);
     }
 
     private void testDataMartic() throws IOException {

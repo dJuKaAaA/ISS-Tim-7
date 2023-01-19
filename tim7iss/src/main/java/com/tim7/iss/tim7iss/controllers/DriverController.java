@@ -236,7 +236,6 @@ public class DriverController {
         return new ResponseEntity<>(scheduledRides, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PASSENGER')")
     @GetMapping("/locations")
     public ResponseEntity<PaginatedResponseDto<DriverLocationDto>> fetchActivityAndLocations(Pageable page) {
         PaginatedResponseDto<DriverLocationDto> paginatedDriverLocations = driverService

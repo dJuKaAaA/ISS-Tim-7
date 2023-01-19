@@ -267,7 +267,7 @@ public class RideController {
     }
 
     @GetMapping(value = "/driver/{driverId}/active")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     public ResponseEntity<RideDto> getDriversActiveRide(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long driverId) throws UserNotFoundException, RideNotFoundException {
         driverService.getById(driverId).orElseThrow(() -> new UserNotFoundException("Driver not found"));
         List<RideDto> rides = rideService.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACTIVE.ordinal()).stream().map(RideDto::new).toList();
@@ -279,7 +279,7 @@ public class RideController {
 
     //Delete fixed id
     @GetMapping(value = "/passenger/{passengerId}/active")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PASSENGER')")
     public ResponseEntity<RideDto> getPassengersActiveRide(@PathVariable Long passengerId, @RequestHeader(value = "Authorization") String authHeader) throws RideNotFoundException {
         List<Ride> rides = rideService.findByPassengerIdAndStatus(passengerId, Enums.RideStatus.ACTIVE.ordinal());
         if (rides.size() == 0) {
@@ -427,7 +427,6 @@ public class RideController {
             return true;
         return false;
     }
-
 
     @CrossOrigin(origins = "http://localhost:4200")
     @MessageMapping("/send/scheduled/ride")
