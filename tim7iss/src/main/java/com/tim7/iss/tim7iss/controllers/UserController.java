@@ -117,11 +117,14 @@ public class UserController {
 
     @PostMapping("/api/user/{id}/message")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
-    public ResponseEntity<MessageDto> sendMessage(@RequestHeader(value = "Authorization") String authHeader, @PathVariable("id") Long id, @Valid @RequestBody CreateMessageDto createMessageDto) throws UserNotFoundException, RideNotFoundException {
+    public ResponseEntity<MessageDto> sendMessage(@RequestHeader(value = "Authorization") String authHeader,
+                                                  @PathVariable("id") Long id,
+                                                  @Valid @RequestBody MessageDto messageDto) throws UserNotFoundException,
+            RideNotFoundException {
         LOGGER.info("send messages");
         String token = tokenUtils.getToken(authHeader);
         String senderEmail = tokenUtils.getEmailFromToken(token);
-        return userService.sendMessage(id, senderEmail,createMessageDto);
+        return userService.sendMessage(id, senderEmail,messageDto);
     }
 
     @CrossOrigin(origins = "http://localhost:4200")

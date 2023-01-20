@@ -1,6 +1,5 @@
 package com.tim7.iss.tim7iss.controllers;
 
-import com.tim7.iss.tim7iss.dto.CreateReviewDto;
 import com.tim7.iss.tim7iss.dto.PaginatedResponseDto;
 import com.tim7.iss.tim7iss.dto.ReviewDto;
 import com.tim7.iss.tim7iss.dto.RideReviewDto;
@@ -35,12 +34,13 @@ public class ReviewController {
     TokenUtils tokenUtils;
 
     @PostMapping("/api/review/{rideId}/vehicle")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
-    public ResponseEntity<ReviewDto> addVehicleReview(@RequestHeader(value = "Authorization") String authHeader, @PathVariable("rideId") Long rideId, @Valid @RequestBody CreateReviewDto createReviewDto) throws RideNotFoundException {
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<ReviewDto> addVehicleReview(@RequestHeader(value = "Authorization") String authHeader, @PathVariable("rideId") Long rideId, @Valid @RequestBody ReviewDto reviewDto) throws RideNotFoundException {
+
         LOGGER.info("add vehicle review");
         String token = tokenUtils.getToken(authHeader);
         String email = tokenUtils.getEmailFromToken(token);
-        return reviewService.addVehicleReview(rideId, email, createReviewDto);
+        return reviewService.addVehicleReview(rideId, email, reviewDto);
 
     }
 
@@ -52,12 +52,12 @@ public class ReviewController {
     }
 
     @PostMapping("/api/review/{rideId}/driver")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
-    public ResponseEntity<ReviewDto> addDriverReview(@RequestHeader(value = "Authorization") String authHeader, @PathVariable("rideId") Long rideId, @Valid @RequestBody CreateReviewDto craCreateReviewDto) throws RideNotFoundException {
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<ReviewDto> addDriverReview(@RequestHeader(value = "Authorization") String authHeader, @PathVariable("rideId") Long rideId, @Valid @RequestBody ReviewDto reviewDto) throws RideNotFoundException {
         LOGGER.info("add driver review");
         String token = tokenUtils.getToken(authHeader);
         String email = tokenUtils.getEmailFromToken(token);
-        return reviewService.addDriverReview(rideId, email, craCreateReviewDto);
+        return reviewService.addDriverReview(rideId, email, reviewDto);
     }
 
     @GetMapping("/api/review/driver/{id}")

@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -133,7 +134,7 @@ public class UserService implements UserDetailsService {
 
     }
 
-    public ResponseEntity<MessageDto> sendMessage(Long id, String senderEmail, CreateMessageDto messageDTO) throws RideNotFoundException, UserNotFoundException {
+    public ResponseEntity<MessageDto> sendMessage(Long id, String senderEmail, @Valid MessageDto messageDTO) throws RideNotFoundException, UserNotFoundException {
 
         Ride ride = null;
         if (messageDTO.getRideId() != null) {
