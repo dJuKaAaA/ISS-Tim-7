@@ -1,14 +1,18 @@
 package com.tim7.iss.tim7iss.services;
+
+import com.tim7.iss.tim7iss.dto.RideDto;
+import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.global.Constants;
-import com.tim7.iss.tim7iss.models.Enums;
-import com.tim7.iss.tim7iss.models.Ride;
+import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.RideRepository;
+import com.tim7.iss.tim7iss.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,6 +21,9 @@ public class RideService {
 
     @Autowired
     private RideRepository rideRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public void save(Ride ride) {
         rideRepository.save(ride);
@@ -30,11 +37,11 @@ public class RideService {
         return rideRepository.findByDriverId(driverId, page);
     }
 
-    public List<Ride> findRideByPassengerId(Long id){
+    public List<Ride> findRideByPassengerId(Long id) {
         return rideRepository.findAll(id);
     }
 
-    public Page<Ride> findRideByPassengerId(Long id, Pageable page){
+    public Page<Ride> findRideByPassengerId(Long id, Pageable page) {
         return rideRepository.findRideByPassengersId(id, page);
     }
 
@@ -43,11 +50,11 @@ public class RideService {
     }
 
     //Pitati zasto ovo ne radi
-    public List<Ride> findByDriverIdAndStatus(Long id, Integer status){
+    public List<Ride> findByDriverIdAndStatus(Long id, Integer status) {
         return rideRepository.findByDriverIdAndStatus(id, status);
     }
 
-    public List<Ride> findByPassengerIdAndStatus(Long id, Integer status){
+    public List<Ride> findByPassengerIdAndStatus(Long id, Integer status) {
         return rideRepository.findByPassengersIdAndStatus(id, status);
     }
 
@@ -55,32 +62,69 @@ public class RideService {
 //        return rideRepository.findByPassengerIdAndStatus(id, status);
 //    }
 
-    public Ride findById(Long id){
+    public Ride findById(Long id) {
         return rideRepository.findById(id).orElse(null);
     }
 
     public Ride findByStatus(Enums.RideStatus status) {
         return rideRepository.findByStatus(status);
     }
+
     public Ride driverRideAtMoment(Long driverId, LocalDateTime moment) {
         List<Ride> rides = rideRepository.findRidesByDriverId(driverId);
-        rides = rides
-                .stream()
-                .filter((Ride ride) -> {
-                    if (ride.getStatus() == Enums.RideStatus.ACCEPTED
-                            || ride.getStatus() == Enums.RideStatus.PENDING
-                            || ride.getStatus() == Enums.RideStatus.ACTIVE) {
-                        LocalDateTime rideStartTime = ride.getStartTime();
-                        LocalDateTime estimatedRideEndTime = ride.getStartTime().plusMinutes(ride.getEstimatedTimeInMinutes());
+        rides = rides.stream().filter((Ride ride) -> {
+            if (ride.getStatus() == Enums.RideStatus.ACCEPTED || ride.getStatus() == Enums.RideStatus.PENDING || ride.getStatus() == Enums.RideStatus.ACTIVE) {
+                LocalDateTime rideStartTime = ride.getStartTime();
+                LocalDateTime estimatedRideEndTime = ride.getStartTime().plusMinutes(ride.getEstimatedTimeInMinutes());
 
-                        // the time window for in which a ride is considered to be taken is between 5 minutes before start date and 5 minutes after end date
-                        return !moment.isBefore(rideStartTime.minusMinutes(Constants.vehicleWaitTimeInMinutes))
-                                && !moment.isAfter(estimatedRideEndTime.plusMinutes(Constants.vehicleWaitTimeInMinutes));
-                    }
-                    return false;
-                })
-                .toList();
+                // the time window for in which a ride is considered to be taken is between 5 minutes before start date and 5 minutes after end date
+                return !moment.isBefore(rideStartTime.minusMinutes(Constants.vehicleWaitTimeInMinutes)) && !moment.isAfter(estimatedRideEndTime.plusMinutes(Constants.vehicleWaitTimeInMinutes));
+            }
+            return false;
+        }).toList();
         return rides.size() == 0 ? null : rides.get(0);
     }
+
+    public List<RideDto> getAllFinishedRides(Long userId) throws UserNotFoundException {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Collection<RideDto> rides = new ArrayList<>();
+
+        if (user instanceof Driver driver) {
+            rideRepository.findRidesByDriverId(driver.getId()).forEach(ride -> rides.add(new RideDto(ride)));
+        } else if (user instanceof Passenger passenger) {
+            rideRepository.findRidesByPassengersId(passenger.getId()).forEach(ride -> rides.add(new RideDto(ride)));
+        }
+
+        List<RideDto> finishedRides = new ArrayList<>();
+        for (RideDto ride : rides) {
+            if (ride.getStatus().equals("FINISHED")) {
+                finishedRides.add(ride);
+            }
+        }
+
+        return finishedRides;
+    }
+
+
+    public List<RideDto> getAllRejectedRides(Long userId) throws UserNotFoundException {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Collection<RideDto> rides = new ArrayList<>();
+
+        if (user instanceof Driver driver) {
+            rideRepository.findRidesByDriverId(driver.getId()).forEach(ride -> rides.add(new RideDto(ride)));
+        } else if (user instanceof Passenger passenger) {
+            rideRepository.findRidesByPassengersId(passenger.getId()).forEach(ride -> rides.add(new RideDto(ride)));
+        }
+
+        List<RideDto> finishedRides = new ArrayList<>();
+        for (RideDto ride : rides) {
+            if (ride.getStatus().equals("REJECTED")) {
+                finishedRides.add(ride);
+            }
+        }
+
+        return finishedRides;
+    }
+
 
 }

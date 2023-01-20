@@ -1,6 +1,5 @@
 package com.tim7.iss.tim7iss.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.Ride;
 import com.tim7.iss.tim7iss.models.Route;
@@ -9,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Null;
+import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,12 +35,12 @@ public class RideDto {
     private String vehicleType;
     private Boolean babyTransport;
     private Boolean petTransport;
-//    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    //    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private RideRejectDto rejection;
 
     private String scheduledTime;
     private List<LocationForRideDto> locations = new ArrayList<>();
-    @Pattern(regexp="^(PENDING|ACCEPTED|REJECTED|ACTIVE|FINISHED)$",
+    @Pattern(regexp = "^(PENDING|ACCEPTED|REJECTED|ACTIVE|FINISHED)$",
             message = "Invalid status... Must be PENDING, ACCEPTED, REJECTED, ACTIVE or FINISHED")
     private String status;
 
