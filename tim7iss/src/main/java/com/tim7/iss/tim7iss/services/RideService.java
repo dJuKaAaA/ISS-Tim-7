@@ -1,9 +1,12 @@
 package com.tim7.iss.tim7iss.services;
 
+import com.tim7.iss.tim7iss.dto.PaginatedResponseDto;
 import com.tim7.iss.tim7iss.dto.RideDto;
+import com.tim7.iss.tim7iss.exceptions.DriverNotFoundException;
 import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
+import com.tim7.iss.tim7iss.repositories.DriverRepository;
 import com.tim7.iss.tim7iss.repositories.RideRepository;
 import com.tim7.iss.tim7iss.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -21,6 +25,8 @@ public class RideService {
 
     @Autowired
     private RideRepository rideRepository;
+    @Autowired
+    private DriverRepository driverRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -126,5 +132,40 @@ public class RideService {
         return finishedRides;
     }
 
+
+    public PaginatedResponseDto<RideDto> getPaginatedRidesForDriverAsDto(Long driverId, Pageable page)
+            throws DriverNotFoundException {
+        driverRepository.findById(driverId).orElseThrow(DriverNotFoundException::new);
+        List<RideDto> rides = rideRepository.findByDriverId(driverId, page)
+                .stream()
+                .map(RideDto::new)
+                .toList();
+        return new PaginatedResponseDto<>(rides.size(), rides);
+    }
+
+    public Collection<RideDto> getScheduledRidesForDriverAsDto(Long driverId) throws DriverNotFoundException {
+        driverRepository.findById(driverId).orElseThrow(DriverNotFoundException::new);
+        Collection<RideDto> pendingRides = rideRepository.
+                findByDriverIdAndStatus(driverId, Enums.RideStatus.PENDING.ordinal())
+                .stream()
+                .map(RideDto::new)
+                .toList();
+        Collection<RideDto> acceptedRides = rideRepository
+                .findByDriverIdAndStatus(driverId, Enums.RideStatus.ACCEPTED.ordinal())
+                .stream()
+                .map((Ride ride) -> {
+                    ride.setRoutes(ride.getRoutes().stream().sorted(Comparator.comparing(Route::getId)).toList());
+                    return new RideDto(ride);
+                })
+                .toList();
+        Collection<RideDto> rides = new ArrayList<>();
+        rides.addAll(pendingRides);
+        rides.addAll(acceptedRides);
+        return rides
+                .stream()
+                .sorted(Comparator.comparing(
+                        (RideDto ride) -> LocalDateTime.parse(ride.getStartTime(), Constants.customDateTimeFormat)))
+                .toList();
+    }
 
 }

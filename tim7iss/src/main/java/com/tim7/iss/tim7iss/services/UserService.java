@@ -2,6 +2,7 @@ package com.tim7.iss.tim7iss.services;
 
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.*;
+import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,15 +125,21 @@ public class UserService implements UserDetailsService {
 
     public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(Long id) throws UserNotFoundException {
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-        Collection<MessageDto> messages = new ArrayList<>();
-        getAllMessages(user).forEach(message -> messages.add(new MessageDto(message)));
+        Collection<MessageDto> messages = getAllMessages(user)
+                .stream()
+                .sorted(Comparator.comparing(Message::getSentDate))
+                .map(MessageDto::new)
+                .toList();
         return new ResponseEntity<>(new PaginatedResponseDto<>(messages.size(), messages), HttpStatus.OK);
 
     }
 
     public ResponseEntity<MessageDto> sendMessage(Long id, String senderEmail, @Valid MessageDto messageDTO) throws RideNotFoundException, UserNotFoundException {
 
-        Ride ride = rideRepository.findById(messageDTO.getRideId()).orElseThrow(RideNotFoundException::new);
+        Ride ride = null;
+        if (messageDTO.getRideId() != null) {
+            ride = rideRepository.findById(messageDTO.getRideId()).orElseThrow(RideNotFoundException::new);
+        }
         User receiver = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("Receiver not found"));
         User sender = userRepository.findByEmailAddress(senderEmail);
         if (sender == null) {

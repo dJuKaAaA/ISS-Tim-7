@@ -174,14 +174,6 @@ public class UserController {
         return userService.getNotes(userId, pageable);
     }
 
-    // getting user id from mail
-    @PostMapping("/api/user/id")
-    public ResponseEntity<UserRefDto> getIdFromMail(@Valid @RequestBody UserRefDto userRefDto) throws UserNotFoundException {
-        System.err.println("\n\n\n\n\n\n\n\n" + userRefDto.getEmail() + "\n\n\n\n\n\n\n\n\n");
-        User user = userService.findByEmailAddress(userRefDto.getEmail()).orElseThrow(UserNotFoundException::new);
-        return new ResponseEntity<>(new UserRefDto(user), HttpStatus.OK);
-    }
-
     @GetMapping("/api/user/{id}/messagedUsers")
     public ResponseEntity<List<UserDto>> fetchMessagedUsers(@PathVariable Long id) {
         List<User> users = userService.getAllUsersByReceivedMessages(id);

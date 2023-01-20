@@ -88,6 +88,11 @@ public class RideController {
         // initializing the ride according to the ride creation dto
         Ride rideToSchedule = new Ride(rideCreationDto);
 
+        // if the ride is null; that means an immediate order
+        if (rideToSchedule.getStartTime() == null) {
+            rideToSchedule.setStartTime(LocalDateTime.now().plusMinutes(Constants.vehicleWaitTimeInMinutes + 1));
+        }
+
         // throwing error if the schedule date is invalid
         if (rideToSchedule.getStartTime().isBefore(LocalDateTime.now().plusMinutes(Constants.vehicleWaitTimeInMinutes))) {
             throw new SchedulingRideAtInvalidDateException("Ride can only be scheduled " + Constants.vehicleWaitTimeInMinutes + " minutes from now or later");
@@ -262,7 +267,7 @@ public class RideController {
     }
 
     @GetMapping(value = "/driver/{driverId}/active")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     public ResponseEntity<RideDto> getDriversActiveRide(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long driverId) throws UserNotFoundException, RideNotFoundException {
         driverService.getById(driverId).orElseThrow(() -> new UserNotFoundException("Driver not found"));
         List<RideDto> rides = rideService.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACTIVE.ordinal()).stream().map(RideDto::new).toList();
@@ -274,7 +279,7 @@ public class RideController {
 
     //Delete fixed id
     @GetMapping(value = "/passenger/{passengerId}/active")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PASSENGER')")
     public ResponseEntity<RideDto> getPassengersActiveRide(@PathVariable Long passengerId, @RequestHeader(value = "Authorization") String authHeader) throws RideNotFoundException {
         List<Ride> rides = rideService.findByPassengerIdAndStatus(passengerId, Enums.RideStatus.ACTIVE.ordinal());
         if (rides.size() == 0) {
@@ -285,7 +290,7 @@ public class RideController {
 
 
     @GetMapping(value = "/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PASSENGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PASSENGER', 'DRIVER')")
     public ResponseEntity<RideDto> getRideById(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id) throws RideNotFoundException {
         Ride ride = rideService.findById(id);
         if (ride == null) {
@@ -422,7 +427,6 @@ public class RideController {
             return true;
         return false;
     }
-
 
     @CrossOrigin(origins = "http://localhost:4200")
     @MessageMapping("/send/scheduled/ride")

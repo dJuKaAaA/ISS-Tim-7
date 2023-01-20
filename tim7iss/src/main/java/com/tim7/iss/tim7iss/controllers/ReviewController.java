@@ -35,9 +35,8 @@ public class ReviewController {
 
     @PostMapping("/api/review/{rideId}/vehicle")
     @PreAuthorize("hasRole('PASSENGER')")
-    public ResponseEntity<ReviewDto> addVehicleReview(@RequestHeader(value = "Authorization") String authHeader,
-                                                      @PathVariable("rideId") Long rideId,
-                                                      @Valid @RequestBody ReviewDto reviewDto) throws RideNotFoundException {
+    public ResponseEntity<ReviewDto> addVehicleReview(@RequestHeader(value = "Authorization") String authHeader, @PathVariable("rideId") Long rideId, @Valid @RequestBody ReviewDto reviewDto) throws RideNotFoundException {
+
         LOGGER.info("add vehicle review");
         String token = tokenUtils.getToken(authHeader);
         String email = tokenUtils.getEmailFromToken(token);
@@ -54,9 +53,7 @@ public class ReviewController {
 
     @PostMapping("/api/review/{rideId}/driver")
     @PreAuthorize("hasRole('PASSENGER')")
-    public ResponseEntity<ReviewDto> addDriverReview(@RequestHeader(value = "Authorization") String authHeader,
-                                                     @PathVariable("rideId") Long rideId,
-                                                     @Valid @RequestBody ReviewDto reviewDto) throws RideNotFoundException {
+    public ResponseEntity<ReviewDto> addDriverReview(@RequestHeader(value = "Authorization") String authHeader, @PathVariable("rideId") Long rideId, @Valid @RequestBody ReviewDto reviewDto) throws RideNotFoundException {
         LOGGER.info("add driver review");
         String token = tokenUtils.getToken(authHeader);
         String email = tokenUtils.getEmailFromToken(token);
