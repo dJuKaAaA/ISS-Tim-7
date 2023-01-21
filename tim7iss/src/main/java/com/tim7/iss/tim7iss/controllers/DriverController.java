@@ -91,7 +91,7 @@ public class DriverController {
         return new ResponseEntity<>(new UserDto(newDriver), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> save(@PathVariable Long id, @Valid @RequestBody UserDto driverChanges)
             throws DriverNotFoundException, NotAnImageException, LargeImageException {
