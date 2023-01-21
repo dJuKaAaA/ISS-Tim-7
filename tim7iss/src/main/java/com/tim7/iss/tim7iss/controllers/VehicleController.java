@@ -65,7 +65,7 @@ public class VehicleController {
 
     @PutMapping("/{id}/location")
     @PreAuthorize("hasRole('DRIVER')")
-    public ResponseEntity<String> changeLocation(@RequestHeader(value = "Authorization")String authHeader,@PathVariable Long id, @Valid @RequestBody GeoCoordinateDto location) throws VehicleNotAssignedException, VehicleNotFoundException {
+    public ResponseEntity<String> changeLocation(@PathVariable Long id, @Valid @RequestBody GeoCoordinateDto location) throws VehicleNotAssignedException, VehicleNotFoundException {
         Vehicle vehicle = vehicleRepository.findById(id).get();  // TODO: Refactor (put the logic in the service class)
         if(vehicle == null){
             throw new VehicleNotFoundException("Vehicle does not exist!");
@@ -76,7 +76,7 @@ public class VehicleController {
         newLocation.setId(vehicle.getLocation().getId());
         vehicle.setLocation(newLocation);
         vehicleRepository.save(vehicle);
-        return new ResponseEntity<>("Cordinates successfully updated", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("Coordinates successfully updated", HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/{id}/driver/{driver_id}")
