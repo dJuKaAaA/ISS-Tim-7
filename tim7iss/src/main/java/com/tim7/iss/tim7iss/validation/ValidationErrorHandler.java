@@ -187,4 +187,10 @@ public class ValidationErrorHandler {
     protected ResponseEntity<ErrorDto> handleNoShiftOngoingException(WrongPasswordOrEmailException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler({MessageNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ResponseEntity<ErrorDto> handleMessageNotFoundException(MessageNotFoundException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
+    }
 }

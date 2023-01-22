@@ -254,12 +254,15 @@ public class DriverController {
             if (socketMessageConverted.containsKey("rideId") && socketMessageConverted.get("rideId") != null) {
                 this.simpMessagingTemplate.convertAndSend("/socket-driver-movement/to-ride/" + socketMessageConverted.get("rideId"),
                         socketMessageConverted);
+            }
+            if (socketMessageConverted.containsKey("passengers")) {
                 @SuppressWarnings("unchecked")
                 List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
                 for (Map<String, Object> passenger : passengers) {
                     this.simpMessagingTemplate.convertAndSend("/socket-driver-movement/to-passenger/" + passenger.get("id"),
                             socketMessageConverted);
                 }
+
             }
         }
 
