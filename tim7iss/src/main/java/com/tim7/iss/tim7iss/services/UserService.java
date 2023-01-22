@@ -146,6 +146,7 @@ public class UserService implements UserDetailsService {
             throw new UserNotFoundException("Sender not found");
         }
 
+        messageDTO.setTimeOfSending(LocalDateTime.now().format(Constants.customDateTimeFormat));
         Message message = new Message(messageDTO, ride, sender, receiver);
         messageRepository.save(message);
         return new ResponseEntity<>(new MessageDto(message), HttpStatus.OK);

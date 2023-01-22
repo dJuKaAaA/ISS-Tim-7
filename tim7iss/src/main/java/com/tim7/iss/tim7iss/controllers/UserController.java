@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -133,11 +134,15 @@ public class UserController {
         Map<String, Object> messageConverted = Constants.parseJsonString(message);
 
         if (messageConverted != null) {
-            if (messageConverted.containsKey("receiverId") && messageConverted.get("receiverId") != null) {
-                this.simpMessagingTemplate.convertAndSend("/socket-send-message/" + messageConverted.get("receiverId"), messageConverted);
-                this.simpMessagingTemplate.convertAndSend("/socket-send-message/" + messageConverted.get("senderId"), messageConverted);
-            } else {
-                this.simpMessagingTemplate.convertAndSend("/socket-send-message", messageConverted);
+//            if (messageConverted.containsKey("senderId") && messageConverted.get("senderId") != null) {
+//                this.simpMessagingTemplate.convertAndSend("/socket-send-message/" + messageConverted.get("senderId"), messageConverted);
+//            }
+//            if (messageConverted.containsKey("receiverId") && messageConverted.get("receiverId") != null) {
+//                this.simpMessagingTemplate.convertAndSend("/socket-send-message/" + messageConverted.get("receiverId"), messageConverted);
+//            }
+            if (messageConverted.containsKey("senderId") && messageConverted.get("senderId") != null
+                    && messageConverted.containsKey("receiverId") && messageConverted.get("receiverId") != null) {
+                this.simpMessagingTemplate.convertAndSend("/socket-send-message/sender/" + messageConverted.get("senderId") + "/receiver/" + messageConverted.get("receiverId"), messageConverted);
             }
         }
 
@@ -194,5 +199,24 @@ public class UserController {
         return new ResponseEntity<>(messageDtos, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('DRIVER') or hasRole('PASSENGER') or hasRole('ADMIN')")
+    @GetMapping("api/user/{id}/last")
+    public ResponseEntity<MessageDto> getLastWithUser(@PathVariable Long id, Principal principal) throws MessageNotFoundException {
+        User user = userRepository.findByEmailAddress(principal.getName());
+        Message lastMessage = messageRepository.findLastSentByUsers(user.getId(), id).orElseThrow(MessageNotFoundException::new);
+        return new ResponseEntity<>(new MessageDto(lastMessage), HttpStatus.OK);
+    }
+    @PreAuthorize("hasRole('DRIVER') or hasRole('PASSENGER') or hasRole('ADMIN')")
+    @GetMapping("api/user/{receiverId}/conversation")
+    public ResponseEntity<List<MessageDto>> getConversation(@PathVariable Long receiverId, Principal principal)
+            throws UserNotFoundException{
+        User user = userRepository.findByEmailAddress(principal.getName());
+        User receiver = userRepository.findById(receiverId).orElseThrow(UserNotFoundException::new);
+        List<MessageDto> conversation = messageRepository.findConversation(user.getId(), receiver.getId())
+                .stream()
+                .map(MessageDto::new)
+                .toList();
+        return new ResponseEntity<>(conversation, HttpStatus.OK);
+    }
 
 }
