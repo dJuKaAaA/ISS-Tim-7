@@ -85,7 +85,7 @@ public class PassengerController {
     }
 
     @GetMapping(value = "/{id}")
-    @PreAuthorize("hasRole('PASSENGER')")
+    @PreAuthorize("hasRole('PASSENGER') or hasRole('DRIVER')")
     public ResponseEntity<UserDto> findPassengerByID(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id) throws UserNotFoundException {
         Passenger passenger = passengerService.findById(id);
         if (passenger == null) throw new UserNotFoundException("Passenger does not exist!") {

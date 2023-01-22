@@ -31,14 +31,20 @@ public class NotificationService {
 
     public void save(NotificationDto notificationDto) throws UserNotFoundException {
         User user = userRepository.findById(notificationDto.getUserId()).orElseThrow(UserNotFoundException::new);
-        Ride ride = rideRepository.findById(notificationDto.getRideId()).orElse(null);
+        Ride ride = null;
+        if (notificationDto.getRideId() != null) {
+            ride = rideRepository.findById(notificationDto.getRideId()).orElse(null);
+        }
         Notification notification = new Notification(notificationDto, user, ride);
         notificationRepository.save(notification);
     }
 
-    public void update(NotificationDto notificationDto) throws UserNotFoundException{
+    public void update(NotificationDto notificationDto) throws UserNotFoundException {
         User user = userRepository.findById(notificationDto.getUserId()).orElseThrow(UserNotFoundException::new);
-        Ride ride = rideRepository.findById(notificationDto.getRideId()).orElse(null);
+        Ride ride = null;
+        if (notificationDto.getRideId() != null) {
+            ride = rideRepository.findById(notificationDto.getRideId()).orElse(null);
+        }
         Notification notification = new Notification(notificationDto, user, ride);
         notificationRepository.save(notification);
     }
