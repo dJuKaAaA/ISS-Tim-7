@@ -7,6 +7,7 @@ import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.DriverRepository;
 import com.tim7.iss.tim7iss.services.*;
 import com.tim7.iss.tim7iss.util.TokenUtils;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -211,7 +212,7 @@ public class DriverController {
     @PreAuthorize("hasRole('DRIVER') or hasRole('ADMIN')")
     @PostMapping("/request/{driverId}")
     public HttpStatus saveRequest(@PathVariable Long driverId,
-                                  @RequestBody DriverChangeProfileRequestDto requestDto) {
+                                  @RequestBody DriverChangeProfileRequestDto requestDto) throws DriverNotFoundException, DocumentNotFoundException {
         return requestService.saveRequest(driverId, requestDto);
     }
 

@@ -25,7 +25,9 @@ public class NotificationDto {
         this.content = notification.getContent();
         this.show = notification.isShow();
         this.userId = notification.getUser().getId();
-        this.rideId = notification.getRide().getId();
+        if (notification.getRide() != null) {
+            this.rideId = notification.getRide().getId();
+        }
     }
 
 
