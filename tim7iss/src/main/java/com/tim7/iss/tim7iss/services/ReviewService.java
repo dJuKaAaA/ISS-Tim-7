@@ -1,9 +1,9 @@
 package com.tim7.iss.tim7iss.services;
 
-import com.tim7.iss.tim7iss.dto.CreateReviewDto;
 import com.tim7.iss.tim7iss.dto.PaginatedResponseDto;
 import com.tim7.iss.tim7iss.dto.ReviewDto;
 import com.tim7.iss.tim7iss.dto.RideReviewDto;
+import com.tim7.iss.tim7iss.exceptions.DriverNotFoundException;
 import com.tim7.iss.tim7iss.exceptions.RideNotFoundException;
 import com.tim7.iss.tim7iss.exceptions.VehicleNotFoundException;
 import com.tim7.iss.tim7iss.models.*;
@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.*;
 
 @Service
@@ -42,7 +43,7 @@ public class ReviewService {
     @Autowired
     PassengerRepository passengerRepository;
 
-    public ResponseEntity<ReviewDto> addVehicleReview(Long rideId, String email, CreateReviewDto createReviewDto) throws RideNotFoundException {
+    public ResponseEntity<ReviewDto> addVehicleReview(Long rideId, String email, @Valid ReviewDto createReviewDto) throws RideNotFoundException {
 
         VehicleReview review = new VehicleReview();
         Ride ride = rideRepository.findById(rideId).orElseThrow(RideNotFoundException::new);
@@ -66,7 +67,7 @@ public class ReviewService {
         return new ResponseEntity<>(new PaginatedResponseDto<>(vehicleReviews.size(), vehicleReviews), HttpStatus.OK);
     }
 
-    public ResponseEntity<ReviewDto> addDriverReview(Long rideId, String email, CreateReviewDto createReviewDto) throws RideNotFoundException {
+    public ResponseEntity<ReviewDto> addDriverReview(Long rideId, String email, @Valid ReviewDto createReviewDto) throws RideNotFoundException {
         DriverReview review = new DriverReview();
 
         Ride ride = rideRepository.findById(rideId).orElseThrow(RideNotFoundException::new);
@@ -84,8 +85,8 @@ public class ReviewService {
 
     }
 
-    public ResponseEntity<PaginatedResponseDto<ReviewDto>> getDriverReviews(Long driverId) throws RideNotFoundException {
-        Driver driver = driverRepository.findById(driverId).orElseThrow(RideNotFoundException::new);
+    public ResponseEntity<PaginatedResponseDto<ReviewDto>> getDriverReviews(Long driverId) throws RideNotFoundException, DriverNotFoundException {
+        Driver driver = driverRepository.findById(driverId).orElseThrow(DriverNotFoundException::new);
         Collection<ReviewDto> driverReviews = new ArrayList<>();
         driverReviewRepository.findAllByDriverId(driver.getId()).forEach(review -> driverReviews.add(new ReviewDto(review)));
         return new ResponseEntity<>(new PaginatedResponseDto<>(driverReviews.size(), driverReviews), HttpStatus.OK);

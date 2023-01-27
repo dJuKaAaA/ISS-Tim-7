@@ -85,7 +85,7 @@ public class PassengerController {
     }
 
     @GetMapping(value = "/{id}")
-    @PreAuthorize("hasRole('PASSENGER')")
+    @PreAuthorize("hasRole('PASSENGER') or hasRole('DRIVER')")
     public ResponseEntity<UserDto> findPassengerByID(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id) throws UserNotFoundException {
         Passenger passenger = passengerService.findById(id);
         if (passenger == null) throw new UserNotFoundException("Passenger does not exist!") {
@@ -99,9 +99,13 @@ public class PassengerController {
         Passenger passenger = passengerService.findById(id);
         if (passenger == null) throw new UserNotFoundException("Passenger does not exist!") {
         };
-        Passenger updatedPassenger = new Passenger(passengerRequestDto);
-        updatedPassenger.setId(passenger.getId());
-        passengerService.save(updatedPassenger);
+        passenger.setFirstName(passengerRequestDto.getName());
+        passenger.setLastName(passengerRequestDto.getSurname());
+        passenger.setProfilePicture(passengerRequestDto.getProfilePicture());
+        passenger.setPhoneNumber(passengerRequestDto.getTelephoneNumber());
+        passenger.setEmailAddress(passengerRequestDto.getEmail());
+        passenger.setAddress(passengerRequestDto.getAddress());
+        passengerService.save(passenger);
         return new ResponseEntity<>(new UserDto(passenger), HttpStatus.OK);
     }
 
@@ -112,7 +116,7 @@ public class PassengerController {
         if(passengerService.findById(id) == null)
             throw new UserNotFoundException("Passenger does not exist!");
         Collection<RideDto> rides = new ArrayList<>();
-        for (Ride ride : rideService.findRideByPassengerId(id, page)) {
+        for (Ride ride : rideService.findRideByPassengerId(id)) {
             rides.add(new RideDto(ride));
         }
         return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);

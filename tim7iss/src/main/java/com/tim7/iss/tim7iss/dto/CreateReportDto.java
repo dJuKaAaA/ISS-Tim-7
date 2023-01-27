@@ -4,17 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class EndShiftDto {
-
+@NoArgsConstructor
+@Data
+public class CreateReportDto {
     @Pattern(regexp = "^([1-9]|([012][0-9])|(3[01]))\\.([0]{0,1}[1-9]|1[012])\\.\\d\\d\\d\\d\\s([0-1]?[0-9]|2?[0-3]):([0-5]\\d):([0-5]\\d)$",
             message = "Invalid date format")
-    @NotBlank(message = "End shift cannot be blank")
-    private String end;
-
+    String startDate;
+    @Pattern(regexp = "^([1-9]|([012][0-9])|(3[01]))\\.([0]{0,1}[1-9]|1[012])\\.\\d\\d\\d\\d\\s([0-1]?[0-9]|2?[0-3]):([0-5]\\d):([0-5]\\d)$",
+            message = "Invalid date format")
+    String endDate;
 }

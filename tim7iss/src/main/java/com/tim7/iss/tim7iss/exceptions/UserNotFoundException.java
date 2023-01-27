@@ -5,7 +5,7 @@ import com.tim7.iss.tim7iss.models.User;
 public class UserNotFoundException extends Exception {
 
     public UserNotFoundException() {
-        super("User not found");
+        super("User does not exist!");
     }
 
     public UserNotFoundException(String message) {

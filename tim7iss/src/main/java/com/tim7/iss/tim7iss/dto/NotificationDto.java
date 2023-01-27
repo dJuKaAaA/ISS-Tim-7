@@ -18,13 +18,16 @@ public class NotificationDto {
     private Long userId;
     private Long rideId;
 
+
     public NotificationDto(Notification notification) {
         this.id = notification.getId();
         this.date = notification.getDate().format(Constants.customDateTimeFormat);
         this.content = notification.getContent();
         this.show = notification.isShow();
         this.userId = notification.getUser().getId();
-        this.rideId = notification.getRide().getId();
+        if (notification.getRide() != null) {
+            this.rideId = notification.getRide().getId();
+        }
     }
 
 

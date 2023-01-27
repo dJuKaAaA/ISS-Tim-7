@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @AllArgsConstructor
@@ -17,6 +18,7 @@ public class ChangePasswordDto {
             @Pattern(regexp = "^(?=.*[A-Z]).+", message = "Password must contain at least one uppercase letter"),
             @Pattern(regexp = "^(?=.{8,20}).+", message = "Password must be between 8 and 20 characters")
     })
+    @NotNull
     public String newPassword;
     @Pattern.List({
             @Pattern(regexp = "^(?=.*[0-9]).+", message = "Password must contain at least one number"),
@@ -24,5 +26,6 @@ public class ChangePasswordDto {
             @Pattern(regexp = "^(?=.*[A-Z]).+", message = "Password must contain at least one uppercase letter"),
             @Pattern(regexp = "^(?=.{8,20}).+", message = "Password must be between 8 and 20 characters")
     })
+    @NotNull
     public String oldPassword;
 }

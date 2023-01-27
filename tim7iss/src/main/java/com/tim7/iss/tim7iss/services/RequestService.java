@@ -2,6 +2,8 @@ package com.tim7.iss.tim7iss.services;
 
 import com.tim7.iss.tim7iss.dto.DriverChangeDocumentRequestDto;
 import com.tim7.iss.tim7iss.dto.DriverChangeProfileRequestDto;
+import com.tim7.iss.tim7iss.exceptions.DocumentNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.DriverNotFoundException;
 import com.tim7.iss.tim7iss.models.Document;
 import com.tim7.iss.tim7iss.models.Driver;
 import com.tim7.iss.tim7iss.models.DriverDocumentChangeRequest;
@@ -41,19 +43,20 @@ public class RequestService {
         return new ResponseEntity<>(new DriverChangeProfileRequestDto(), HttpStatus.OK);
     }
 
-    public HttpStatus saveRequest(Long driverId,
-                                  DriverChangeProfileRequestDto requestDto) {
 
-        Driver driver = driverRepository.findById(driverId).get();
+    public HttpStatus saveRequest(Long driverId,
+                                  DriverChangeProfileRequestDto requestDto) throws DriverNotFoundException, DocumentNotFoundException {
+
+        Driver driver = driverRepository.findById(driverId).orElseThrow(DriverNotFoundException::new);
 
         Set<DriverDocumentChangeRequest> documentChangeRequests = new HashSet<>();
         for (DriverChangeDocumentRequestDto doc : requestDto.getDocuments()) {
             if (doc.getDocumentId() == null) {
-                // Dodavanje novog
+                // Dodavanje novog dokumenta
                 documentChangeRequests.add(new DriverDocumentChangeRequest(doc, null));
             } else {
                 // Brisanje dokumenta
-                Document document = documentRepository.findById(doc.getDocumentId()).get();
+                Document document = documentRepository.findById(doc.getDocumentId()).orElseThrow(DocumentNotFoundException::new);
                 documentChangeRequests.add(new DriverDocumentChangeRequest(null, null, document));
             }
         }

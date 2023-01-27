@@ -33,6 +33,7 @@ public class Notification {
     @JoinColumn(name = "ride_id", referencedColumnName = "id")
     private Ride ride;
 
+
     public Notification(NotificationDto notificationDto, User user, Ride ride) {
         this.id = notificationDto.getId();
         this.date = LocalDateTime.parse(notificationDto.getDate(), Constants.customDateTimeFormat);

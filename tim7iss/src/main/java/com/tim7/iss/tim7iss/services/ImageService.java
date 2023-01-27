@@ -7,6 +7,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 @Service
 public class ImageService {
@@ -16,7 +17,7 @@ public class ImageService {
         boolean valid = true;
         try {
             // Decode the Base64-encoded string
-            byte[] bytes = DatatypeConverter.parseBase64Binary(imageString);
+            byte[] bytes = Base64.getDecoder().decode(imageString);
 
             // Check if the byte array represents a valid image
             BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes));

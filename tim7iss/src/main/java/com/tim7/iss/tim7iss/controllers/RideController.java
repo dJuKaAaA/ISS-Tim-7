@@ -114,7 +114,7 @@ public class RideController {
     }
 
     @GetMapping(value = "/driver/{driverId}/active")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     public ResponseEntity<RideDto> getDriversActiveRide(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long driverId) throws UserNotFoundException, RideNotFoundException {
         List<RideDto>rides = rideService.getDriversActiveRide(driverService, driverId);
         return new ResponseEntity<>(rides.get(0), HttpStatus.OK);
@@ -122,7 +122,7 @@ public class RideController {
 
     //Delete fixed id
     @GetMapping(value = "/passenger/{passengerId}/active")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PASSENGER')")
     public ResponseEntity<RideDto> getPassengersActiveRide(@PathVariable Long passengerId, @RequestHeader(value = "Authorization") String authHeader) throws RideNotFoundException {
         List<RideDto>rides = rideService.getPassengersActiveRide(passengerId);
         return new ResponseEntity<>(rides.get(0), HttpStatus.OK);
@@ -130,7 +130,7 @@ public class RideController {
 
 
     @GetMapping(value = "/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PASSENGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PASSENGER', 'DRIVER')")
     public ResponseEntity<RideDto> getRideById(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id) throws RideNotFoundException {
         RideDto ride = rideService.getRideById(id);
         return new ResponseEntity<>(ride, HttpStatus.OK);
@@ -196,7 +196,6 @@ public class RideController {
         RideDto ride = rideService.setDriver(driverService, rideAddDriverDto);
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
-
 
     @CrossOrigin(origins = "http://localhost:4200")
     @MessageMapping("/send/scheduled/ride")

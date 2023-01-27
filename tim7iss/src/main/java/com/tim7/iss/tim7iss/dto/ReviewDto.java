@@ -16,12 +16,9 @@ public class ReviewDto {
     @Null(message = "Id should not be provided")
     private Long id;
     @Min(value = 1, message = "Rating cannot be less than 1")
-    @Min(value = 5, message = "Rating cannot be greater than 5")
+    @Max(value = 5, message = "Rating cannot be greater than 5")
     private Float rating;
 
-    @NotBlank
-    @NotEmpty
-    @NotNull
     private String comment;
     private UserRefDto passenger;
 
