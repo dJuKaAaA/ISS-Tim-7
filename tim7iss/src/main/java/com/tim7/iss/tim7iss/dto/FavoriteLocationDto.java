@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,9 +17,13 @@ import java.util.Set;
 @AllArgsConstructor
 public class FavoriteLocationDto {
     private Long id;
+    @NotEmpty
     private String favoriteName;
+    @NotNull
     private Set<RouteDto> locations = new HashSet<>();
+    @NotNull
     private Set<UserRefDto> passengers = new HashSet<>();
+    @NotNull
     private String vehicleType;
     @NotNull(message = "Baby transport must be provided")
     private boolean babyTransport;
