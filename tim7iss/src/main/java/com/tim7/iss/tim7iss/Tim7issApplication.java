@@ -67,9 +67,10 @@ public class Tim7issApplication {
     // DISCLAIMER: for testing purposes
     @Bean
     protected InitializingBean sendDatabase() {
-        return this::testDataDjukanovic;
+//        return this::testDataDjukanovic;
 //        return this::testDataMartic;
 //        return this::testDataStanojlovic;
+        return this::generateTestDataInDataBase;
     }
 
     private void testDataDjukanovic() throws IOException {
@@ -192,4 +193,85 @@ public class Tim7issApplication {
     private void testDataStanojlovic() {
 
     }
+
+    private void generateTestDataInDataBase() throws IOException {
+
+
+        Random random = new Random();
+
+        // vehicle type creation
+
+        // vehicle type creation
+        VehicleType vehicleType = vehicleTypeRepository.save(new VehicleType(null, 100, "STANDARD"));
+
+        // role creation
+        Role adminRole = roleRepository.save(new Role(null, "ROLE_ADMIN"));
+        Role driverRole = roleRepository.save(new Role(null, "ROLE_DRIVER"));
+        Role passengerRole = roleRepository.save(new Role(null, "ROLE_PASSENGER"));
+        Role anonymousRole = roleRepository.save(new Role(null, "ROLE_ANONYMOUS"));
+
+        // id=1
+        Driver driver = new Driver(new UserDto(null, "Mika", "Mikic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372222", "mika.mikic@email.com", "Mikina adresa", "$2a$12$4z3y3x45WYUdy98AhcW5Vee6UmIAClGcs61e1yJZpwpaobzkm5asa"));  // Mika1234
+        driver.setEnabled(true);
+        driver.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, vehicleType, driver, new Location(null, "Fakultet tehnickih nauka Univerziteta u Novom Sadu, Trg Dositeja Obradovica, Novi Sad", 45.24648813f, 19.8516641f)));
+        driver.setWorkHours(Set.of(new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 19, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 19, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 20, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 20, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 21, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 21, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 22, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 22, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 23, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 23, 16, 0))));
+        driver.setRoles(List.of(driverRole));
+        driverRepository.save(driver);
+
+        // id=2
+        Driver driver2 = new Driver(new UserDto(null, "Pera", "Peric", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372222", "pera.peric@email.com", "Perina adresa", "$2a$12$YzM..B5oG29ezUdF3pC6qexJQpw4UJSxdoaQD9Y.aiURFBuU4/3Qe"));  // Pera1234
+        driver2.setEnabled(true);
+        driver2.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, vehicleType, driver2, new Location(null, "Bistrica, Novi Sad", 45.25207768500065f, 19.799845506488243f)));
+        driver2.setRoles(List.of(driverRole));
+        driverRepository.save(driver2);
+
+
+        // passenger creation
+        Passenger passenger1 = new Passenger(new UserDto(null, "Petar", "Petrovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372727", "petar.petrovic@email.com", "Petrova adresa", "$2a$12$lA8WEWzn3E7l53E2HYpX3ee0q.ZOVDjY34jNYTs/n9ucvebpY3v86")); // Petar123
+        passenger1.setRoles(List.of(passengerRole));
+        passenger1.setEnabled(true);
+        passengerRepository.save(passenger1);
+        Passenger passenger2 = new Passenger(new UserDto(null, "Jovan", "Jovanovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "jovan.jovanovic@email.com", "Jovanova adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passenger2.setRoles(List.of(passengerRole));
+        passenger2.setEnabled(true);
+        passengerRepository.save(passenger2);
+        Passenger passenger3 = new Passenger(new UserDto(null, "Mirko", "Mirkovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "00381737111", "mirko.mirkovic@email.com", "Mirkova adresa", "$2a$12$nYULTJpydL5pFRSxQ30DnOlhu/m/O6U4CoWLqea82PYKNsswHCEsG"));  // Mirko123
+        passenger3.setRoles(List.of(passengerRole));
+        passenger3.setEnabled(true);
+        passengerRepository.save(passenger3);
+        Passenger passenger4 = new Passenger(new UserDto(null, "Aleksandar", "Popovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "0038173724234", "aleksandar.popovic@email.com", "Aleksandrova adresa", "$2a$12$yNYY1KoO4DDFSLzqRBXPJ.EJU3us/O8ws5d45pQ856BoiS70mslyu"));  // Aleksandar123
+        passenger4.setRoles(List.of(passengerRole));
+        passenger4.setEnabled(true);
+        passengerRepository.save(passenger4);
+        Passenger passenger5 = new Passenger(new UserDto(null, "Vuk", "Perisic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372727", "vuk.perisic@email.com", "Vukova adresa", "$2a$12$fCHBcs11T5oI78NcRModiuCn5TjFE1QLn9x1awvf0meSO7LqSepc2"));  // Vuk12345
+        passenger5.setRoles(List.of(passengerRole));
+        passenger5.setEnabled(true);
+        passengerRepository.save(passenger5);
+
+
+        // declaring routes that will be saved when the ride that contains them gets created
+        Route route1 = new Route(null, 1000, 3, new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija", 45.24914205013315f, 19.843100056994654f), new Location(null, "Srpsko narodno pozorište, Pozorišni trg, Novi Sad, Srbija", 45.25510777309239f, 19.842949154190308f));
+        Route route2 = new Route(null, 1900, 5, new Location(null, "Katolicka Porta 4, Novi Sad", 45.25642044682303f, 19.845453240699275f), new Location(null, "Dunavski Park, Dunavska, Novi Sad, Srbija", 45.25539880319645f, 19.85058802720829f));
+        Route route3 = new Route(null, 3600, 9, new Location(null, "NTP NS, Fruškogorska, Novi Sad, Serbia", 45.24475880747688f, 19.84708251359552f), new Location(null, "Knin, Novi Sad, Serbia", 45.25433739645546f, 19.820878211862986f));
+        Route route4 = new Route(null, 6700, 10, new Location(null, "Prime Training Facility, Svetozara Miletića, Novi Sad, Srbija", 45.257847680306085f, 19.843377640699245f), new Location(null, "Police Academy, Železnička, Sremska Kamenica, Srbija", 45.22163647056052f, 19.850156546431652f));
+        Route route5 = new Route(null, 5400, 11, new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija", 45.24914205013315f, 19.843100056994654f), new Location(null, "Sportski Centar “Slana Bara”, Sentandrejski put, Novi Sad, Srbija", 45.29135042557076f, 19.824244340624777f));
+
+        // ride creation
+        // TODO: Make at least 20
+        // TODO: Place the right price depending on the vehicle type and route distance
+        // TODO: Place the right ride length
+        Ride ride1 = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(random.nextInt(60, 1400)), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1, passenger2, passenger3), null, List.of(route1.clone())));
+        Ride ride2 = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(random.nextInt(1500, 2800)), LocalDateTime.now().plusMinutes(random.nextInt(2900, 3000)), route3.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger4, passenger5), null, List.of(route3.clone())));
+
+
+        // creating vehicles
+        locationRepository.save(new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f));
+        locationRepository.save(new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f));
+        vehicleRepository.save(new Vehicle(null, "BMW iXM60", "PGAA112", 5, false, false, vehicleType, null, new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f)));
+        vehicleRepository.save(new Vehicle(null, "BMW iX3", "PGAA113", 5, true, true, vehicleType, null, new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f)));
+    }
 }
+
+
+
+

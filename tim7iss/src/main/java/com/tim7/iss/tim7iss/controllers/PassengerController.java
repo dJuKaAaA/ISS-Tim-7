@@ -116,7 +116,7 @@ public class PassengerController {
         if(passengerService.findById(id) == null)
             throw new UserNotFoundException("Passenger does not exist!");
         Collection<RideDto> rides = new ArrayList<>();
-        for (Ride ride : rideService.findRideByPassengerId(id, page)) {
+        for (Ride ride : rideService.findRideByPassengerId(id)) {
             rides.add(new RideDto(ride));
         }
         return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
