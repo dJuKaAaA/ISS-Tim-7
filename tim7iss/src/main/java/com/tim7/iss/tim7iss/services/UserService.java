@@ -106,11 +106,11 @@ public class UserService implements UserDetailsService {
         Collection<RideDto> rides = new ArrayList<>();
 
         if (user instanceof Driver driver) {
-            rideRepository.findRidesByDriverId(driver.getId(), pageable).forEach(ride -> rides.add(new RideDto(ride)));
+            rideRepository.findRidesByDriverId(driver.getId()).forEach(ride -> rides.add(new RideDto(ride)));
             return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
 
         } else if (user instanceof Passenger passenger) {
-            rideRepository.findRidesByPassengersId(passenger.getId(), pageable).forEach(ride -> rides.add(new RideDto(ride)));
+            rideRepository.findRidesByPassengersId(passenger.getId()).forEach(ride -> rides.add(new RideDto(ride)));
             return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
         }
         throw new UserNotFoundException();
