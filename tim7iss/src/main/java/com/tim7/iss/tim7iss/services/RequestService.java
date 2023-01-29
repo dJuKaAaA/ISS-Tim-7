@@ -14,10 +14,13 @@ import com.tim7.iss.tim7iss.repositories.DriverRepository;
 import com.tim7.iss.tim7iss.repositories.DriverRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -41,6 +44,24 @@ public class RequestService {
 
         // TODO dodati
         return new ResponseEntity<>(new DriverChangeProfileRequestDto(), HttpStatus.OK);
+    }
+
+    public ResponseEntity<List<DriverChangeProfileRequestDto>> getAllRequests(){
+        List<DriverProfileChangeRequest> requests = driverRequestRepository.findAll();
+        List<DriverChangeProfileRequestDto> requestsDto = new ArrayList<>();
+        for(DriverProfileChangeRequest request: requests){
+            requestsDto.add(new DriverChangeProfileRequestDto(request));
+        }
+        return new ResponseEntity<>(requestsDto, HttpStatus.OK);
+    }
+
+    public ResponseEntity<List<DriverChangeProfileRequestDto>> getAllPendingRequests() {
+        List<DriverProfileChangeRequest> requests = driverRequestRepository.findDriverProfileChangeRequestsByStatus("PENDING");
+        List<DriverChangeProfileRequestDto> requestsDto = new ArrayList<>();
+        for (DriverProfileChangeRequest request : requests) {
+            requestsDto.add(new DriverChangeProfileRequestDto(request));
+        }
+        return new ResponseEntity<>(requestsDto, HttpStatus.OK);
     }
 
 

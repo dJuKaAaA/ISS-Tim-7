@@ -4,6 +4,7 @@ import com.tim7.iss.tim7iss.dto.UserDto;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
+import com.tim7.iss.tim7iss.services.RequestService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -52,8 +53,12 @@ public class Tim7issApplication {
     private VehicleTypeRepository vehicleTypeRepository;
     @Autowired
     private UserActivationRepository userActivationRepository;
+
     @Autowired
     private FavoriteLocationRepository favoriteLocationRepository;
+
+    @Autowired
+    private RequestService requestService;
 
     public static void main(String[] args) {
         SpringApplication.run(Tim7issApplication.class, args);
@@ -70,7 +75,7 @@ public class Tim7issApplication {
 //        return this::testDataDjukanovic;
 //        return this::testDataMartic;
 //        return this::testDataStanojlovic;
-        return this::generateTestDataInDataBase;
+        return this::testDataDjukanovic;
     }
 
     private void testDataDjukanovic() throws IOException {

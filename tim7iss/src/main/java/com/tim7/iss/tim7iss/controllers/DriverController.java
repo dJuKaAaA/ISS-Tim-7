@@ -223,6 +223,18 @@ public class DriverController {
         return new ResponseEntity<>(isActiveDto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/request")
+    public ResponseEntity<List<DriverChangeProfileRequestDto>>getAllRequests(){
+        return requestService.getAllRequests();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/request/pending")
+    public ResponseEntity<List<DriverChangeProfileRequestDto>>getAllPendingRequests(){
+        return requestService.getAllRequests();
+    }
+
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @PutMapping("/{id}/activity")
     public ResponseEntity<ActivityDto> changeActivity(@PathVariable Long id, @Valid @RequestBody ActivityDto activity)

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -68,6 +69,18 @@ public class DriverProfileChangeRequest {
         this.driver = driver;
         this.driverDocumentChangeRequests = driverDocumentChangeRequests;
 
+    }
+
+    public DriverProfileChangeRequest(User user){
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.profilePicture = user.getProfilePicture();
+        this.email = user.getEmailAddress();
+        this.address = user.getAddress();
+        this.isMessageDisplayed = false;
+        this.status = "PENDING";
+        this.driver = driver;
+        this.driverDocumentChangeRequests = new HashSet<>();
     }
 
 }
