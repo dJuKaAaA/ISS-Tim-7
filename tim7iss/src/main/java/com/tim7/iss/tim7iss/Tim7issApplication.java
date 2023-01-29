@@ -314,7 +314,7 @@ public class Tim7issApplication {
         deleteDriverDocumentChangeRequest.setDriverProfileChangeRequest(driverProfileChangeRequest);
         deleteDriverDocumentChangeRequest.setDocument(document);
         deleteDriverDocumentChangeRequest.setDocumentName(null);
-        deleteDriverDocumentChangeRequest.setDocumentImage(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
+        deleteDriverDocumentChangeRequest.setDocumentImage(null);
         driverDocumentRequestRepository.save(deleteDriverDocumentChangeRequest);
 
 
