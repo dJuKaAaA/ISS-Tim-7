@@ -30,8 +30,7 @@ public class Tim7issApplication {
     private PanicRepository panicRepository;
     @Autowired
     private AdminRepository adminRepository;
-    @Autowired
-    private DocumentRepository documentRepository;
+
     @Autowired
     private DriverRepository driverRepository;
     @Autowired
@@ -44,16 +43,22 @@ public class Tim7issApplication {
     private RideRepository rideRepository;
     @Autowired
     private RoleRepository roleRepository;
-    @Autowired
-    private RoutesRepository routeRepository;
+
     @Autowired
     private VehicleRepository vehicleRepository;
     @Autowired
     private VehicleTypeRepository vehicleTypeRepository;
     @Autowired
-    private UserActivationRepository userActivationRepository;
+    private DocumentRepository documentRepository;
+
     @Autowired
-    private FavoriteLocationRepository favoriteLocationRepository;
+    DriverDocumentRequestRepository driverDocumentRequestRepository;
+
+    @Autowired
+    DriverRequestRepository driverRequestRepository;
+
+
+
 
     public static void main(String[] args) {
         SpringApplication.run(Tim7issApplication.class, args);
@@ -278,6 +283,41 @@ public class Tim7issApplication {
         locationRepository.save(new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f));
         vehicleRepository.save(new Vehicle(null, "BMW iXM60", "PGAA112", 5, false, false, vehicleType, null, new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f)));
         vehicleRepository.save(new Vehicle(null, "BMW iX3", "PGAA113", 5, true, true, vehicleType, null, new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f)));
+
+        Document document = new Document();
+        document.setPicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
+        document.setName("Licna karta");
+        document.setDriver(driver);
+        documentRepository.save(document);
+
+        DriverProfileChangeRequest driverProfileChangeRequest = new DriverProfileChangeRequest();
+        driverProfileChangeRequest.setFirstName("Marko");
+        driverProfileChangeRequest.setLastName("Maric");
+        driverProfileChangeRequest.setProfilePicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
+        driverProfileChangeRequest.setPhoneNumber("06014102999");
+        driverProfileChangeRequest.setEmail("ivanmartic@gmail.com");
+        driverProfileChangeRequest.setAddress("adresa");
+        driverProfileChangeRequest.setMessageDisplayed(false);
+        driverProfileChangeRequest.setStatus("PENDING");
+        driverProfileChangeRequest.setDriver(driver);
+
+        driverRequestRepository.save(driverProfileChangeRequest);
+
+        DriverDocumentChangeRequest newDriverDocumentChangeRequest = new DriverDocumentChangeRequest();
+        newDriverDocumentChangeRequest.setDriverProfileChangeRequest(driverProfileChangeRequest);
+        newDriverDocumentChangeRequest.setDocument(null);
+        newDriverDocumentChangeRequest.setDocumentName("Pera");
+        newDriverDocumentChangeRequest.setDocumentImage(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
+        driverDocumentRequestRepository.save(newDriverDocumentChangeRequest);
+
+        DriverDocumentChangeRequest deleteDriverDocumentChangeRequest = new DriverDocumentChangeRequest();
+        deleteDriverDocumentChangeRequest.setDriverProfileChangeRequest(driverProfileChangeRequest);
+        deleteDriverDocumentChangeRequest.setDocument(document);
+        deleteDriverDocumentChangeRequest.setDocumentName(null);
+        deleteDriverDocumentChangeRequest.setDocumentImage(null);
+        driverDocumentRequestRepository.save(deleteDriverDocumentChangeRequest);
+
+
     }
 }
 

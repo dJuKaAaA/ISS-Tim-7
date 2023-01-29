@@ -25,14 +25,19 @@ import java.util.Map;
 public class RideController {
     @Autowired
     PanicService panicService;
+
     @Autowired
     VehicleTypeService vehicleTypeService;
+
     @Autowired
     RoutesService routesService;
+
     @Autowired
     MapService mapService;
+
     @Autowired
     FavoriteLocationService favoriteLocationService;
+
     @Autowired
     LocationService locationService;
     @Autowired
@@ -151,7 +156,7 @@ public class RideController {
 
     @PutMapping(value = "{id}/cancel")
     @PreAuthorize("hasRole('DRIVER')")
-    public ResponseEntity<RideDto> rejectRide(@PathVariable Long id, @Valid @RequestBody PanicCreateDto rideReject, @RequestHeader("Authorization") String authHeader) throws RideNotFoundException, RideCancelationException,  DriverNotFoundException {
+    public ResponseEntity<RideDto> rejectRide(@PathVariable Long id, @Valid @RequestBody PanicCreateDto rideReject, @RequestHeader("Authorization") String authHeader) throws RideNotFoundException, RideCancelationException, DriverNotFoundException {
         String token = tokenUtils.getToken(authHeader);
         String userEmail = tokenUtils.getEmailFromToken(token);
         RideDto ride = rideService.rejectRide(id, userEmail, rideReject);

@@ -42,6 +42,7 @@ public class UserController {
     private final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     @Autowired
     UserService userService;
+
     @Autowired
     MailService mailService;
     @Autowired
