@@ -227,22 +227,31 @@ public class Tim7issApplication {
 
 
         // passenger creation
+        // id =3
         Passenger passenger1 = new Passenger(new UserDto(null, "Petar", "Petrovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372727", "petar.petrovic@email.com", "Petrova adresa", "$2a$12$lA8WEWzn3E7l53E2HYpX3ee0q.ZOVDjY34jNYTs/n9ucvebpY3v86")); // Petar123
         passenger1.setRoles(List.of(passengerRole));
         passenger1.setEnabled(true);
         passengerRepository.save(passenger1);
+
+        // id = 4
         Passenger passenger2 = new Passenger(new UserDto(null, "Jovan", "Jovanovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "jovan.jovanovic@email.com", "Jovanova adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
         passenger2.setRoles(List.of(passengerRole));
         passenger2.setEnabled(true);
         passengerRepository.save(passenger2);
+
+        // id = 5
         Passenger passenger3 = new Passenger(new UserDto(null, "Mirko", "Mirkovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "00381737111", "mirko.mirkovic@email.com", "Mirkova adresa", "$2a$12$nYULTJpydL5pFRSxQ30DnOlhu/m/O6U4CoWLqea82PYKNsswHCEsG"));  // Mirko123
         passenger3.setRoles(List.of(passengerRole));
         passenger3.setEnabled(true);
         passengerRepository.save(passenger3);
+
+        // id = 6
         Passenger passenger4 = new Passenger(new UserDto(null, "Aleksandar", "Popovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "0038173724234", "aleksandar.popovic@email.com", "Aleksandrova adresa", "$2a$12$yNYY1KoO4DDFSLzqRBXPJ.EJU3us/O8ws5d45pQ856BoiS70mslyu"));  // Aleksandar123
         passenger4.setRoles(List.of(passengerRole));
         passenger4.setEnabled(true);
         passengerRepository.save(passenger4);
+
+        // id = 7
         Passenger passenger5 = new Passenger(new UserDto(null, "Vuk", "Perisic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372727", "vuk.perisic@email.com", "Vukova adresa", "$2a$12$fCHBcs11T5oI78NcRModiuCn5TjFE1QLn9x1awvf0meSO7LqSepc2"));  // Vuk12345
         passenger5.setRoles(List.of(passengerRole));
         passenger5.setEnabled(true);
@@ -261,7 +270,7 @@ public class Tim7issApplication {
         // TODO: Place the right price depending on the vehicle type and route distance
         // TODO: Place the right ride length
         Ride ride1 = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(random.nextInt(60, 1400)), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1, passenger2, passenger3), null, List.of(route1.clone())));
-        Ride ride2 = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(random.nextInt(1500, 2800)), LocalDateTime.now().plusMinutes(random.nextInt(2900, 3000)), route3.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger4, passenger5), null, List.of(route3.clone())));
+        Ride ride2 = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(random.nextInt(1500, 2800)), LocalDateTime.now().plusMinutes(random.nextInt(2900, 3000)), route3.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger4), null, List.of(route3.clone())));
 
 
         // creating vehicles

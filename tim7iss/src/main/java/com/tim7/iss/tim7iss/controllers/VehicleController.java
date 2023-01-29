@@ -3,6 +3,7 @@ package com.tim7.iss.tim7iss.controllers;
 import com.tim7.iss.tim7iss.dto.GeoCoordinateDto;
 import com.tim7.iss.tim7iss.dto.PaginatedResponseDto;
 import com.tim7.iss.tim7iss.dto.VehicleDto;
+import com.tim7.iss.tim7iss.exceptions.DriverNotFoundException;
 import com.tim7.iss.tim7iss.exceptions.VehicleNotAssignedException;
 import com.tim7.iss.tim7iss.exceptions.VehicleNotFoundException;
 import com.tim7.iss.tim7iss.models.Location;
@@ -80,7 +81,7 @@ public class VehicleController {
     }
 
     @PutMapping("/{id}/driver/{driver_id}")
-    public ResponseEntity<VehicleDto> setDriver(@PathVariable Long id, @PathVariable Long driver_id){
+    public ResponseEntity<VehicleDto> setDriver(@PathVariable Long id, @PathVariable Long driver_id) throws DriverNotFoundException {
         Vehicle vehicle = vehicleRepository.findById(id).get();  // TODO: Refactor (put the logic in the service class)
         vehicle.setDriver(driverService.findById(driver_id));
         vehicleRepository.save(vehicle);
