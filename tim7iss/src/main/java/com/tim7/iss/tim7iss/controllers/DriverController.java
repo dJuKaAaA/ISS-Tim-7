@@ -3,11 +3,13 @@ package com.tim7.iss.tim7iss.controllers;
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.global.Constants;
-import com.tim7.iss.tim7iss.models.*;
+import com.tim7.iss.tim7iss.models.Document;
+import com.tim7.iss.tim7iss.models.Driver;
+import com.tim7.iss.tim7iss.models.Vehicle;
+import com.tim7.iss.tim7iss.models.WorkHour;
 import com.tim7.iss.tim7iss.repositories.DriverRepository;
 import com.tim7.iss.tim7iss.services.*;
 import com.tim7.iss.tim7iss.util.TokenUtils;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,8 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 @Transactional
 @RestController
@@ -86,24 +89,21 @@ public class DriverController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto driverRequestBodyDto)
-            throws EmailAlreadyExistsException, NotAnImageException, LargeImageException {
+    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto driverRequestBodyDto) throws EmailAlreadyExistsException, NotAnImageException, LargeImageException {
         Driver newDriver = driverService.createAccount(driverRequestBodyDto);
         return new ResponseEntity<>(new UserDto(newDriver), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> save(@PathVariable Long id, @Valid @RequestBody UserDto driverChanges)
-            throws DriverNotFoundException, NotAnImageException, LargeImageException {
+    public ResponseEntity<UserDto> save(@PathVariable Long id, @Valid @RequestBody UserDto driverChanges) throws DriverNotFoundException, NotAnImageException, LargeImageException {
         Driver updatedDriver = driverService.makeChangesToAccount(id, driverChanges);
         return new ResponseEntity<>(new UserDto(updatedDriver), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @GetMapping("/{id}/documents")
-    public ResponseEntity<Collection<DriverDocumentDto>> getDocuments(@PathVariable Long id)
-            throws DriverNotFoundException {
+    public ResponseEntity<Collection<DriverDocumentDto>> getDocuments(@PathVariable Long id) throws DriverNotFoundException {
         Collection<DriverDocumentDto> documentsDto = driverService.getDriverDocumentsAsDto(id);
         return new ResponseEntity<>(documentsDto, HttpStatus.OK);
     }
@@ -117,81 +117,65 @@ public class DriverController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/documents")
-    public ResponseEntity<DriverDocumentDto> addDocument(@PathVariable Long id,
-                                                         @Valid @RequestBody DriverDocumentDto driverDocumentDto)
-            throws DriverNotFoundException, NotAnImageException, LargeImageException {
+    public ResponseEntity<DriverDocumentDto> addDocument(@PathVariable Long id, @Valid @RequestBody DriverDocumentDto driverDocumentDto) throws DriverNotFoundException, NotAnImageException, LargeImageException {
         Document newDocument = documentService.createDocumentForDriver(driverDocumentDto, id);
         return new ResponseEntity<>(new DriverDocumentDto(newDocument), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
     @GetMapping("/{id}/vehicle")
-    public ResponseEntity<VehicleDto> getVehicle(@PathVariable Long id)
-            throws DriverNotFoundException, VehicleNotAssignedException {
+    public ResponseEntity<VehicleDto> getVehicle(@PathVariable Long id) throws DriverNotFoundException, VehicleNotAssignedException {
         VehicleDto assignedVehicleDto = driverService.getAssignedVehicle(id);
         return new ResponseEntity<>(assignedVehicleDto, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/vehicle")
-    public ResponseEntity<VehicleDto> addVehicle(@PathVariable Long id,
-                                                 @Valid @RequestBody VehicleDto vehicleRequestBodyDto)
-            throws DriverNotFoundException, VehicleAlreadyAssignedException {
+    public ResponseEntity<VehicleDto> addVehicle(@PathVariable Long id, @Valid @RequestBody VehicleDto vehicleRequestBodyDto) throws DriverNotFoundException, VehicleAlreadyAssignedException {
         Vehicle newVehicle = vehicleService.createAndAssignToDriver(vehicleRequestBodyDto, id);
         return new ResponseEntity<>(new VehicleDto(newVehicle), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}/vehicle")
-    public ResponseEntity<VehicleDto> changeVehicle(@PathVariable Long id,
-                                                    @Valid @RequestBody VehicleDto vehicleRequestBodyDto)
-            throws DriverNotFoundException, VehicleNotAssignedException {
+    public ResponseEntity<VehicleDto> changeVehicle(@PathVariable Long id, @Valid @RequestBody VehicleDto vehicleRequestBodyDto) throws DriverNotFoundException, VehicleNotAssignedException {
         Vehicle updatedVehicle = vehicleService.makeChanges(vehicleRequestBodyDto, id);
         return new ResponseEntity<>(new VehicleDto(updatedVehicle), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @GetMapping("/{id}/working-hour")
-    public ResponseEntity<PaginatedResponseDto<WorkingHourDto>> getWorkHours(@PathVariable Long id, Pageable page)
-            throws DriverNotFoundException {
+    public ResponseEntity<PaginatedResponseDto<WorkingHourDto>> getWorkHours(@PathVariable Long id, Pageable page) throws DriverNotFoundException {
         PaginatedResponseDto<WorkingHourDto> paginatedWorkHours = driverService.getPaginatedWorkingHoursAsDto(id, page);
         return new ResponseEntity<>(paginatedWorkHours, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @PostMapping("/{id}/working-hour")
-    public ResponseEntity<WorkingHourDto> addWorkHour(@PathVariable Long id,
-                                                      @Valid @RequestBody StartShiftDto startShiftDto)
-            throws DriverNotFoundException, VehicleNotAssignedException, ShiftAlreadyOngoingException,
-            ShiftExceededException {
+    public ResponseEntity<WorkingHourDto> addWorkHour(@PathVariable Long id, @Valid @RequestBody StartShiftDto startShiftDto) throws DriverNotFoundException, VehicleNotAssignedException, ShiftAlreadyOngoingException, ShiftExceededException {
         WorkHour shiftStart = workHourService.startShiftForDriver(startShiftDto, id);
         return new ResponseEntity<>(new WorkingHourDto(shiftStart), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @GetMapping("/{id}/ride")
-    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable Long id, Pageable page)
-            throws DriverNotFoundException {
+    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable Long id, Pageable page) throws DriverNotFoundException {
         PaginatedResponseDto<RideDto> paginatedRides = rideService.getPaginatedRidesForDriverAsDto(id, page);
         return new ResponseEntity<>(paginatedRides, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @GetMapping("/working-hour/{workingHourId}")
-    public ResponseEntity<WorkingHourDto> getWorkHourDetails(@PathVariable Long workingHourId)
-            throws WorkHourNotFoundException {
+    public ResponseEntity<WorkingHourDto> getWorkHourDetails(@PathVariable Long workingHourId) throws WorkHourNotFoundException {
         WorkHour workHour = workHourService.getById(workingHourId);
         return new ResponseEntity<>(new WorkingHourDto(workHour), HttpStatus.OK);
     }
 
     /* Admin won't be able to access this endpoint even though he has authorization because this method uses
-    *  the value from the token to identify the driver so it can fetch their ongoing shift */
+     *  the value from the token to identify the driver so it can fetch their ongoing shift */
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @PutMapping("/working-hour/{workingHourId}")
-    public ResponseEntity<WorkingHourDto> changeWorkHour(@PathVariable Long workingHourId,
-                                                         @Valid @RequestBody EndShiftDto endShiftDto,
-                                                         Principal principal)
-            throws NoShiftOngoingException, DriverNotFoundException, VehicleNotAssignedException {
+    public ResponseEntity<WorkingHourDto> changeWorkHour(@PathVariable Long workingHourId, @Valid @RequestBody EndShiftDto endShiftDto, Principal principal) throws NoShiftOngoingException, DriverNotFoundException, VehicleNotAssignedException {
         WorkHour completedShift = workHourService.endShiftForDriver(endShiftDto, principal.getName());
         return new ResponseEntity<>(new WorkingHourDto(completedShift), HttpStatus.OK);
     }
@@ -202,18 +186,30 @@ public class DriverController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @PutMapping("/{id}/working-hour")
-    public ResponseEntity<WorkingHourDto> endShift(@PathVariable Long id,
-                                                   @Valid @RequestBody EndShiftDto endShiftDto)
-            throws DriverNotFoundException, VehicleNotAssignedException, NoShiftOngoingException {
+    public ResponseEntity<WorkingHourDto> endShift(@PathVariable Long id, @Valid @RequestBody EndShiftDto endShiftDto) throws DriverNotFoundException, VehicleNotAssignedException, NoShiftOngoingException {
         WorkHour completedShift = workHourService.endShiftForDriver(endShiftDto, id);
         return new ResponseEntity<>(new WorkingHourDto(completedShift), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('DRIVER') or hasRole('ADMIN')")
     @PostMapping("/request/{driverId}")
-    public HttpStatus saveRequest(@PathVariable Long driverId,
-                                  @RequestBody DriverChangeProfileRequestDto requestDto) throws DriverNotFoundException, DocumentNotFoundException {
+    public HttpStatus saveRequest(@PathVariable Long driverId, @RequestBody DriverChangeProfileRequestDto requestDto) throws DriverNotFoundException, DocumentNotFoundException {
         return requestService.saveRequest(driverId, requestDto);
+    }
+
+    @PreAuthorize("hasRole('DRIVER') or hasRole('ADMIN')")
+    @DeleteMapping("/request/{requestId}")
+    public HttpStatus saveRequest(@PathVariable Long requestId) {
+        requestService.deleteRequest(requestId);
+        return HttpStatus.OK;
+    }
+
+    @PreAuthorize("hasRole('DRIVER') or hasRole('ADMIN')")
+    @GetMapping("/request/isExist/{driverId}")
+    public ResponseEntity<RequestExistenceDto> isRequestExist(@PathVariable Long driverId) throws DriverNotFoundException {
+        boolean isRequestExist = requestService.isRequestExistForDriver(driverId);
+        RequestExistenceDto requestExistenceDto = new RequestExistenceDto(isRequestExist);
+        return new ResponseEntity<>(requestExistenceDto,HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
@@ -225,8 +221,7 @@ public class DriverController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @PutMapping("/{id}/activity")
-    public ResponseEntity<ActivityDto> changeActivity(@PathVariable Long id, @Valid @RequestBody ActivityDto activity)
-            throws DriverNotFoundException {
+    public ResponseEntity<ActivityDto> changeActivity(@PathVariable Long id, @Valid @RequestBody ActivityDto activity) throws DriverNotFoundException {
         driverService.setActivityState(activity, id);
         return new ResponseEntity<>(activity, HttpStatus.OK);
     }
@@ -240,8 +235,7 @@ public class DriverController {
 
     @GetMapping("/locations")
     public ResponseEntity<PaginatedResponseDto<DriverLocationDto>> fetchActivityAndLocations(Pageable page) {
-        PaginatedResponseDto<DriverLocationDto> paginatedDriverLocations = driverService
-                .getPaginatedLocationsAsDto(page);
+        PaginatedResponseDto<DriverLocationDto> paginatedDriverLocations = driverService.getPaginatedLocationsAsDto(page);
         return new ResponseEntity<>(paginatedDriverLocations, HttpStatus.OK);
     }
 
@@ -253,15 +247,12 @@ public class DriverController {
 
         if (socketMessageConverted != null) {
             if (socketMessageConverted.containsKey("rideId") && socketMessageConverted.get("rideId") != null) {
-                this.simpMessagingTemplate.convertAndSend("/socket-driver-movement/to-ride/" + socketMessageConverted.get("rideId"),
-                        socketMessageConverted);
+                this.simpMessagingTemplate.convertAndSend("/socket-driver-movement/to-ride/" + socketMessageConverted.get("rideId"), socketMessageConverted);
             }
             if (socketMessageConverted.containsKey("passengers")) {
-                @SuppressWarnings("unchecked")
-                List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
+                @SuppressWarnings("unchecked") List<Map<String, Object>> passengers = (List<Map<String, Object>>) socketMessageConverted.get("passengers");
                 for (Map<String, Object> passenger : passengers) {
-                    this.simpMessagingTemplate.convertAndSend("/socket-driver-movement/to-passenger/" + passenger.get("id"),
-                            socketMessageConverted);
+                    this.simpMessagingTemplate.convertAndSend("/socket-driver-movement/to-passenger/" + passenger.get("id"), socketMessageConverted);
                 }
 
             }

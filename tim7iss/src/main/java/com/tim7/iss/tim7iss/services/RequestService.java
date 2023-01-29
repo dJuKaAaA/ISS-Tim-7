@@ -44,6 +44,24 @@ public class RequestService {
         return new ResponseEntity<>(new DriverChangeProfileRequestDto(), HttpStatus.OK);
     }
 
+    public void deleteRequest(Long requestId) {
+        DriverProfileChangeRequest driverProfileChangeRequest = driverRequestRepository.findById(requestId).orElse(null);
+
+        if (driverProfileChangeRequest != null) {
+            List<DriverDocumentChangeRequest> documentRequests = driverDocumentRequestRepository.findAllByDriverProfileChangeRequest(driverProfileChangeRequest).get();
+
+            if (!documentRequests.isEmpty()) {
+                driverDocumentRequestRepository.deleteAll(documentRequests);
+            }
+        }
+    }
+
+    public boolean isRequestExistForDriver(Long driverId) throws DriverNotFoundException {
+        Driver driver = driverRepository.findById(driverId).orElseThrow(DriverNotFoundException::new);
+        DriverProfileChangeRequest driverProfileChangeRequest = driverRequestRepository.findByDriver(driver).orElse(null);
+        return driverProfileChangeRequest != null;
+    }
+
 
     public HttpStatus saveRequest(Long driverId, DriverChangeProfileRequestDto requestDto) throws DriverNotFoundException, DocumentNotFoundException {
         Driver driver = driverRepository.findById(driverId).orElseThrow(DriverNotFoundException::new);
