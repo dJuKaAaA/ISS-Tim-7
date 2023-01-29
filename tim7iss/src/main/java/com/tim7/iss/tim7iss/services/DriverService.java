@@ -38,7 +38,10 @@ public class DriverService {
         driverRepository.save(driver);
     }
 
-    public Driver findById(Long id){ return driverRepository.findById(id).orElse(null); }
+    public Driver findById(Long id) throws DriverNotFoundException {
+        Driver driver = driverRepository.findById(id).orElseThrow(DriverNotFoundException::new);
+        return  driver;
+    }
 
     public Collection<Driver> getAll() {
         return driverRepository.findAll();
