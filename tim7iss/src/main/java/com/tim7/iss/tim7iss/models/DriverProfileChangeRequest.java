@@ -25,7 +25,7 @@ public class DriverProfileChangeRequest {
     private String firstName;
     private String lastName;
     @Column(length = Constants.imageFieldSize)
-    private String profilePicture;
+    private byte[] profilePicture;
     private String phoneNumber;
     private String email;
     private String address;
@@ -43,7 +43,7 @@ public class DriverProfileChangeRequest {
                                       Set<DriverDocumentChangeRequest> driverDocumentChangeRequests) {
         this.firstName = requestDto.getFirstName();
         this.lastName = requestDto.getLastName();
-        this.profilePicture = requestDto.getProfilePicture();
+        this.profilePicture = requestDto.getProfilePicture().getBytes();
         this.email = requestDto.getEmail();
         this.phoneNumber = requestDto.getPhoneNumber();
         this.address = requestDto.getAddress();
@@ -60,7 +60,7 @@ public class DriverProfileChangeRequest {
         this.id = id;
         this.firstName = requestDto.getFirstName();
         this.lastName = requestDto.getLastName();
-        this.profilePicture = requestDto.getProfilePicture();
+        this.profilePicture = requestDto.getProfilePicture().getBytes();
         this.email = requestDto.getEmail();
         this.address = requestDto.getAddress();
         this.isMessageDisplayed = requestDto.isMessageDisplayed();

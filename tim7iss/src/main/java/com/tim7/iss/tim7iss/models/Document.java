@@ -27,11 +27,11 @@ public class Document {
     private String name;
 
     @Column(length = Constants.imageFieldSize)
-    private byte[] picture;
+    private String picture;
 
     public Document(DriverDocumentDto driverDocumentDto, Driver driver) {
         this.setName(driverDocumentDto.getName());
-        this.setPicture(driverDocumentDto.getDocumentImage().getBytes());
+        this.setPicture(driverDocumentDto.getDocumentImage());
         this.driver = driver;
     }
 

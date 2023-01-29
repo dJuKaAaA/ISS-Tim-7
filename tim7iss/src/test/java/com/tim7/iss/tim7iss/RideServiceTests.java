@@ -33,7 +33,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
-public class RideServiceTest {
+public class RideServiceTests {
 
     @Mock
     private UserRepository userRepository;
