@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -44,10 +45,18 @@ public class RequestService {
     }
 
 
-    public HttpStatus saveRequest(Long driverId,
-                                  DriverChangeProfileRequestDto requestDto) throws DriverNotFoundException, DocumentNotFoundException {
-
+    public HttpStatus saveRequest(Long driverId, DriverChangeProfileRequestDto requestDto) throws DriverNotFoundException, DocumentNotFoundException {
         Driver driver = driverRepository.findById(driverId).orElseThrow(DriverNotFoundException::new);
+
+        DriverProfileChangeRequest driverProfileChangeRequest = driverRequestRepository.findByDriver(driver).orElse(null);
+
+        if (driverProfileChangeRequest != null) {
+            List<DriverDocumentChangeRequest> documentRequests = driverDocumentRequestRepository.findAllByDriverProfileChangeRequest(driverProfileChangeRequest).get();
+
+            if (!documentRequests.isEmpty()) {
+                driverDocumentRequestRepository.deleteAll(documentRequests);
+            }
+        }
 
         Set<DriverDocumentChangeRequest> documentChangeRequests = new HashSet<>();
         for (DriverChangeDocumentRequestDto doc : requestDto.getDocuments()) {

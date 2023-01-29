@@ -293,7 +293,7 @@ public class Tim7issApplication {
         DriverProfileChangeRequest driverProfileChangeRequest = new DriverProfileChangeRequest();
         driverProfileChangeRequest.setFirstName("Marko");
         driverProfileChangeRequest.setLastName("Maric");
-        driverProfileChangeRequest.setProfilePicture(Constants.getPlaceHolderProfilePicture());
+        driverProfileChangeRequest.setProfilePicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
         driverProfileChangeRequest.setPhoneNumber("06014102999");
         driverProfileChangeRequest.setEmail("ivanmartic@gmail.com");
         driverProfileChangeRequest.setAddress("adresa");
