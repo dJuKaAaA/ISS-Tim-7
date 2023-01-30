@@ -22,7 +22,7 @@ public class StatisticController {
     @Autowired
     StatisticService statisticService;
 
-    @PostMapping("/api/statistic/number/accepted/rides/{userId}")
+    @PostMapping("/api/statistic/number/finished/rides/{userId}")
     public ResponseEntity<StatisticReportDto> getTotalNumberOfAcceptedRides(@PathVariable("userId") Long userId, @RequestBody CreateReportDto createReportDto) throws UserNotFoundException {
         LocalDateTime staDate = LocalDateTime.parse(createReportDto.getStartDate(), Constants.customDateTimeFormat);
         LocalDateTime endDate = LocalDateTime.parse(createReportDto.getEndDate(), Constants.customDateTimeFormat);
@@ -31,7 +31,7 @@ public class StatisticController {
         return new ResponseEntity<>(statisticReportDto, HttpStatus.OK);
     }
 
-    @PostMapping("/api/statistic/accepted/rides/{userId}")
+    @PostMapping("/api/statistic/finished/rides/{userId}")
     public ResponseEntity<RidesReportDto> getAcceptedRides(@PathVariable("userId") Long userId, @RequestBody CreateReportDto createReportDto) throws UserNotFoundException {
         LocalDateTime staDate = LocalDateTime.parse(createReportDto.getStartDate(), Constants.customDateTimeFormat);
         LocalDateTime endDate = LocalDateTime.parse(createReportDto.getEndDate(), Constants.customDateTimeFormat);

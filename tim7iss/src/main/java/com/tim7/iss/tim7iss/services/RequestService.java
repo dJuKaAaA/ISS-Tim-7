@@ -53,6 +53,7 @@ public class RequestService {
             if (!documentRequests.isEmpty()) {
                 driverDocumentRequestRepository.deleteAll(documentRequests);
             }
+            driverRequestRepository.deleteById(requestId);
         }
     }
 

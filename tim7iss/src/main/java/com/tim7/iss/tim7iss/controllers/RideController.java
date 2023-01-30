@@ -111,6 +111,7 @@ public class RideController {
     }
 
 
+    // TESTIRANO
     @GetMapping(value = "/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'PASSENGER', 'DRIVER')")
     public ResponseEntity<RideDto> getRideById(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id) throws RideNotFoundException {
@@ -136,14 +137,17 @@ public class RideController {
         return new ResponseEntity<>(panic, HttpStatus.OK);
     }
 
+
+    // TESTIRANO
     @PutMapping(value = "{id}/accept")
     @PreAuthorize("hasRole('DRIVER')")
-    public ResponseEntity<RideDto> acceptRide(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) throws RideCancelationException, UserNotFoundException, RideNotFoundException {
+    public ResponseEntity<RideDto> acceptRide(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) throws RideCancelationException, RideNotFoundException, DriverNotFoundException {
         String token = tokenUtils.getToken(authHeader);
         String userEmail = tokenUtils.getEmailFromToken(token);
         RideDto ride = rideService.acceptRide(id, userEmail);
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
+
 
     @PutMapping(value = "{id}/end")
     @PreAuthorize("hasRole('DRIVER')")
@@ -179,6 +183,8 @@ public class RideController {
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
 
+
+    // NE TESTIRATI
     @CrossOrigin(origins = "http://localhost:4200")
     @MessageMapping("/send/scheduled/ride")
     public Map<String, Object> sendScheduledRide(String socketMessage) {
