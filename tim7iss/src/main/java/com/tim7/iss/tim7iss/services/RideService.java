@@ -181,9 +181,9 @@ public class RideService {
         return new PanicDetailsDto(panic);
     }
 
-    public RideDto acceptRide(Long id, String userEmail) throws RideNotFoundException, UserNotFoundException, RideCancelationException {
+    public RideDto acceptRide(Long id, String userEmail) throws RideNotFoundException, RideCancelationException, DriverNotFoundException {
         Ride ride = rideRepository.findById(id).orElseThrow(RideNotFoundException::new);
-        User driver = driverService.getByEmailAddress(userEmail).orElseThrow(UserNotFoundException::new);
+        User driver = driverService.getByEmailAddress(userEmail).orElseThrow(DriverNotFoundException::new);
 
         if (ride.getDriver().getId() != driver.getId()) throw new RideNotFoundException();
 
@@ -412,14 +412,14 @@ public class RideService {
             throw new UserNotFoundException("Only driver or passenger can have rides!");
         }
 
-        List<RideDto> finishedRides = new ArrayList<>();
+        List<RideDto> rejectedRides = new ArrayList<>();
         for (RideDto ride : rides) {
             if (ride.getStatus().equals("REJECTED")) {
-                finishedRides.add(ride);
+                rejectedRides.add(ride);
             }
         }
 
-        return finishedRides;
+        return rejectedRides;
     }
 
 
