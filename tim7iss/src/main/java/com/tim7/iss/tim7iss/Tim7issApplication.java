@@ -230,6 +230,7 @@ public class Tim7issApplication {
         driverWithNoDrive.setEnabled(true);
         driverWithNoDrive.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, vehicleType, driverWithNoDrive, new Location(null, "Bistrica, Novi Sad", 45.25207768500065f, 19.799845506488243f)));
         driverWithNoDrive.setRoles(List.of(driverRole));
+        driverWithNoDrive.setEnabled(true);
         driverRepository.save(driverWithNoDrive);
 
 

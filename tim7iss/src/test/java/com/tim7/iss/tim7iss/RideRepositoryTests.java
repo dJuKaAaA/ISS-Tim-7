@@ -10,6 +10,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RideRepositoryTests {
 
+    public CustomTestData customTestData = new CustomTestData();
 
     @Autowired
     private RideRepository rideRepository;
@@ -34,8 +36,8 @@ public class RideRepositoryTests {
 
 
     @Test
-    public void findRidesByDriverId_shouldReturnListOfRidesForGivenDriverId() {
-        Long driverId = 1L;
+    public void findRidesByDriverId_shouldReturnListOfRidesForGivenDriverId() throws IOException {
+        Long driverId = customTestData.getDriver().getId();
         int numberOfExpectedRides = 5;
         List<Ride> rides = rideRepository.findRidesByDriverId(driverId);
         assertEquals(numberOfExpectedRides, rides.size());
@@ -48,8 +50,8 @@ public class RideRepositoryTests {
     }
 
     @Test
-    public void findRidesByDriverId_shouldReturnEmptyListForGivenDriverId() {
-        Long driverIdWithNoRides = 2L;
+    public void findRidesByDriverId_shouldReturnEmptyListForGivenDriverId() throws IOException {
+        Long driverIdWithNoRides = customTestData.getDriverWithNoRides().getId();
         int numberOfExpectedRides = 0;
         List<Ride> rides = rideRepository.findRidesByDriverId(driverIdWithNoRides);
         assertEquals(numberOfExpectedRides, rides.size());
@@ -81,11 +83,10 @@ public class RideRepositoryTests {
 
         assertThat(savedRide).usingRecursiveComparison().ignoringFields("id").isEqualTo(ride);
     }
-
-
+    
     @Test
-    public void countByPassengersId_ShouldReturnNumberOfRidesForPassengerId() {
-        Long passengerId = 3L;
+    public void countByPassengersId_ShouldReturnNumberOfRidesForPassengerId() throws IOException {
+        Long passengerId = customTestData.getPassenger1().getId();
         Long numberOfRides = 5L;
         Long retrievedNumberOfRides = rideRepository.countByPassengersId(passengerId);
 
@@ -93,8 +94,8 @@ public class RideRepositoryTests {
     }
 
     @Test
-    public void countByPassengersId_ShouldReturnZeroNumberOfRidesForPassengerId() {
-        Long passengerId = 6L;
+    public void countByPassengersId_ShouldReturnZeroNumberOfRidesForPassengerId() throws IOException {
+        Long passengerId = customTestData.getPassengerWithNoRides().getId();
         Long numberOfRides = 0L;
         Long retrievedNumberOfRides = rideRepository.countByPassengersId(passengerId);
 
