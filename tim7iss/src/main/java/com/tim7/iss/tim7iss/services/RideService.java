@@ -151,10 +151,7 @@ public class RideService {
     }
 
     public RideDto getRideById(Long id) throws RideNotFoundException {
-        Ride ride = findById(id);
-        if (ride == null) {
-            throw new RideNotFoundException("Active ride does not exist!");
-        }
+        Ride ride = rideRepository.findById(id).orElseThrow(RideNotFoundException::new);
         return new RideDto(ride);
     }
 

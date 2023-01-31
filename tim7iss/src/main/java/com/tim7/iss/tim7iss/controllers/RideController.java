@@ -69,6 +69,7 @@ public class RideController {
         return new ResponseEntity<>(newFavoriteLocationDto, HttpStatus.OK);
     }
 
+    // TESTIRANO
     @GetMapping(value = "/favorites")
     @PreAuthorize("hasRole('PASSENGER')")
     public ResponseEntity<List<FavoriteLocationDto>> getFavoriteLocations(@RequestHeader(value = "Authorization") String authHeader) {
@@ -88,12 +89,14 @@ public class RideController {
         return new ResponseEntity<>(favoriteLocationsDto, HttpStatus.OK);
     }
 
+    // TESTIRANO
     @DeleteMapping(value = "/favorites/{id}")
     @PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
     public ResponseEntity<String> deleteFavoriteLocation(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id) throws FavoriteLocationNotFoundException {
         rideService.deleteFavoriteLocation(id);
         return new ResponseEntity("Successful deletion of favorite location!", HttpStatus.NO_CONTENT);
     }
+
 
     @GetMapping(value = "/driver/{driverId}/active")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
@@ -148,6 +151,7 @@ public class RideController {
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
 
+    // TESTIRANO
 
     @PutMapping(value = "{id}/end")
     @PreAuthorize("hasRole('DRIVER')")
