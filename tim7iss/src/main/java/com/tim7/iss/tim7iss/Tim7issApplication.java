@@ -31,8 +31,7 @@ public class Tim7issApplication {
     private PanicRepository panicRepository;
     @Autowired
     private AdminRepository adminRepository;
-    @Autowired
-    private DocumentRepository documentRepository;
+
     @Autowired
     private DriverRepository driverRepository;
     @Autowired
@@ -45,8 +44,7 @@ public class Tim7issApplication {
     private RideRepository rideRepository;
     @Autowired
     private RoleRepository roleRepository;
-    @Autowired
-    private RoutesRepository routeRepository;
+
     @Autowired
     private VehicleRepository vehicleRepository;
     @Autowired
@@ -55,7 +53,17 @@ public class Tim7issApplication {
     private UserActivationRepository userActivationRepository;
 
     @Autowired
-    private FavoriteLocationRepository favoriteLocationRepository;
+    private DocumentRepository documentRepository;
+
+
+    @Autowired
+    DriverDocumentRequestRepository driverDocumentRequestRepository;
+
+    @Autowired
+    DriverRequestRepository driverRequestRepository;
+
+
+
 
     @Autowired
     private RequestService requestService;
@@ -75,7 +83,7 @@ public class Tim7issApplication {
 //        return this::testDataDjukanovic;
 //        return this::testDataMartic;
 //        return this::testDataStanojlovic;
-        return this::testDataDjukanovic;
+        return this::generateTestDataInDataBase;
     }
 
     private void testDataDjukanovic() throws IOException {
@@ -232,26 +240,47 @@ public class Tim7issApplication {
 
 
         // passenger creation
+        // id =3
         Passenger passenger1 = new Passenger(new UserDto(null, "Petar", "Petrovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372727", "petar.petrovic@email.com", "Petrova adresa", "$2a$12$lA8WEWzn3E7l53E2HYpX3ee0q.ZOVDjY34jNYTs/n9ucvebpY3v86")); // Petar123
         passenger1.setRoles(List.of(passengerRole));
         passenger1.setEnabled(true);
         passengerRepository.save(passenger1);
+
+        // id = 4
         Passenger passenger2 = new Passenger(new UserDto(null, "Jovan", "Jovanovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "jovan.jovanovic@email.com", "Jovanova adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
         passenger2.setRoles(List.of(passengerRole));
         passenger2.setEnabled(true);
         passengerRepository.save(passenger2);
+
+        // id = 5
         Passenger passenger3 = new Passenger(new UserDto(null, "Mirko", "Mirkovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "00381737111", "mirko.mirkovic@email.com", "Mirkova adresa", "$2a$12$nYULTJpydL5pFRSxQ30DnOlhu/m/O6U4CoWLqea82PYKNsswHCEsG"));  // Mirko123
         passenger3.setRoles(List.of(passengerRole));
         passenger3.setEnabled(true);
         passengerRepository.save(passenger3);
+
+        // id = 6
         Passenger passenger4 = new Passenger(new UserDto(null, "Aleksandar", "Popovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "0038173724234", "aleksandar.popovic@email.com", "Aleksandrova adresa", "$2a$12$yNYY1KoO4DDFSLzqRBXPJ.EJU3us/O8ws5d45pQ856BoiS70mslyu"));  // Aleksandar123
         passenger4.setRoles(List.of(passengerRole));
         passenger4.setEnabled(true);
         passengerRepository.save(passenger4);
+
+        // id = 7
         Passenger passenger5 = new Passenger(new UserDto(null, "Vuk", "Perisic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372727", "vuk.perisic@email.com", "Vukova adresa", "$2a$12$fCHBcs11T5oI78NcRModiuCn5TjFE1QLn9x1awvf0meSO7LqSepc2"));  // Vuk12345
         passenger5.setRoles(List.of(passengerRole));
         passenger5.setEnabled(true);
         passengerRepository.save(passenger5);
+
+        // id = 8
+        Admin admin = new Admin();
+        admin.setFirstName("Adonis");
+        admin.setLastName("Adonis");
+        admin.setProfilePicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
+        admin.setPhoneNumber("003814523423");
+        admin.setEmailAddress("admin@email.com");
+        admin.setPassword("$2a$12$c9cKc9F6WaOKIchi9bWCpOrWRnXTBEKTU4NFtS3azXhJWy4TAcTey");  // Admin123
+        admin.setEnabled(true);
+        admin.setRoles(List.of(adminRole));
+        adminRepository.save(admin);
 
 
         // declaring routes that will be saved when the ride that contains them gets created
@@ -266,7 +295,7 @@ public class Tim7issApplication {
         // TODO: Place the right price depending on the vehicle type and route distance
         // TODO: Place the right ride length
         Ride ride1 = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(random.nextInt(60, 1400)), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1, passenger2, passenger3), null, List.of(route1.clone())));
-        Ride ride2 = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(random.nextInt(1500, 2800)), LocalDateTime.now().plusMinutes(random.nextInt(2900, 3000)), route3.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger4, passenger5), null, List.of(route3.clone())));
+        Ride ride2 = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(random.nextInt(1500, 2800)), LocalDateTime.now().plusMinutes(random.nextInt(2900, 3000)), route3.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger4), null, List.of(route3.clone())));
 
 
         // creating vehicles
@@ -274,6 +303,41 @@ public class Tim7issApplication {
         locationRepository.save(new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f));
         vehicleRepository.save(new Vehicle(null, "BMW iXM60", "PGAA112", 5, false, false, vehicleType, null, new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f)));
         vehicleRepository.save(new Vehicle(null, "BMW iX3", "PGAA113", 5, true, true, vehicleType, null, new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f)));
+
+        Document document = new Document();
+        document.setPicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
+        document.setName("Licna karta");
+        document.setDriver(driver);
+        documentRepository.save(document);
+
+        DriverProfileChangeRequest driverProfileChangeRequest = new DriverProfileChangeRequest();
+        driverProfileChangeRequest.setFirstName("Marko");
+        driverProfileChangeRequest.setLastName("Maric");
+        driverProfileChangeRequest.setProfilePicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
+        driverProfileChangeRequest.setPhoneNumber("06014102999");
+        driverProfileChangeRequest.setEmail("ivanmartic@gmail.com");
+        driverProfileChangeRequest.setAddress("adresa");
+        driverProfileChangeRequest.setMessageDisplayed(false);
+        driverProfileChangeRequest.setStatus("PENDING");
+        driverProfileChangeRequest.setDriver(driver);
+
+        driverRequestRepository.save(driverProfileChangeRequest);
+
+        DriverDocumentChangeRequest newDriverDocumentChangeRequest = new DriverDocumentChangeRequest();
+        newDriverDocumentChangeRequest.setDriverProfileChangeRequest(driverProfileChangeRequest);
+        newDriverDocumentChangeRequest.setDocument(null);
+        newDriverDocumentChangeRequest.setDocumentName("Pera");
+        newDriverDocumentChangeRequest.setDocumentImage(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
+        driverDocumentRequestRepository.save(newDriverDocumentChangeRequest);
+
+        DriverDocumentChangeRequest deleteDriverDocumentChangeRequest = new DriverDocumentChangeRequest();
+        deleteDriverDocumentChangeRequest.setDriverProfileChangeRequest(driverProfileChangeRequest);
+        deleteDriverDocumentChangeRequest.setDocument(document);
+        deleteDriverDocumentChangeRequest.setDocumentName(null);
+        deleteDriverDocumentChangeRequest.setDocumentImage(null);
+        driverDocumentRequestRepository.save(deleteDriverDocumentChangeRequest);
+
+
     }
 }
 

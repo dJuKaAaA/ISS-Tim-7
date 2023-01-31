@@ -70,7 +70,6 @@ public class DriverProfileChangeRequest {
         this.driverDocumentChangeRequests = driverDocumentChangeRequests;
 
     }
-
     public DriverProfileChangeRequest(User user){
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();

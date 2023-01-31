@@ -1,9 +1,12 @@
 package com.tim7.iss.tim7iss.services;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.tim7.iss.tim7iss.dto.DriverChangeDocumentRequestDto;
 import com.tim7.iss.tim7iss.dto.DriverChangeProfileRequestDto;
+import com.tim7.iss.tim7iss.dto.ErrorDto;
 import com.tim7.iss.tim7iss.exceptions.DocumentNotFoundException;
 import com.tim7.iss.tim7iss.exceptions.DriverNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.Document;
 import com.tim7.iss.tim7iss.models.Driver;
 import com.tim7.iss.tim7iss.models.DriverDocumentChangeRequest;
@@ -12,6 +15,8 @@ import com.tim7.iss.tim7iss.repositories.DocumentRepository;
 import com.tim7.iss.tim7iss.repositories.DriverDocumentRequestRepository;
 import com.tim7.iss.tim7iss.repositories.DriverRepository;
 import com.tim7.iss.tim7iss.repositories.DriverRequestRepository;
+import org.apache.tomcat.util.json.JSONParser;
+import org.openqa.selenium.json.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -64,11 +69,38 @@ public class RequestService {
         return new ResponseEntity<>(requestsDto, HttpStatus.OK);
     }
 
+    public void deleteRequest(Long requestId) {
+        DriverProfileChangeRequest driverProfileChangeRequest = driverRequestRepository.findById(requestId).orElse(null);
 
-    public HttpStatus saveRequest(Long driverId,
-                                  DriverChangeProfileRequestDto requestDto) throws DriverNotFoundException, DocumentNotFoundException {
+        if (driverProfileChangeRequest != null) {
+            List<DriverDocumentChangeRequest> documentRequests = driverDocumentRequestRepository.findAllByDriverProfileChangeRequest(driverProfileChangeRequest).get();
 
+            if (!documentRequests.isEmpty()) {
+                driverDocumentRequestRepository.deleteAll(documentRequests);
+            }
+            driverRequestRepository.deleteById(requestId); // OVO SAM DODAO
+        }
+    }
+
+    public boolean isRequestExistForDriver(Long driverId) throws DriverNotFoundException {
         Driver driver = driverRepository.findById(driverId).orElseThrow(DriverNotFoundException::new);
+        DriverProfileChangeRequest driverProfileChangeRequest = driverRequestRepository.findByDriver(driver).orElse(null);
+        return driverProfileChangeRequest != null;
+    }
+
+
+    public HttpStatus saveRequest(Long driverId, DriverChangeProfileRequestDto requestDto) throws DriverNotFoundException, DocumentNotFoundException {
+        Driver driver = driverRepository.findById(driverId).orElseThrow(DriverNotFoundException::new);
+
+        DriverProfileChangeRequest driverProfileChangeRequest = driverRequestRepository.findByDriver(driver).orElse(null);
+
+        if (driverProfileChangeRequest != null) {
+            List<DriverDocumentChangeRequest> documentRequests = driverDocumentRequestRepository.findAllByDriverProfileChangeRequest(driverProfileChangeRequest).get();
+
+            if (!documentRequests.isEmpty()) {
+                driverDocumentRequestRepository.deleteAll(documentRequests);
+            }
+        }
 
         Set<DriverDocumentChangeRequest> documentChangeRequests = new HashSet<>();
         for (DriverChangeDocumentRequestDto doc : requestDto.getDocuments()) {
@@ -97,4 +129,16 @@ public class RequestService {
         return HttpStatus.OK;
     }
 
+    public ResponseEntity<ErrorDto> changeRequestStatus(Long requestId, String status) throws UserNotFoundException {
+        if(status == "denied"){
+            deleteRequest(requestId);
+            return new ResponseEntity<>(new ErrorDto("Request deleted"),HttpStatus.OK);
+        }
+        DriverProfileChangeRequest driverProfileChangeRequest = driverRequestRepository.findById(requestId).orElse(null);
+        Driver driver = driverRepository.findById(driverProfileChangeRequest.getDriver().getId()).orElseThrow(UserNotFoundException::new);
+        driver.setData(driverProfileChangeRequest, documentRepository);
+        JSONParser jsonParser = new JSONParser("Profile changed");
+        deleteRequest(requestId);
+        return new ResponseEntity<>(new ErrorDto("Profile changed"), HttpStatus.OK);
+    }
 }

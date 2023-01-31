@@ -19,6 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class DriverChangeProfileRequestDto {
 
+    private Long id;
     @NotBlank(message = "Name must be provided")
     private String firstName;
     @NotBlank(message = "Surname must be provided")
@@ -41,6 +42,7 @@ public class DriverChangeProfileRequestDto {
 
 
     public DriverChangeProfileRequestDto(DriverProfileChangeRequest request) {
+        this.id = request.getId();
         this.firstName = request.getFirstName();
         this.lastName = request.getLastName();
         this.profilePicture = request.getProfilePicture();
