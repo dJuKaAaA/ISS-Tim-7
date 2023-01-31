@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,7 +51,7 @@ public class RideServiceTests {
 
     private Admin getAdmin() throws IOException {
         Admin admin = new Admin();
-        admin.setId(1L);
+        admin.setId(5L);
         admin.setFirstName("Adonis");
         admin.setLastName("Adonis");
         admin.setProfilePicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
@@ -62,20 +61,33 @@ public class RideServiceTests {
         return admin;
     }
 
-    private Passenger getPassenger() throws IOException {
-        Passenger passenger = new Passenger(new UserDto(3L, "Petar", "Petrovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372727", "petar.petrovic@email.com", "Petrova adresa", "$2a$12$lA8WEWzn3E7l53E2HYpX3ee0q.ZOVDjY34jNYTs/n9ucvebpY3v86")); // Petar123
+    private Passenger getPassenger1() throws IOException {
+        Passenger passenger1 = new Passenger(new UserDto(3L, "Petar", "Petrovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372727", "petar.petrovic@email.com", "Petrova adresa", "$2a$12$lA8WEWzn3E7l53E2HYpX3ee0q.ZOVDjY34jNYTs/n9ucvebpY3v86")); // Petar123
+        passenger1.setEnabled(true);
 
-        return passenger;
+        return passenger1;
+    }
+
+    private Passenger getPassenger2() throws IOException {
+        Passenger passenger2 = new Passenger(new UserDto(4L, "Jovan", "Jovanovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "jovan.jovanovic@email.com", "Jovanova adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passenger2.setEnabled(true);
+
+        return passenger2;
+    }
+
+    private VehicleType getVehicleType() {
+        VehicleType vehicleType = new VehicleType(1L, 100, "STANDARD");
+        return vehicleType;
     }
 
     private Driver getDriver() throws IOException {
-        VehicleType vehicleType = new VehicleType(null, 100, "STANDARD");
+        VehicleType vehicleType = getVehicleType();
 
         Driver driver = new Driver(new UserDto(2L, "Mika", "Mikic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372222", "mika.mikic@email.com", "Mikina adresa", "$2a$12$4z3y3x45WYUdy98AhcW5Vee6UmIAClGcs61e1yJZpwpaobzkm5asa"));  // Mika1234
         driver.setEnabled(true);
 
-        // vehicle
-        driver.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, vehicleType, driver, new Location(null, "Fakultet tehnickih nauka Univerziteta u Novom Sadu, Trg Dositeja Obradovica, Novi Sad", 45.24648813f, 19.8516641f)));
+
+        driver.setVehicle(new Vehicle(1L, "BMW X2", "PGAA111", 5, false, true, vehicleType, driver, new Location(null, "Fakultet tehnickih nauka Univerziteta u Novom Sadu, Trg Dositeja Obradovica, Novi Sad", 45.24648813f, 19.8516641f)));
 
         return driver;
     }
@@ -85,53 +97,66 @@ public class RideServiceTests {
         return route;
     }
 
-    private Ride getFinishedRide() throws IOException {
-
-        Driver driver = getDriver();
-        Passenger passenger = getPassenger();
-        Route route = getRoute();
-
-        Ride ride = new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 8, 0), LocalDateTime.of(2023, Month.JANUARY, 19, 8, 20), route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger), null, List.of(route));
-        return ride;
-    }
-
-    private Ride getRejectedRide() throws IOException {
-        Driver driver = getDriver();
-        Passenger passenger = getPassenger();
-        Route route = getRoute();
-
-        Ride ride = new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 8, 0), null, route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.REJECTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger), null, List.of(route));
-        return ride;
-    }
-
-    private Ride getAcceptedRide() throws IOException {
-        Driver driver = getDriver();
-        Passenger passenger = getPassenger();
-        Route route = getRoute();
-
-        Ride ride = new Ride(null, 1000, LocalDateTime.now().minusMinutes(10), null, route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger), null, List.of(route));
-        return ride;
-    }
-
     private Ride getPendingRide() throws IOException {
         Driver driver = getDriver();
-        Passenger passenger = getPassenger();
+        Passenger passenger1 = getPassenger1();
+        Passenger passenger2 = getPassenger2();
         Route route = getRoute();
+        route.setId(1L);
 
-        Ride ride = new Ride(null, 1000, LocalDateTime.now().minusMinutes(10), null, route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING, driver, driver.getVehicle().getVehicleType(), Set.of(passenger), null, List.of(route));
-        return ride;
+        Ride pendingRide = new Ride(1L, 1000, LocalDateTime.now().minusMinutes(3), null, route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1, passenger2), null, List.of(route));
+
+        return pendingRide;
     }
 
     private Ride getActiveRide() throws IOException {
         Driver driver = getDriver();
-        Passenger passenger = getPassenger();
+        Passenger passenger = getPassenger1();
         Route route = getRoute();
+        route.setId(2L);
 
-        Ride ride = new Ride(null, 1000, LocalDateTime.now().minusMinutes(10), null,
-                route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false,
-                Enums.RideStatus.ACTIVE, driver, driver.getVehicle().getVehicleType(), Set.of(passenger), null, List.of(route));
-        return ride;
+        Ride activeRide = new Ride(2L, 1000, LocalDateTime.now().minusMinutes(11), null, route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACTIVE, driver, driver.getVehicle().getVehicleType(), Set.of(passenger), null, List.of(route));
+
+        return activeRide;
     }
+
+    private Ride getFinishedRide() throws IOException {
+
+        Driver driver = getDriver();
+        Passenger passenger = getPassenger1();
+        Route route = getRoute();
+        route.setId(3L);
+
+        Ride finishedRide = new Ride(3L, 1000, LocalDateTime.now().minusMinutes(100), LocalDateTime.now().minusMinutes(80), route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger), null, List.of(route));
+
+        return finishedRide;
+    }
+
+    private Ride getRejectedRide() throws IOException {
+        Driver driver = getDriver();
+        Passenger passenger = getPassenger1();
+        Route route = getRoute();
+        route.setId(4L);
+
+        Ride rejectedRide = new Ride(4L, 1000, LocalDateTime.now().minusMinutes(200), null, route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.REJECTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger), null, List.of(route));
+
+        Refusal refusal = new Refusal(null, driver, "Refusal", LocalDateTime.now().minusMinutes(195), rejectedRide);
+        rejectedRide.setRefusal(refusal);
+        return rejectedRide;
+    }
+
+    private Ride getAcceptedRide() throws IOException {
+        Driver driver = getDriver();
+        Passenger passenger = getPassenger1();
+        Route route = getRoute();
+        route.setId(5L);
+
+        Ride acceptedRide = new Ride(5L, 1000, LocalDateTime.now().minusMinutes(10), null, route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger), null, List.of(route));
+
+        return acceptedRide;
+    }
+
+
     // Levo je ono sto ocekujemo
     // Desno je sta nam je vratola baza
 
@@ -139,7 +164,7 @@ public class RideServiceTests {
     // getAllFinishedRides
     @Test
     public void getAllFinishedRides_shouldReturnFinishedRidesForPassengerId() throws IOException, UserNotFoundException {
-        Passenger passenger = getPassenger();
+        Passenger passenger = getPassenger1();
         Ride ride = getFinishedRide();
 
         Mockito.when(userRepository.findById(passenger.getId())).thenReturn(Optional.of(passenger));
@@ -169,7 +194,7 @@ public class RideServiceTests {
 
     @Test
     public void getAllFinishedRides_shouldReturnEmptyListWhenDriverOrPassengerNotHaveFinishedRides() throws IOException, UserNotFoundException {
-        Passenger passenger = getPassenger();
+        Passenger passenger = getPassenger1();
 
         Mockito.when(userRepository.findById(passenger.getId())).thenReturn(Optional.of(passenger));
         Mockito.when(rideRepository.findRidesByPassengersId(passenger.getId())).thenReturn(new ArrayList<>());
@@ -206,7 +231,7 @@ public class RideServiceTests {
     // getAllRejectedRides
     @Test
     public void getAllRejectedRides_shouldReturnRejectedRidesForPassengerId() throws IOException, UserNotFoundException {
-        Passenger passenger = getPassenger();
+        Passenger passenger = getPassenger1();
         Ride ride = getRejectedRide();
 
         Mockito.when(userRepository.findById(passenger.getId())).thenReturn(Optional.of(passenger));
@@ -258,7 +283,7 @@ public class RideServiceTests {
 
     @Test
     public void getAllRejectedRides_shouldReturnEmptyListWhenDriverOrPassengerNotHaveRejectedRides() throws IOException, UserNotFoundException {
-        Passenger passenger = getPassenger();
+        Passenger passenger = getPassenger1();
 
         Mockito.when(userRepository.findById(passenger.getId())).thenReturn(Optional.of(passenger));
         Mockito.when(rideRepository.findRidesByPassengersId(passenger.getId())).thenReturn(new ArrayList<>());
@@ -622,9 +647,7 @@ public class RideServiceTests {
 
 
     @Test
-    public void rejectRide_shouldRejectPendingRide() throws IOException, DriverNotFoundException,
-            RideCancelationException,
-            RideNotFoundException {
+    public void rejectRide_shouldRejectPendingRide() throws IOException, DriverNotFoundException, RideCancelationException, RideNotFoundException {
         Ride pendingRide = getPendingRide();
         Driver driver = getDriver();
         Mockito.when(rideRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(pendingRide));
@@ -642,8 +665,7 @@ public class RideServiceTests {
 
     // endRide
     @Test
-    public void endRide_shouldThrowRideNotFoundExceptionForNonExistingRideId() throws DriverNotFoundException,
-            RideCancelationException {
+    public void endRide_shouldThrowRideNotFoundExceptionForNonExistingRideId() throws DriverNotFoundException, RideCancelationException {
         doAnswer(invocation -> {
             throw new RideNotFoundException();
         }).when(rideRepository).findById(Mockito.anyLong());
@@ -655,8 +677,7 @@ public class RideServiceTests {
     }
 
     @Test
-    public void endRide_shouldThrowDriverNotFoundForNonExistingDriverId() throws RideCancelationException, IOException,
-            RideNotFoundException {
+    public void endRide_shouldThrowDriverNotFoundForNonExistingDriverId() throws RideCancelationException, IOException, RideNotFoundException {
         doAnswer(invocation -> {
             throw new DriverNotFoundException();
         }).when(driverService).getByEmailAddress(Mockito.anyString());
@@ -670,8 +691,7 @@ public class RideServiceTests {
     }
 
     @Test
-    public void endRide_shouldThrowDriverNotFoundWhenDriverRideIdAndFoundDriverIdNotSame() throws RideCancelationException,
-            IOException, DriverNotFoundException {
+    public void endRide_shouldThrowDriverNotFoundWhenDriverRideIdAndFoundDriverIdNotSame() throws RideCancelationException, IOException, DriverNotFoundException {
         try {
 
             Ride acceptedRide = getAcceptedRide();
@@ -686,8 +706,7 @@ public class RideServiceTests {
     }
 
     @Test
-    public void endRide_shouldThrowRideCancellationExceptionWhenRideStatusIsNotAActive() throws IOException,
-            DriverNotFoundException, RideNotFoundException {
+    public void endRide_shouldThrowRideCancellationExceptionWhenRideStatusIsNotAActive() throws IOException, DriverNotFoundException, RideNotFoundException {
         try {
             Ride rejectedRide = getRejectedRide();
             Driver driver = getDriver();
@@ -700,9 +719,7 @@ public class RideServiceTests {
     }
 
     @Test
-    public void endRide_shouldEndRide() throws IOException, DriverNotFoundException,
-            RideCancelationException,
-            RideNotFoundException {
+    public void endRide_shouldEndRide() throws IOException, DriverNotFoundException, RideCancelationException, RideNotFoundException {
         Ride activeRide = getActiveRide();
         Driver driver = getDriver();
         Mockito.when(rideRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(activeRide));
