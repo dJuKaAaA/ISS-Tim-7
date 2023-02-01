@@ -249,7 +249,7 @@ public class DriverController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @GetMapping("/{id}/rides/scheduled")
-    public ResponseEntity<Collection<RideDto>> getPendingRides(@PathVariable Long id) throws DriverNotFoundException {
+    public ResponseEntity<Collection<RideDto>> getPendingRides(@PathVariable Long id) throws DriverNotFoundException, RideNotFoundException {
         Collection<RideDto> scheduledRides = rideService.getScheduledRidesForDriverAsDto(id);
         return new ResponseEntity<>(scheduledRides, HttpStatus.OK);
     }

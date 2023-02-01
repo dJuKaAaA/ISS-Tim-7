@@ -54,7 +54,7 @@ public class RideController {
 
     @PostMapping
     @PreAuthorize("hasRole('PASSENGER')")
-    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto, @RequestHeader("Authorization") String authHeader) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException, PassengerNotFoundException {
+    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto, @RequestHeader("Authorization") String authHeader) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException, PassengerNotFoundException, RideNotFoundException {
         RideDto ride = rideService.scheduleRide(rideCreationDto);
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
@@ -69,6 +69,7 @@ public class RideController {
         return new ResponseEntity<>(newFavoriteLocationDto, HttpStatus.OK);
     }
 
+    // TESTIRANO
     @GetMapping(value = "/favorites")
     @PreAuthorize("hasRole('PASSENGER')")
     public ResponseEntity<List<FavoriteLocationDto>> getFavoriteLocations(@RequestHeader(value = "Authorization") String authHeader) {
@@ -83,17 +84,19 @@ public class RideController {
     }
 
     @GetMapping(value = "/passenger/{id}/favorites")
-    public ResponseEntity<List<FavoriteLocationDto>> getFavoriteLocationsByPassengerId(@PathVariable Long id) {
+    public ResponseEntity<List<FavoriteLocationDto>> getFavoriteLocationsByPassengerId(@PathVariable Long id) throws UserNotFoundException {
         List<FavoriteLocationDto> favoriteLocationsDto = rideService.getFavoriteLocationsByPassengerId(id);
         return new ResponseEntity<>(favoriteLocationsDto, HttpStatus.OK);
     }
 
+    // TESTIRANO
     @DeleteMapping(value = "/favorites/{id}")
     @PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
     public ResponseEntity<String> deleteFavoriteLocation(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id) throws FavoriteLocationNotFoundException {
         rideService.deleteFavoriteLocation(id);
         return new ResponseEntity("Successful deletion of favorite location!", HttpStatus.NO_CONTENT);
     }
+
 
     @GetMapping(value = "/driver/{driverId}/active")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
@@ -111,6 +114,7 @@ public class RideController {
     }
 
 
+    // TESTIRANO
     @GetMapping(value = "/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'PASSENGER', 'DRIVER')")
     public ResponseEntity<RideDto> getRideById(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id) throws RideNotFoundException {
@@ -136,14 +140,18 @@ public class RideController {
         return new ResponseEntity<>(panic, HttpStatus.OK);
     }
 
+
+    // TESTIRANO
     @PutMapping(value = "{id}/accept")
     @PreAuthorize("hasRole('DRIVER')")
-    public ResponseEntity<RideDto> acceptRide(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) throws RideCancelationException, UserNotFoundException, RideNotFoundException {
+    public ResponseEntity<RideDto> acceptRide(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) throws RideCancelationException, RideNotFoundException, DriverNotFoundException {
         String token = tokenUtils.getToken(authHeader);
         String userEmail = tokenUtils.getEmailFromToken(token);
         RideDto ride = rideService.acceptRide(id, userEmail);
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
+
+    // TESTIRANO
 
     @PutMapping(value = "{id}/end")
     @PreAuthorize("hasRole('DRIVER')")
@@ -179,6 +187,8 @@ public class RideController {
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
 
+
+    // NE TESTIRATI
     @CrossOrigin(origins = "http://localhost:4200")
     @MessageMapping("/send/scheduled/ride")
     public Map<String, Object> sendScheduledRide(String socketMessage) {

@@ -1,5 +1,6 @@
 package com.tim7.iss.tim7iss.services;
 
+import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.FavoriteLocation;
 import com.tim7.iss.tim7iss.repositories.FavoriteLocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,8 @@ public class FavoriteLocationService {
         return favoriteLocationRepository.findById(id).orElse(null);
     }
 
-    public List<FavoriteLocation> findByPassengerId(Long id){
-        return favoriteLocationRepository.findBySubmittedById(id);
+    public List<FavoriteLocation> findByPassengerId(Long id) throws UserNotFoundException {
+        return favoriteLocationRepository.findBySubmittedById(id).orElseThrow(UserNotFoundException::new);
     }
 
 }
