@@ -58,7 +58,7 @@ public class PassengerController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('PASSENGER')")
+    @PreAuthorize("hasRole('PASSENGER') or hasRole('ADMIN')")
     public ResponseEntity<PaginatedResponseDto<UserDto>> load(@RequestHeader(value = "Authorization") String authHeader, Pageable page) throws UnauthorizedException {
 //        if(authHeader == null)
 //            throw new UnauthorizedException();
@@ -85,7 +85,7 @@ public class PassengerController {
     }
 
     @GetMapping(value = "/{id}")
-    @PreAuthorize("hasRole('PASSENGER') or hasRole('DRIVER')")
+    @PreAuthorize("hasRole('PASSENGER') or hasRole('DRIVER') or hasRole('ADMIN')")
     public ResponseEntity<UserDto> findPassengerByID(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id) throws UserNotFoundException {
         Passenger passenger = passengerService.findById(id);
         if (passenger == null) throw new UserNotFoundException("Passenger does not exist!") {

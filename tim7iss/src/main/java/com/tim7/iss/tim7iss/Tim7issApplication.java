@@ -70,10 +70,10 @@ public class Tim7issApplication {
     // DISCLAIMER: for testing purposes
     @Bean
     protected InitializingBean sendDatabase() {
-////        return this::testDataDjukanovic;
+        return this::testDataDjukanovic;
 ////        return this::testDataMartic;
 ////        return this::testDataStanojlovic;
-        return this::generateTestDataInDataBase;
+//        return this::generateTestDataInDataBase;
     }
 
     private void testDataDjukanovic() throws IOException {

@@ -88,7 +88,7 @@ public class StatisticController {
             DateReport dateReport = new DateReport(entry.getKey().atStartOfDay().format(Constants.customDateTimeFormat), entry.getValue());
             dateReports.add(dateReport);
         }
-        dateReports = sortDateReportsByDate(dateReports);
+        dateReports = statisticService.sortDateReportsByDate(dateReports);
         return new ResponseEntity<>(dateReports, HttpStatus.OK);
     }
 
@@ -104,19 +104,23 @@ public class StatisticController {
             dateReports.add(dateReport);
         }
 
-        dateReports = sortDateReportsByDate(dateReports);
+        dateReports = statisticService.sortDateReportsByDate(dateReports);
         return new ResponseEntity<>(dateReports, HttpStatus.OK);
     }
 
-    private List<DateReport> sortDateReportsByDate(List<DateReport> reports) {
-        Collections.sort(reports, new Comparator<DateReport>() {
-            @Override
-            public int compare(DateReport o1, DateReport o2) {
-                return LocalDateTime.parse(o1.getDate(),Constants.customDateTimeFormat).compareTo(LocalDateTime.parse(o2.getDate(),Constants.customDateTimeFormat));
-            }
-        });
-        return reports;
+    @PostMapping("/api/statistic/financialsPerDay/{userId}")
+    public ResponseEntity<List<DateReport>> getFinancialsPerDay(@PathVariable("userId") Long userId, @RequestBody CreateReportDto createReportDto) throws UserNotFoundException {
+        LocalDateTime startDate = LocalDateTime.parse(createReportDto.getStartDate(), Constants.customDateTimeFormat);
+        LocalDateTime endDate = LocalDateTime.parse(createReportDto.getEndDate(), Constants.customDateTimeFormat);
+        Map<LocalDate, Integer> traveledDistancePerDay = statisticService.getFinancialsPerDay(startDate, endDate, userId);
+
+        List<DateReport> dateReports = new ArrayList<>();
+        for (Map.Entry<LocalDate, Integer> entry : traveledDistancePerDay.entrySet()) {
+            DateReport dateReport = new DateReport(entry.getKey().atStartOfDay().format(Constants.customDateTimeFormat), entry.getValue());
+            dateReports.add(dateReport);
+        }
+
+        dateReports = statisticService.sortDateReportsByDate(dateReports);
+        return new ResponseEntity<>(dateReports, HttpStatus.OK);
     }
-
-
 }

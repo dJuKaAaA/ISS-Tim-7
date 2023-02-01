@@ -193,4 +193,10 @@ public class ValidationErrorHandler {
     protected ResponseEntity<ErrorDto> handleMessageNotFoundException(MessageNotFoundException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler({InvalidReportDateException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ResponseEntity<ErrorDto> handleInvalidReportDateException(InvalidReportDateException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), HttpStatus.NOT_FOUND);
+    }
 }
