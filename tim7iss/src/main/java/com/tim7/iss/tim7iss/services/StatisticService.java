@@ -1,7 +1,9 @@
 package com.tim7.iss.tim7iss.services;
 
+import com.tim7.iss.tim7iss.dto.DateReport;
 import com.tim7.iss.tim7iss.dto.LocationForRideDto;
 import com.tim7.iss.tim7iss.dto.RideDto;
+import com.tim7.iss.tim7iss.exceptions.InvalidReportDateException;
 import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.Driver;
@@ -119,8 +121,13 @@ public class StatisticService {
         return rejectedRides;
     }
 
-
     public Map<LocalDate, Integer> getNumberOfRidesPerDay(LocalDateTime startDate, LocalDateTime endDate, Long userId) throws UserNotFoundException {
+        if (!endDate.isAfter(startDate)) {
+            throw new InvalidReportDateException("Start date must be before end date!");
+        }
+        if (!endDate.isBefore(LocalDateTime.now())) {
+            throw new InvalidReportDateException("End date must be in the past!");
+        }
 
         Map<LocalDate, Integer> numberOfRidesPerDay = new HashMap<>();
         List<RideDto> finishedRides = rideService.getAllFinishedRides(userId);
@@ -157,18 +164,26 @@ public class StatisticService {
         return numberOfRidesPerDay;
     }
 
-    public Map<LocalDate, Integer> getProfitPerDay(LocalDateTime startDate, LocalDateTime endDate, Long driverId) throws UserNotFoundException {
-        Map<LocalDate, Integer> profitPerDay = new HashMap<>();
-        List<RideDto> finishedRides = rideService.getAllFinishedRides(driverId);
+    // ako je proslijedjen id putnika onda se ovo tretira kako 'expense', a ako je vozac onda je 'profit'
+    public Map<LocalDate, Integer> getFinancialsPerDay(LocalDateTime startDate, LocalDateTime endDate, Long userId) throws UserNotFoundException {
+        if (!endDate.isAfter(startDate)) {
+            throw new InvalidReportDateException("Start date must be before end date!");
+        }
+        if (!endDate.isBefore(LocalDateTime.now())) {
+            throw new InvalidReportDateException("End date must be in the past!");
+        }
+
+        Map<LocalDate, Integer> financialsPerDay = new HashMap<>();
+        List<RideDto> finishedRides = rideService.getAllFinishedRides(userId);
         for (RideDto ride : finishedRides) {
             LocalDateTime rideDateTime = LocalDateTime.parse(ride.getStartTime(), Constants.customDateTimeFormat);
             LocalDate date = LocalDate.from(rideDateTime);
 
             if ((rideDateTime.isAfter(startDate) || rideDateTime.equals(startDate)) && (rideDateTime.isBefore(endDate) || rideDateTime.equals(endDate))) {
-                if (profitPerDay.containsKey(date)) {
-                    profitPerDay.replace(date, profitPerDay.get(date) + ride.getTotalCost());
+                if (financialsPerDay.containsKey(date)) {
+                    financialsPerDay.replace(date, financialsPerDay.get(date) + ride.getTotalCost());
                 } else {
-                    profitPerDay.put(date, ride.getTotalCost());
+                    financialsPerDay.put(date, ride.getTotalCost());
                 }
             }
         }
@@ -176,16 +191,23 @@ public class StatisticService {
         LocalDate localStartDate = LocalDate.from(startDate);
         LocalDate localEndDate = LocalDate.from(endDate);
         while (!localStartDate.equals(localEndDate)) {
-            if (!profitPerDay.containsKey(localStartDate)) {
-                profitPerDay.put(localStartDate, 0);
+            if (!financialsPerDay.containsKey(localStartDate)) {
+                financialsPerDay.put(localStartDate, 0);
             }
             localStartDate = localStartDate.plusDays(1);
         }
 
-        return profitPerDay;
+        return financialsPerDay;
     }
 
     public Map<LocalDate, Integer> getTraveledDistancePerDay(LocalDateTime startDate, LocalDateTime endDate, Long userId) throws UserNotFoundException {
+        if (!endDate.isAfter(startDate)) {
+            throw new InvalidReportDateException("Start date must be before end date!");
+        }
+        if (!endDate.isBefore(LocalDateTime.now())) {
+            throw new InvalidReportDateException("End date must be in the past!");
+        }
+
         Map<LocalDate, Integer> traveledDistancePerDay = new HashMap<>();
         List<RideDto> rides = rideService.getAllFinishedRides(userId);
         for (RideDto ride : rides) {
@@ -243,5 +265,15 @@ public class StatisticService {
         }
 
         return rejectedRides;
+    }
+
+    public List<DateReport> sortDateReportsByDate(List<DateReport> reports) {
+        Collections.sort(reports, new Comparator<DateReport>() {
+            @Override
+            public int compare(DateReport o1, DateReport o2) {
+                return LocalDateTime.parse(o1.getDate(),Constants.customDateTimeFormat).compareTo(LocalDateTime.parse(o2.getDate(),Constants.customDateTimeFormat));
+            }
+        });
+        return reports;
     }
 }

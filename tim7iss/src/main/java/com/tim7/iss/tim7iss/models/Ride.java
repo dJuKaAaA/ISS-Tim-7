@@ -83,6 +83,9 @@ public class Ride {
         }
         if(rideRequestDTO.getScheduledTime() != null)
             this.startTime = LocalDateTime.parse(rideRequestDTO.getScheduledTime(), Constants.customDateTimeFormat);
+        else {
+            this.startTime = LocalDateTime.now().plusMinutes(Constants.vehicleWaitTimeInMinutes + 1);
+        }
         this.babyOnBoard = rideRequestDTO.getBabyTransport();
         this.petOnBoard = rideRequestDTO.getPetTransport();
         this.status = Enums.RideStatus.PENDING;

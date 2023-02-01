@@ -236,6 +236,7 @@ public class RideService {
         if (ride.getStatus() != Enums.RideStatus.ACCEPTED)
             throw new RideCancelationException("Cannot start a ride that is not in status ACCEPTED!");
         ride.setStatus(Enums.RideStatus.ACTIVE);
+        ride.setStartTime(LocalDateTime.now());
         save(ride);
         return new RideDto(ride);
     }
