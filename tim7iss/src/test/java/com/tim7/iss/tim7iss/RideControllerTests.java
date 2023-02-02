@@ -320,7 +320,7 @@ public class RideControllerTests {
     }
 
 
-    //    DeleteFavoriteRide
+    //  DeleteFavoriteRide
     @Test
     public void deleteFavouriteRide_shouldBeUnauthorized() throws Exception {
         int favoriteLocationId = 1;

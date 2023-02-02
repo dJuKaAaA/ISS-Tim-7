@@ -197,7 +197,7 @@ public class Tim7issApplication {
 
     }
 
-    private void generateTestDataInDataBase() throws IOException {
+    public  void generateTestDataInDataBase() throws IOException {
 
 
         Random random = new Random();
