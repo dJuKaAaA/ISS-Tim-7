@@ -164,8 +164,16 @@ public class StatisticService {
         return numberOfRidesPerDay;
     }
 
+    public Map<LocalDate, Integer> getNumberOfRidesPerDayByEmail(LocalDateTime startDate, LocalDateTime endDate, String email) throws UserNotFoundException {
+        User user = userRepository.findByEmailAddress(email);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return getNumberOfRidesPerDay(startDate, endDate, user.getId());
+    }
+
     // ako je proslijedjen id putnika onda se ovo tretira kako 'expense', a ako je vozac onda je 'profit'
-    public Map<LocalDate, Integer> getFinancialsPerDay(LocalDateTime startDate, LocalDateTime endDate, Long userId) throws UserNotFoundException {
+    public Map<LocalDate, Integer> getFinancialsPerDay(LocalDateTime startDate, LocalDateTime endDate, Long email) throws UserNotFoundException {
         if (!endDate.isAfter(startDate)) {
             throw new InvalidReportDateException("Start date must be before end date!");
         }
@@ -174,7 +182,7 @@ public class StatisticService {
         }
 
         Map<LocalDate, Integer> financialsPerDay = new HashMap<>();
-        List<RideDto> finishedRides = rideService.getAllFinishedRides(userId);
+        List<RideDto> finishedRides = rideService.getAllFinishedRides(email);
         for (RideDto ride : finishedRides) {
             LocalDateTime rideDateTime = LocalDateTime.parse(ride.getStartTime(), Constants.customDateTimeFormat);
             LocalDate date = LocalDate.from(rideDateTime);
@@ -200,7 +208,15 @@ public class StatisticService {
         return financialsPerDay;
     }
 
-    public Map<LocalDate, Integer> getTraveledDistancePerDay(LocalDateTime startDate, LocalDateTime endDate, Long userId) throws UserNotFoundException {
+    public Map<LocalDate, Integer> getFinancialsPerDayByEmail(LocalDateTime startDate, LocalDateTime endDate, String email) throws UserNotFoundException {
+        User user = userRepository.findByEmailAddress(email);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return getFinancialsPerDay(startDate, endDate, user.getId());
+    }
+
+    public Map<LocalDate, Integer> getTraveledDistancePerDay(LocalDateTime startDate, LocalDateTime endDate, Long email) throws UserNotFoundException {
         if (!endDate.isAfter(startDate)) {
             throw new InvalidReportDateException("Start date must be before end date!");
         }
@@ -209,7 +225,7 @@ public class StatisticService {
         }
 
         Map<LocalDate, Integer> traveledDistancePerDay = new HashMap<>();
-        List<RideDto> rides = rideService.getAllFinishedRides(userId);
+        List<RideDto> rides = rideService.getAllFinishedRides(email);
         for (RideDto ride : rides) {
             LocalDateTime rideDateTime = LocalDateTime.parse(ride.getStartTime(), Constants.customDateTimeFormat);
             LocalDate date = LocalDate.from(rideDateTime);
@@ -236,6 +252,14 @@ public class StatisticService {
         return traveledDistancePerDay;
     }
 
+    public Map<LocalDate, Integer> getTraveledDistancePerDayByEmail(LocalDateTime startDate, LocalDateTime endDate, String email) throws UserNotFoundException {
+        User user = userRepository.findByEmailAddress(email);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return getTraveledDistancePerDay(startDate, endDate, user.getId());
+    }
+
     private Integer calculateDistance(RideDto ride) {
         Integer travelledDistance = 0;
         for (LocationForRideDto locationForRideDto : ride.getLocations()) {
@@ -245,8 +269,8 @@ public class StatisticService {
     }
 
     // Ovde sam je doda da ne bi je testirali
-    private List<RideDto> getAllCanceledRides(Long userId) throws UserNotFoundException {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    private List<RideDto> getAllCanceledRides(Long email) throws UserNotFoundException {
+        User user = userRepository.findById(email).orElseThrow(UserNotFoundException::new);
         Collection<RideDto> rides = new ArrayList<>();
 
         if (user instanceof Driver driver) {
