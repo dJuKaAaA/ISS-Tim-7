@@ -9,12 +9,15 @@ import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.Driver;
 import com.tim7.iss.tim7iss.models.Passenger;
 import com.tim7.iss.tim7iss.models.User;
+import com.tim7.iss.tim7iss.repositories.DriverRepository;
+import com.tim7.iss.tim7iss.repositories.PassengerRepository;
 import com.tim7.iss.tim7iss.repositories.RideRepository;
 import com.tim7.iss.tim7iss.repositories.UserRepository;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -34,6 +37,12 @@ public class StatisticService {
     WorkHourService workHourService;
     @Autowired
     MapService mapService;
+
+    @Autowired
+    private DriverRepository driverRepository;
+
+    @Autowired
+    private PassengerRepository passengerRepository;
 
     public Integer getTotalNumberOfFinishedRides(LocalDateTime startDate, LocalDateTime endDate, Long userId) throws UserNotFoundException {
 
@@ -121,6 +130,34 @@ public class StatisticService {
         return rejectedRides;
     }
 
+    public Map<LocalDate, Integer> getNumberOfRidesPerDayAllPassengers(LocalDateTime startDate, LocalDateTime endDate) throws UserNotFoundException {
+        Map<LocalDate, Integer> ridesPerDay = new HashMap<>();
+        for (Passenger passenger : passengerRepository.findAll()) {
+            Map<LocalDate, Integer> passengerRidesPerDay = getNumberOfRidesPerDay(startDate, endDate, passenger.getId());
+            for (LocalDate localDate : passengerRidesPerDay.keySet()) {
+                if (!ridesPerDay.containsKey(localDate)) {
+                    ridesPerDay.put(localDate, 0);
+                }
+                ridesPerDay.put(localDate, ridesPerDay.get(localDate) + passengerRidesPerDay.get(localDate));
+            }
+        }
+        return ridesPerDay;
+    }
+
+    public Map<LocalDate, Integer> getNumberOfRidesPerDayAllDrivers(LocalDateTime startDate, LocalDateTime endDate) throws UserNotFoundException {
+        Map<LocalDate, Integer> ridesPerDay = new HashMap<>();
+        for (Driver driver : driverRepository.findAll()) {
+            Map<LocalDate, Integer> driverRidesPerDay = getNumberOfRidesPerDay(startDate, endDate, driver.getId());
+            for (LocalDate localDate : driverRidesPerDay.keySet()) {
+                if (!ridesPerDay.containsKey(localDate)) {
+                    ridesPerDay.put(localDate, 0);
+                }
+                ridesPerDay.put(localDate, ridesPerDay.get(localDate) + driverRidesPerDay.get(localDate));
+            }
+        }
+        return ridesPerDay;
+    }
+
     public Map<LocalDate, Integer> getNumberOfRidesPerDay(LocalDateTime startDate, LocalDateTime endDate, Long userId) throws UserNotFoundException {
         if (!endDate.isAfter(startDate)) {
             throw new InvalidReportDateException("Start date must be before end date!");
@@ -164,8 +201,44 @@ public class StatisticService {
         return numberOfRidesPerDay;
     }
 
+    public Map<LocalDate, Integer> getNumberOfRidesPerDayByEmail(LocalDateTime startDate, LocalDateTime endDate, String email) throws UserNotFoundException {
+        User user = userRepository.findByEmailAddress(email);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return getNumberOfRidesPerDay(startDate, endDate, user.getId());
+    }
+
+    public Map<LocalDate, Integer> getFinancialsPerDayAllDrivers(LocalDateTime startDate, LocalDateTime endDate) throws UserNotFoundException {
+        Map<LocalDate, Integer> financialsPerDay = new HashMap<>();
+        for (Driver driver : driverRepository.findAll()) {
+            Map<LocalDate, Integer> driverFinancialsPerDay = getFinancialsPerDay(startDate, endDate, driver.getId());
+            for (LocalDate localDate : driverFinancialsPerDay.keySet()) {
+                if (!financialsPerDay.containsKey(localDate)) {
+                    financialsPerDay.put(localDate, 0);
+                }
+                financialsPerDay.put(localDate, financialsPerDay.get(localDate) + driverFinancialsPerDay.get(localDate));
+            }
+        }
+        return financialsPerDay;
+    }
+
+    public Map<LocalDate, Integer> getFinancialsPerDayAllPassengers(LocalDateTime startDate, LocalDateTime endDate) throws UserNotFoundException {
+        Map<LocalDate, Integer> financialsPerDay = new HashMap<>();
+        for (Passenger passenger : passengerRepository.findAll()) {
+            Map<LocalDate, Integer> passengerFinancialsPerDay = getFinancialsPerDay(startDate, endDate, passenger.getId());
+            for (LocalDate localDate : passengerFinancialsPerDay.keySet()) {
+                if (!financialsPerDay.containsKey(localDate)) {
+                    financialsPerDay.put(localDate, 0);
+                }
+                financialsPerDay.put(localDate, financialsPerDay.get(localDate) + passengerFinancialsPerDay.get(localDate));
+            }
+        }
+        return financialsPerDay;
+    }
+
     // ako je proslijedjen id putnika onda se ovo tretira kako 'expense', a ako je vozac onda je 'profit'
-    public Map<LocalDate, Integer> getFinancialsPerDay(LocalDateTime startDate, LocalDateTime endDate, Long userId) throws UserNotFoundException {
+    public Map<LocalDate, Integer> getFinancialsPerDay(LocalDateTime startDate, LocalDateTime endDate, Long email) throws UserNotFoundException {
         if (!endDate.isAfter(startDate)) {
             throw new InvalidReportDateException("Start date must be before end date!");
         }
@@ -174,7 +247,7 @@ public class StatisticService {
         }
 
         Map<LocalDate, Integer> financialsPerDay = new HashMap<>();
-        List<RideDto> finishedRides = rideService.getAllFinishedRides(userId);
+        List<RideDto> finishedRides = rideService.getAllFinishedRides(email);
         for (RideDto ride : finishedRides) {
             LocalDateTime rideDateTime = LocalDateTime.parse(ride.getStartTime(), Constants.customDateTimeFormat);
             LocalDate date = LocalDate.from(rideDateTime);
@@ -200,7 +273,43 @@ public class StatisticService {
         return financialsPerDay;
     }
 
-    public Map<LocalDate, Integer> getTraveledDistancePerDay(LocalDateTime startDate, LocalDateTime endDate, Long userId) throws UserNotFoundException {
+    public Map<LocalDate, Integer> getFinancialsPerDayByEmail(LocalDateTime startDate, LocalDateTime endDate, String email) throws UserNotFoundException {
+        User user = userRepository.findByEmailAddress(email);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return getFinancialsPerDay(startDate, endDate, user.getId());
+    }
+
+    public Map<LocalDate, Integer> getTraveledDistancePerDayAllDrivers(LocalDateTime startDate, LocalDateTime endDate) throws UserNotFoundException {
+        Map<LocalDate, Integer> traveledDistancePerDay = new HashMap<>();
+        for (Driver driver : driverRepository.findAll()) {
+            Map<LocalDate, Integer> driverTraveledDistancePerDay = getTraveledDistancePerDay(startDate, endDate, driver.getId());
+            for (LocalDate localDate : driverTraveledDistancePerDay.keySet()) {
+                if (!traveledDistancePerDay.containsKey(localDate)) {
+                    traveledDistancePerDay.put(localDate, 0);
+                }
+                traveledDistancePerDay.put(localDate, traveledDistancePerDay.get(localDate) + driverTraveledDistancePerDay.get(localDate));
+            }
+        }
+        return traveledDistancePerDay;
+    }
+
+    public Map<LocalDate, Integer> getTraveledDistancePerDayAllPassenger(LocalDateTime startDate, LocalDateTime endDate) throws UserNotFoundException {
+        Map<LocalDate, Integer> traveledDistancePerDay = new HashMap<>();
+        for (Passenger passenger : passengerRepository.findAll()) {
+            Map<LocalDate, Integer> passengerTraveledDistancePerDay = getTraveledDistancePerDay(startDate, endDate, passenger.getId());
+            for (LocalDate localDate : passengerTraveledDistancePerDay.keySet()) {
+                if (!traveledDistancePerDay.containsKey(localDate)) {
+                    traveledDistancePerDay.put(localDate, 0);
+                }
+                traveledDistancePerDay.put(localDate, traveledDistancePerDay.get(localDate) + passengerTraveledDistancePerDay.get(localDate));
+            }
+        }
+        return traveledDistancePerDay;
+    }
+
+    public Map<LocalDate, Integer> getTraveledDistancePerDay(LocalDateTime startDate, LocalDateTime endDate, Long email) throws UserNotFoundException {
         if (!endDate.isAfter(startDate)) {
             throw new InvalidReportDateException("Start date must be before end date!");
         }
@@ -209,7 +318,7 @@ public class StatisticService {
         }
 
         Map<LocalDate, Integer> traveledDistancePerDay = new HashMap<>();
-        List<RideDto> rides = rideService.getAllFinishedRides(userId);
+        List<RideDto> rides = rideService.getAllFinishedRides(email);
         for (RideDto ride : rides) {
             LocalDateTime rideDateTime = LocalDateTime.parse(ride.getStartTime(), Constants.customDateTimeFormat);
             LocalDate date = LocalDate.from(rideDateTime);
@@ -236,6 +345,14 @@ public class StatisticService {
         return traveledDistancePerDay;
     }
 
+    public Map<LocalDate, Integer> getTraveledDistancePerDayByEmail(LocalDateTime startDate, LocalDateTime endDate, String email) throws UserNotFoundException {
+        User user = userRepository.findByEmailAddress(email);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return getTraveledDistancePerDay(startDate, endDate, user.getId());
+    }
+
     private Integer calculateDistance(RideDto ride) {
         Integer travelledDistance = 0;
         for (LocationForRideDto locationForRideDto : ride.getLocations()) {
@@ -245,8 +362,8 @@ public class StatisticService {
     }
 
     // Ovde sam je doda da ne bi je testirali
-    private List<RideDto> getAllCanceledRides(Long userId) throws UserNotFoundException {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    private List<RideDto> getAllCanceledRides(Long email) throws UserNotFoundException {
+        User user = userRepository.findById(email).orElseThrow(UserNotFoundException::new);
         Collection<RideDto> rides = new ArrayList<>();
 
         if (user instanceof Driver driver) {
