@@ -334,17 +334,19 @@ public class Tim7issApplication {
 
         // Admin creation
         Admin admin = new Admin();
-        admin.setFirstName("Adonis");
-        admin.setLastName("Adonis");
+        admin.setFirstName("Andrew");
+        admin.setLastName("Tate");
         admin.setProfilePicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
-        admin.setPhoneNumber("003814523423");
-        admin.setEmailAddress("admin@email.com");
+        admin.setPhoneNumber("+3814523423");
+        admin.setEmailAddress("andrewtate@email.com");
         admin.setPassword("$2a$12$c9cKc9F6WaOKIchi9bWCpOrWRnXTBEKTU4NFtS3azXhJWy4TAcTey");  // Admin123
         admin.setEnabled(true);
         admin.setRoles(List.of(adminRole));
         adminRepository.save(admin);
 
         // driver creation
+        //
+        //
         Driver driver = new Driver(new UserDto(null, "Mika", "Mikic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372222", "mika.mikic@email.com", "Mikina adresa", "$2a$12$4z3y3x45WYUdy98AhcW5Vee6UmIAClGcs61e1yJZpwpaobzkm5asa"));  // Mika1234
         driver.setEnabled(true);
         driver.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, standardVehicleType, driver, new Location(null, "Fakultet tehnickih nauka Univerziteta u Novom Sadu, Trg Dositeja Obradovica, Novi Sad", 45.24648813f, 19.8516641f)));
@@ -365,8 +367,13 @@ public class Tim7issApplication {
         dejanMatic.setWorkHours(Set.of(new WorkHour(null, dejanMatic, LocalDateTime.of(2022, Month.DECEMBER, 19, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 19, 16, 0)), new WorkHour(null, dejanMatic, LocalDateTime.of(2022, Month.DECEMBER, 20, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 20, 16, 0)), new WorkHour(null, dejanMatic, LocalDateTime.of(2022, Month.DECEMBER, 21, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 21, 16, 0)), new WorkHour(null, dejanMatic, LocalDateTime.of(2022, Month.DECEMBER, 22, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 22, 16, 0)), new WorkHour(null, dejanMatic, LocalDateTime.of(2022, Month.DECEMBER, 23, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 23, 16, 0))));
         dejanMatic.setRoles(List.of(driverRole));
         driverRepository.save(dejanMatic);
+        //
+        //
+        // driver creation
 
         // passenger creation
+        //
+        //
         Passenger passenger1 = new Passenger(new UserDto(null, "Petar", "Petrovic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/passenger1.jpg")), "003817372727", "petar.petrovic@email.com", "Petrova adresa", "$2a$12$lA8WEWzn3E7l53E2HYpX3ee0q.ZOVDjY34jNYTs/n9ucvebpY3v86")); // Petar123
         passenger1.setRoles(List.of(passengerRole));
         passenger1.setEnabled(true);
@@ -428,8 +435,13 @@ public class Tim7issApplication {
         passengerRepository.save(passenger12);
 
         List<Passenger> passengers = List.of(passenger1, passenger2, passenger3, passenger4, passenger5, passenger6, passenger7, passenger8, passenger9, passenger10, passenger11, passenger12);
+        //
+        //
+        // passenger creation
 
         // declaring routes that will be saved when the ride that contains them gets created
+        //
+        //
         Route route1 = new Route(null, 1000, 3, new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija", 45.24914205013315f, 19.843100056994654f), new Location(null, "Srpsko narodno pozorište, Pozorišni trg, Novi Sad, Srbija", 45.25510777309239f, 19.842949154190308f));
         Route route2 = new Route(null, 1900, 5, new Location(null, "Katolicka Porta 4, Novi Sad", 45.25642044682303f, 19.845453240699275f), new Location(null, "Dunavski Park, Dunavska, Novi Sad, Srbija", 45.25539880319645f, 19.85058802720829f));
         Route route3 = new Route(null, 3600, 9, new Location(null, "NTP NS, Fruškogorska, Novi Sad, Serbia", 45.24475880747688f, 19.84708251359552f), new Location(null, "Knin, Novi Sad, Serbia", 45.25433739645546f, 19.820878211862986f));
@@ -442,10 +454,17 @@ public class Tim7issApplication {
         Route route10 = new Route(null, 14400, 24, new Location(null, "Градско Гробље, Novi Sad", 45.274077132923246f, 19.792574980028654f), new Location(null, "Kafana Tako Je Suđeno, Ribnjak gornji put, Petrovaradin", 45.23220418666553f, 19.856089690524232f));
 
         List<Route> routes = List.of(route1, route2, route3, route4, route5, route6, route7, route8, route9, route10);
+        //
+        //
+        // route declarations
 
         // ride creation
+        //
+        //
 
         // finished rides
+        //
+        //
         final int RIDE_COUNT = 300;
         List<Ride> rides = new ArrayList<>();
         LocalDateTime sasaStartRide = LocalDateTime.of(2022, Month.OCTOBER, 3, 8, 5);
@@ -515,7 +534,7 @@ public class Tim7issApplication {
             rides.add(rideSasa);
             rides.add(rideDejan);
 
-//             this piece of code check if the startRide is on the weekend and if it is, it startRide goes to next monday
+            // this piece of code check if the startRide is on the weekend and if it is, it startRide goes to next monday
             if (sasaStartRide.getHour() >= 16) {
                 sasaStartRide = LocalDateTime.of(sasaStartRide.toLocalDate().plusDays(1), LocalTime.of(8, 30));
                 if (sasaStartRide.getDayOfWeek() == (DayOfWeek.SATURDAY)) {
@@ -530,8 +549,13 @@ public class Tim7issApplication {
             }
 
         }
+        //
+        //
+        // finished rides
 
         // accepted rides
+        //
+        //
         sasaStartRide = LocalDateTime.now().plusMinutes(60);
         dejanStartRide = LocalDateTime.now().plusMinutes(70);
         for (int i = 0; i < 5; ++i) {
@@ -596,36 +620,88 @@ public class Tim7issApplication {
             sasaStartRide = sasaStartRide.plusMinutes(sasaRoute.getEstimatedTimeInMinutes() + random.nextInt(15, 30));
             dejanStartRide = dejanStartRide.plusMinutes(sasaRoute.getEstimatedTimeInMinutes() + random.nextInt(15, 30));
         }
+        //
+        //
+        // accepted rides
+
+        //
+        //
+        // ride creation
 
 
         // creating vehicles
+        //
+        //
         vehicleRepository.save(new Vehicle(null, "BMW iXM60", "PGAA112", 5, false, false, standardVehicleType, null, new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f)));
         vehicleRepository.save(new Vehicle(null, "BMW iX3", "PGAA113", 5, true, true, standardVehicleType, null, new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f)));
+        //
+        //
+        // creating vehicles
 
         // panic creation
-        // TODO: Enter valid date time according to ride start date
+        //
+        //
         Ride rideToPanic = rides.get(random.nextInt(rides.size()));
+        panicRepository.save(new Panic(null, rideToPanic.getStartTime().plusMinutes(3), false, "Driver is very uncomfortable and is making racist comments", rideToPanic, passenger9));
+        //
+        //
+        // panic creation
 
-        panicRepository.save(new Panic(null, LocalDateTime.now(), false, "Driver is very uncomfortable and is making racist comments", rideToPanic, passenger9));
 
         // review creation
-        Ride rideToRate = rides.get(random.nextInt(rides.size()));
+        //
+        //
+        final String VERY_POSITIVE_DRIVER_COMMENT = "This driver exceeded my expectations! He got us there on time and the ride was very pleasant. Well done!";
+        final String POSITIVE_DRIVER_COMMENT = "This ride was great. I enjoyed it";
+        final String NEUTRAL_DRIVER_COMMENT = "This driver was solid. The ride felt nice.";
+        final String NEGATIVE_DRIVER_COMMENT = "Not very good. Wasn't very pleasant but at least we arrived at the destination on timed.";
+        final String CATASTROPHIC_DRIVER_COMMENT = "Awful! I don't think there is a law that this driver didn't break. That was very unpleasant and I might sue you.";
+        Map<Integer, String> driverCommentForRating = new HashMap<>();
+        driverCommentForRating.put(5, VERY_POSITIVE_DRIVER_COMMENT);
+        driverCommentForRating.put(4, POSITIVE_DRIVER_COMMENT);
+        driverCommentForRating.put(3, NEUTRAL_DRIVER_COMMENT);
+        driverCommentForRating.put(2, NEGATIVE_DRIVER_COMMENT);
+        driverCommentForRating.put(1, CATASTROPHIC_DRIVER_COMMENT);
 
-        DriverReview driverReview = new DriverReview();
-        driverReview.setRating(5f);
-        driverReview.setComment("This driver is awesome!");
-        driverReview.setRide(rideToRate);
-        driverReview.setPassenger(passenger6);
-        driverReview.setDriver(rideToRate.getDriver());
-        VehicleReview vehicleReview = new VehicleReview();
-        vehicleReview.setRating(5f);
-        vehicleReview.setComment("This car is very clean!");
-        vehicleReview.setRide(rideToRate);
-        vehicleReview.setPassenger(passenger6);
-        vehicleReview.setVehicle(rideToRate.getDriver().getVehicle());
-        driverReviewRepository.save(driverReview);
-        vehicleReviewRepository.save(vehicleReview);
+        final String VERY_POSITIVE_VEHICLE_COMMENT = "This might be the cleanest car I ever drove in. As soon as I entered I could feel a very pleasant smell. Props to the driver, this vehicle is preserved amazingly.";
+        final String POSITIVE_VEHICLE_COMMENT = "It was very clean and the car looks amazing. Is it a new model";
+        final String NEUTRAL_VEHICLE_COMMENT = "I have nothing bad or good to say about the vehicle besides that it got the job done.";
+        final String NEGATIVE_VEHICLE_COMMENT = "There were crumbs on the seats and the inside didn't smell very nice... Wouldn't recommend";
+        final String CATASTROPHIC_VEHICLE_COMMENT = "I don't know how I managed to not to throw up during the ride. Absolutely disgusting. This shouldn't be legal.";
+        Map<Integer, String> vehicleCommentForRating = new HashMap<>();
+        vehicleCommentForRating.put(5, VERY_POSITIVE_VEHICLE_COMMENT);
+        vehicleCommentForRating.put(4, POSITIVE_VEHICLE_COMMENT);
+        vehicleCommentForRating.put(3, NEUTRAL_VEHICLE_COMMENT);
+        vehicleCommentForRating.put(2, NEGATIVE_VEHICLE_COMMENT);
+        vehicleCommentForRating.put(1, CATASTROPHIC_VEHICLE_COMMENT);
 
+        for (Ride ride : rides) {
+            for (Passenger passenger : ride.getPassengers()) {
+                if (random.nextBoolean()) {
+                    int driverRating = random.nextInt(1, 6);
+                    DriverReview driverReview = new DriverReview();
+                    driverReview.setRating(driverRating);
+                    driverReview.setComment(driverCommentForRating.get(driverRating));
+                    driverReview.setRide(ride);
+                    driverReview.setPassenger(passenger);
+                    driverReview.setDriver(ride.getDriver());
+
+                    int vehicleRating = random.nextInt(1, 6);
+                    VehicleReview vehicleReview = new VehicleReview();
+                    vehicleReview.setRating(vehicleRating);
+                    vehicleReview.setComment(vehicleCommentForRating.get(vehicleRating));
+                    vehicleReview.setRide(ride);
+                    vehicleReview.setPassenger(passenger);
+                    vehicleReview.setVehicle(ride.getDriver().getVehicle());
+
+                    driverReviewRepository.save(driverReview);
+                    vehicleReviewRepository.save(vehicleReview);
+                }
+            }
+        }
+        //
+        //
+        // review creation
     }
 
 }
