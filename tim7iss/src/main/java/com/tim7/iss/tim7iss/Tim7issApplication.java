@@ -74,8 +74,8 @@ public class Tim7issApplication {
 //        return this::testDataDjukanovic;
 //        return this::testDataMartic;
 //        return this::testDataStanojlovic;
-//        return this::generateTestDataInDataBase;
-        return this::projectDefenceTestData;
+        return this::generateTestDataInDataBase;
+//        return this::projectDefenceTestData;
     }
 
     private void testDataDjukanovic() throws IOException {
@@ -262,14 +262,19 @@ public class Tim7issApplication {
 
         // id = 6
         Passenger passenger3 = new Passenger(new UserDto(null, "Rade", "Radic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "rade" + ".radic@email.com", "Radetova adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passenger2.setRoles(List.of(passengerRole));
-        passenger2.setEnabled(true);
-        passengerRepository.save(passenger2);
+        passenger3.setRoles(List.of(passengerRole));
+        passenger3.setEnabled(true);
+        passengerRepository.save(passenger3);
 
+        // id = 7
+        Passenger passengerWhoIsNotSupposedToHaveAnyAcceptedRides = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "neko.nekic@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passengerWhoIsNotSupposedToHaveAnyAcceptedRides.setRoles(List.of(passengerRole));
+        passengerWhoIsNotSupposedToHaveAnyAcceptedRides.setEnabled(true);
+        passengerRepository.save(passengerWhoIsNotSupposedToHaveAnyAcceptedRides);
 
         // declaring routes that will be saved when the ride that contains them gets created
         // id = 1
-        Route route1 = new Route(null, 1000, 3, new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija", 45.24914205013315f, 19.843100056994654f), new Location(null, "Srpsko narodno pozoriste, Pozorisni trg, Novi Sad, Srbija", 45.25510777309239f, 19.842949154190308f));
+        Route route1 = new Route(null, 1000, 10, new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija", 45.24914205013315f, 19.843100056994654f), new Location(null, "Srpsko narodno pozoriste, Pozorisni trg, Novi Sad, Srbija", 45.25510777309239f, 19.842949154190308f));
 
         // ride creation
         // PENDING id = 1
@@ -288,8 +293,13 @@ public class Tim7issApplication {
         refusalRepository.save(refusal);
 
         // ACCEPTED RIDE id = 5
-
         Ride acceptedRide = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
+
+        // Ride that is supposed to be deleted during the tests -> id = 6
+        Ride rideToBeDeleted = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(30), null, route1.getEstimatedTimeInMinutes(), false, false, false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger2), null, List.of(route1.clone())));
+
+        // id = 7
+        Ride rideForDriverAtThatMomentTest = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.MAY, 19, 8, 1), null, route1.getEstimatedTimeInMinutes(), false, false, false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
 
         // Favorite location
         // id = 1
@@ -303,8 +313,6 @@ public class Tim7issApplication {
         favoriteLocationRepository.save(favoriteLocation);
 
         // creating vehicles
-        locationRepository.save(new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f));
-        locationRepository.save(new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f));
         vehicleRepository.save(new Vehicle(null, "BMW iXM60", "PGAA112", 5, false, false, vehicleType, null, new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f)));
         vehicleRepository.save(new Vehicle(null, "BMW iX3", "PGAA113", 5, true, true, vehicleType, null, new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f)));
 
@@ -313,7 +321,6 @@ public class Tim7issApplication {
         document.setName("Licna karta");
         document.setDriver(driver);
         documentRepository.save(document);
-
 
     }
 
@@ -586,7 +593,7 @@ public class Tim7issApplication {
                             null,
                             sasaMatic.getVehicle().getVehicleType().getPricePerKm() + sasaRoute.getDistanceInMeters() / 1000 * 120,
                             sasaStartRide,
-                            sasaStartRide.plusMinutes(sasaRoute.getEstimatedTimeInMinutes()),
+                            null,
                             sasaRoute.getEstimatedTimeInMinutes(),
                             sasaMatic.getVehicle().isBabyAllowed(),
                             sasaMatic.getVehicle().isPetsAllowed(),
@@ -604,7 +611,7 @@ public class Tim7issApplication {
                             null,
                             dejanMatic.getVehicle().getVehicleType().getPricePerKm() + dejanRoute.getDistanceInMeters() / 1000 * 120,
                             dejanStartRide,
-                            dejanStartRide.plusMinutes(dejanRoute.getEstimatedTimeInMinutes()),
+                            null,
                             dejanRoute.getEstimatedTimeInMinutes(),
                             dejanMatic.getVehicle().isBabyAllowed(),
                             dejanMatic.getVehicle().isPetsAllowed(),

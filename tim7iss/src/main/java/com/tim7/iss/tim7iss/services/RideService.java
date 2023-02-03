@@ -4,9 +4,7 @@ import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
-import com.tim7.iss.tim7iss.repositories.DriverRepository;
-import com.tim7.iss.tim7iss.repositories.RideRepository;
-import com.tim7.iss.tim7iss.repositories.UserRepository;
+import com.tim7.iss.tim7iss.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,11 +21,11 @@ public class RideService {
     @Autowired
     DriverService driverService;
     @Autowired
-    PassengerService passengerService;
+    PassengerRepository passengerRepository;
     @Autowired
     FavoriteLocationService favoriteLocationService;
     @Autowired
-    VehicleTypeService vehicleTypeService;
+    VehicleTypeRepository vehicleTypeRepository;
     @Autowired
     MapService mapService;
     @Autowired
@@ -49,7 +47,7 @@ public class RideService {
     }
 
     public Ride driverRideAtMoment(Long driverId, LocalDateTime moment) {
-        List<Ride> rides = rideRepository.findRidesByDriverId(driverId);
+        List<Ride> rides = rideRepository.findByDriverId(driverId);
         rides = rides.stream().filter((Ride ride) -> {
             if (ride.getStatus() == Enums.RideStatus.ACCEPTED || ride.getStatus() == Enums.RideStatus.PENDING || ride.getStatus() == Enums.RideStatus.ACTIVE) {
                 LocalDateTime rideStartTime = ride.getStartTime();
@@ -72,21 +70,22 @@ public class RideService {
     }
 
 
-    public boolean checkIfMoreThan9FavoriteLocations(Long id, FavoriteLocationService favoriteLocationService) {
+    public boolean checkIfMoreThan9FavoriteLocations(Long id) {
         List<FavoriteLocation> locations = favoriteLocationService.findByPassengerId(id);
         return locations.size() > 9;
     }
 
+    // 1. passenger not found - bad email 2. too many favorite rides 3. happy 4. invalid favorite location data
     public FavoriteLocationDto createFavoriteLocation(String passengerEmail, FavoriteLocationDto favoriteLocationDto) throws PassengerNotFoundException, TooManyFavoriteRidesException, UserNotFoundException {
-        Passenger passengerThatSubmitted = passengerService.findByEmailAddress(passengerEmail).orElseThrow(PassengerNotFoundException::new);
-        if (checkIfMoreThan9FavoriteLocations(passengerThatSubmitted.getId(), favoriteLocationService)) {
+        Passenger passengerThatSubmitted = passengerRepository.findByEmailAddress(passengerEmail).orElseThrow(PassengerNotFoundException::new);
+        if (checkIfMoreThan9FavoriteLocations(passengerThatSubmitted.getId())) {
             throw new TooManyFavoriteRidesException();
         }
         Set<Passenger> passengers = new HashSet<>();
         addPassengerFromFavoriteLocation(passengers, favoriteLocationDto);
-        VehicleType vehicleType = vehicleTypeService.getByName(favoriteLocationDto.getVehicleType());
+        VehicleType vehicleType = vehicleTypeRepository.findByName(favoriteLocationDto.getVehicleType()).orElse(null);
         FavoriteLocation favoriteLocation = new FavoriteLocation(favoriteLocationDto, passengers, vehicleType, passengerThatSubmitted);
-        favoriteLocation = favoriteLocationService.save(favoriteLocation);
+        favoriteLocationService.save(favoriteLocation);
         return new FavoriteLocationDto(favoriteLocation);
     }
 
@@ -329,7 +328,7 @@ public class RideService {
         }
 
         // setting vehicle type for the ride
-        rideToSchedule.setVehicleType(vehicleTypeService.getByName(rideCreationDto.getVehicleType()));
+        rideToSchedule.setVehicleType(vehicleTypeRepository.findByName(rideCreationDto.getVehicleType()).orElse(null));
 
         // setting the price
         int totalDistance = 0;
@@ -340,7 +339,7 @@ public class RideService {
 
         // adding passengers to ride
         for (UserRefDto passengerRef : rideCreationDto.getPassengers()) {
-            Passenger passenger = passengerService.findById(passengerRef.getId());
+            Passenger passenger = passengerRepository.findById(passengerRef.getId()).orElse(null);
             if (passenger == null) {
                 continue;
             }
@@ -356,9 +355,8 @@ public class RideService {
     // Testirano
     private void addPassengerFromFavoriteLocation(Set<Passenger> passengers, FavoriteLocationDto favoriteLocationDto) throws UserNotFoundException {
         for (UserRefDto pass : favoriteLocationDto.getPassengers()) {
-            Passenger passenger = passengerService.findById(pass.getId());
-            if (passenger == null) throw new UserNotFoundException();
-            passengers.add(passengerService.findById(pass.getId()));
+            Passenger passenger = passengerRepository.findById(pass.getId()).orElseThrow(UserNotFoundException::new);
+            passengers.add(passenger);
         }
     }
 
@@ -368,7 +366,7 @@ public class RideService {
         Collection<RideDto> rides = new ArrayList<>();
 
         if (user instanceof Driver driver) {
-            rideRepository.findRidesByDriverId(driver.getId()).forEach(ride -> rides.add(new RideDto(ride)));
+            rideRepository.findByDriverId(driver.getId()).forEach(ride -> rides.add(new RideDto(ride)));
         } else if (user instanceof Passenger passenger) {
             rideRepository.findRidesByPassengersId(passenger.getId()).forEach(ride -> rides.add(new RideDto(ride)));
         } else {
@@ -392,7 +390,7 @@ public class RideService {
         Collection<RideDto> rides = new ArrayList<>();
 
         if (user instanceof Driver driver) {
-            rideRepository.findRidesByDriverId(driver.getId()).forEach(ride -> rides.add(new RideDto(ride)));
+            rideRepository.findByDriverId(driver.getId()).forEach(ride -> rides.add(new RideDto(ride)));
         } else if (user instanceof Passenger passenger) {
             rideRepository.findRidesByPassengersId(passenger.getId()).forEach(ride -> rides.add(new RideDto(ride)));
         } else {
@@ -413,7 +411,7 @@ public class RideService {
     // Testirano
     public PaginatedResponseDto<RideDto> getPaginatedRidesForDriverAsDto(Long driverId, Pageable page) throws DriverNotFoundException {
         driverRepository.findById(driverId).orElseThrow(DriverNotFoundException::new);
-        List<RideDto> rides = rideRepository.findRidesByDriverId(driverId).stream().map(RideDto::new).toList();
+        List<RideDto> rides = rideRepository.findByDriverId(driverId).stream().map(RideDto::new).toList();
         return new PaginatedResponseDto<>(rides.size(), rides);
     }
 

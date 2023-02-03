@@ -175,5 +175,20 @@ public class CustomTestData {
         return rideDto;
     }
 
+    public Ride getRideForDriverAtThatMomentTest(Enums.RideStatus status, LocalDateTime moment, Driver driver) throws IOException {
+        Passenger passenger = getPassenger1();
+        Route route = getRoute();
+        route.setId(8L);
+        Ride ride = new Ride(7L, 1000, moment, null, route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, status, driver, driver.getVehicle().getVehicleType(), Set.of(passenger), null, List.of(route));
+        return ride;
+    }
+
+    public Ride getPendingRideWithPassenger(Passenger passenger) throws IOException {
+        Route route = getRoute();
+        Driver driver = getDriver();
+        Ride ride = new Ride(8L, 1000, LocalDateTime.now().plusMinutes(15), null, route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING, driver, driver.getVehicle().getVehicleType(), Set.of(passenger), null, List.of(route));
+        return ride;
+    }
+
 
 }

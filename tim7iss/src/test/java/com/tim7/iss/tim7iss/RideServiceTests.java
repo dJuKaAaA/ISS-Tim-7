@@ -2,17 +2,14 @@ package com.tim7.iss.tim7iss;
 
 
 import com.tim7.iss.tim7iss.dto.*;
-import com.tim7.iss.tim7iss.exceptions.DriverNotFoundException;
-import com.tim7.iss.tim7iss.exceptions.RideCancelationException;
-import com.tim7.iss.tim7iss.exceptions.RideNotFoundException;
-import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
-import com.tim7.iss.tim7iss.repositories.DriverRepository;
-import com.tim7.iss.tim7iss.repositories.RideRepository;
-import com.tim7.iss.tim7iss.repositories.UserRepository;
+import com.tim7.iss.tim7iss.repositories.*;
 import com.tim7.iss.tim7iss.services.DriverService;
+import com.tim7.iss.tim7iss.services.FavoriteLocationService;
 import com.tim7.iss.tim7iss.services.RideService;
+import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,13 +18,14 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
 
@@ -45,6 +43,15 @@ public class RideServiceTests {
 
     @Mock
     private DriverService driverService;
+
+    @Mock
+    private FavoriteLocationService favoriteLocationService;
+
+    @Mock
+    private PassengerRepository passengerRepository;
+
+    @Mock
+    private VehicleTypeRepository vehicleTypeRepository;
 
     @Autowired
     @InjectMocks
@@ -73,7 +80,7 @@ public class RideServiceTests {
         Ride ride = customTestData.getFinishedRide();
 
         Mockito.when(userRepository.findById(driver.getId())).thenReturn(Optional.of(driver));
-        Mockito.when(rideRepository.findRidesByDriverId(driver.getId())).thenReturn(List.of(ride));
+        Mockito.when(rideRepository.findByDriverId(driver.getId())).thenReturn(List.of(ride));
 
         RideDto rideDto = new RideDto(ride);
         List<RideDto> rideDtos = List.of(rideDto);
@@ -139,7 +146,7 @@ public class RideServiceTests {
         Ride ride = customTestData.getRejectedRide();
 
         Mockito.when(userRepository.findById(driver.getId())).thenReturn(Optional.of(driver));
-        Mockito.when(rideRepository.findRidesByDriverId(driver.getId())).thenReturn(List.of(ride));
+        Mockito.when(rideRepository.findByDriverId(driver.getId())).thenReturn(List.of(ride));
 
         RideDto rideDto = new RideDto(ride);
         List<RideDto> rideDtos = List.of(rideDto);
@@ -190,7 +197,7 @@ public class RideServiceTests {
         RideDto rideDto = new RideDto(ride);
 
         Mockito.when(driverRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(driver));
-        Mockito.when(rideRepository.findRidesByDriverId(Mockito.anyLong())).thenReturn(List.of(ride));
+        Mockito.when(rideRepository.findByDriverId(Mockito.anyLong())).thenReturn(List.of(ride));
 
 
         PaginatedResponseDto expectedPaginatedResponseDto = new PaginatedResponseDto(List.of(rideDto).size(), List.of(rideDto));
@@ -206,7 +213,7 @@ public class RideServiceTests {
 
 
         Mockito.when(driverRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(driver));
-        Mockito.when(rideRepository.findRidesByDriverId(Mockito.anyLong())).thenReturn(new ArrayList<>());
+        Mockito.when(rideRepository.findByDriverId(Mockito.anyLong())).thenReturn(new ArrayList<>());
 
 
         PaginatedResponseDto expectedPaginatedResponseDto = new PaginatedResponseDto(0, new ArrayList());
@@ -625,5 +632,262 @@ public class RideServiceTests {
         assertEquals(expectedRideDto, actualRideDto);
     }
 
+    @Test
+    public void driverRideAtMoment_ShouldReturnRideIfDriverHasAcceptedRideAtThatMoment() {
+        LocalDateTime timeOfRide = LocalDateTime.of(2023, Month.MAY, 19, 8, 3);
 
+        Driver driver = Mockito.mock(Driver.class);
+        Mockito.when(driver.getId()).thenReturn(1L);
+
+        Ride acceptedRide = Mockito.mock(Ride.class);
+        Mockito.when(acceptedRide.getStartTime()).thenReturn(timeOfRide);
+        Mockito.when(acceptedRide.getEstimatedTimeInMinutes()).thenReturn(10);
+        Mockito.when(acceptedRide.getStatus()).thenReturn(Enums.RideStatus.ACCEPTED);
+
+        Mockito.when(rideRepository.findByDriverId(driver.getId())).thenReturn(List.of(acceptedRide));
+        Ride rideAtMoment = rideService.driverRideAtMoment(driver.getId(), timeOfRide.plusMinutes(1));
+        assertNotNull(rideAtMoment);
+    }
+
+    @Test void driverRideAtMoment_ShouldReturnRideIfDriverHasPendingRideAtThatMoment() {
+        LocalDateTime timeOfRide = LocalDateTime.of(2023, Month.MAY, 19, 8, 3);
+
+        Driver driver = Mockito.mock(Driver.class);
+        Mockito.when(driver.getId()).thenReturn(1L);
+
+        Ride pendingRide = Mockito.mock(Ride.class);
+        Mockito.when(pendingRide.getStartTime()).thenReturn(timeOfRide);
+        Mockito.when(pendingRide.getEstimatedTimeInMinutes()).thenReturn(10);
+        Mockito.when(pendingRide.getStatus()).thenReturn(Enums.RideStatus.PENDING);
+
+        Mockito.when(rideRepository.findByDriverId(driver.getId())).thenReturn(List.of(pendingRide));
+
+        Ride rideAtMoment = rideService.driverRideAtMoment(driver.getId(), timeOfRide);
+        assertNotNull(rideAtMoment);
+    }
+
+    @Test void driverRideAtMoment_ShouldReturnRideIfDriverHasActiveRideAtThatMoment() {
+        LocalDateTime timeOfRide = LocalDateTime.of(2023, Month.MAY, 19, 8, 3);
+
+        Driver driver = Mockito.mock(Driver.class);
+        Mockito.when(driver.getId()).thenReturn(1L);
+
+        Ride activeRide = Mockito.mock(Ride.class);
+        Mockito.when(activeRide.getStartTime()).thenReturn(timeOfRide);
+        Mockito.when(activeRide.getEstimatedTimeInMinutes()).thenReturn(10);
+        Mockito.when(activeRide.getStatus()).thenReturn(Enums.RideStatus.ACTIVE);
+
+        Mockito.when(rideRepository.findByDriverId(driver.getId())).thenReturn(List.of(activeRide));
+
+        Ride rideAtMoment = rideService.driverRideAtMoment(driver.getId(), timeOfRide);
+        assertNotNull(rideAtMoment);
+    }
+
+    @Test void driverRideAtMoment_ShouldNotReturnRideIfDriverHasNoActivePendingOrAcceptedRidesAtThatMoment() {
+        LocalDateTime timeOfRide = LocalDateTime.of(2023, Month.MAY, 19, 8, 3);
+
+        Driver driver = Mockito.mock(Driver.class);
+        Mockito.when(driver.getId()).thenReturn(1L);
+
+        Ride acceptedRide = Mockito.mock(Ride.class);
+        Mockito.when(acceptedRide.getStartTime()).thenReturn(timeOfRide.plusDays(1));
+        Mockito.when(acceptedRide.getEstimatedTimeInMinutes()).thenReturn(10);
+        Mockito.when(acceptedRide.getStatus()).thenReturn(Enums.RideStatus.ACCEPTED);
+
+        Ride pendingRide = Mockito.mock(Ride.class);
+        Mockito.when(pendingRide.getStartTime()).thenReturn(timeOfRide.plusDays(2));
+        Mockito.when(pendingRide.getEstimatedTimeInMinutes()).thenReturn(10);
+        Mockito.when(pendingRide.getStatus()).thenReturn(Enums.RideStatus.PENDING);
+
+        Ride activeRide = Mockito.mock(Ride.class);
+        Mockito.when(activeRide.getStartTime()).thenReturn(timeOfRide.plusDays(3));
+        Mockito.when(activeRide.getEstimatedTimeInMinutes()).thenReturn(10);
+        Mockito.when(activeRide.getStatus()).thenReturn(Enums.RideStatus.ACTIVE);
+
+        Mockito.when(rideRepository.findByDriverId(driver.getId())).thenReturn(
+                List.of(acceptedRide, pendingRide, activeRide));
+
+        Ride rideAtMoment = rideService.driverRideAtMoment(driver.getId(), timeOfRide);
+        assertNull(rideAtMoment);
+    }
+
+    @Test void driverRideAtMoment_ShouldNotReturnRideIfDriverHasOnlyFinishedRejectedOrCancelledRidesAtThatMoment() {
+        LocalDateTime timeOfRide = LocalDateTime.of(2023, Month.MAY, 19, 8, 3);
+
+        Driver driver = Mockito.mock(Driver.class);
+        Mockito.when(driver.getId()).thenReturn(1L);
+
+        Ride finishedRide = Mockito.mock(Ride.class);
+        Mockito.when(finishedRide.getStatus()).thenReturn(Enums.RideStatus.FINISHED);
+
+        Ride rejectedRide = Mockito.mock(Ride.class);
+        Mockito.when(rejectedRide.getStatus()).thenReturn(Enums.RideStatus.REJECTED);
+
+        Ride cancelledRide = Mockito.mock(Ride.class);
+        Mockito.when(cancelledRide.getStatus()).thenReturn(Enums.RideStatus.CANCELED);
+
+        Mockito.when(rideRepository.findByDriverId(driver.getId())).thenReturn(
+                List.of(finishedRide, rejectedRide, cancelledRide));
+        Ride rideAtMoment = rideService.driverRideAtMoment(driver.getId(), timeOfRide);
+        assertNull(rideAtMoment);
+    }
+
+    @Test
+    public void driverRideAtMoment_ShouldNotReturnRideIfDriverHasNoRides() {
+        LocalDateTime timeOfRide = LocalDateTime.of(2023, Month.MAY, 19, 8, 3);
+
+        Driver driver = Mockito.mock(Driver.class);
+        Mockito.when(driver.getId()).thenReturn(1L);
+
+        Mockito.when(rideRepository.findByDriverId(driver.getId())).thenReturn(new ArrayList<>());
+        Ride rideAtMoment = rideService.driverRideAtMoment(driver.getId(), timeOfRide);
+        assertNull(rideAtMoment);
+    }
+
+    @Test
+    public void AnyRidesArePending_ShouldReturnTrueIfAnyPassengerHasPendingRides() {
+        UserRefDto passenger1 = Mockito.mock(UserRefDto.class);
+        Mockito.when(passenger1.getId()).thenReturn(1L);
+
+        List<UserRefDto> passengers = List.of(passenger1);
+
+        Ride pendingRide = Mockito.mock(Ride.class);
+
+        Mockito.when(rideRepository.findByPassengersIdAndStatus(passenger1.getId(), Enums.RideStatus.PENDING.ordinal()))
+                .thenReturn(List.of(pendingRide));
+        assertEquals(true, rideService.AnyRidesArePending(passengers));
+    }
+
+    @Test
+    public void AnyRidesArePending_ShouldReturnFalseIfNoPassengersHaveNoPendingRides() throws IOException {
+        UserRefDto passenger1 = Mockito.mock(UserRefDto.class);
+        Mockito.when(passenger1.getId()).thenReturn(1L);
+        UserRefDto passenger2 = Mockito.mock(UserRefDto.class);
+        Mockito.when(passenger2.getId()).thenReturn(2L);
+        UserRefDto passenger3 = Mockito.mock(UserRefDto.class);
+        Mockito.when(passenger3.getId()).thenReturn(3L);
+        List<UserRefDto> passengers = List.of(passenger1, passenger2, passenger3);
+
+        Mockito.when(rideRepository.findByPassengersIdAndStatus(passenger1.getId(), Enums.RideStatus.PENDING.ordinal()))
+                        .thenReturn(new ArrayList<>());
+        Mockito.when(rideRepository.findByPassengersIdAndStatus(passenger2.getId(), Enums.RideStatus.PENDING.ordinal()))
+                .thenReturn(new ArrayList<>());
+        Mockito.when(rideRepository.findByPassengersIdAndStatus(passenger3.getId(), Enums.RideStatus.PENDING.ordinal()))
+                .thenReturn(new ArrayList<>());
+
+        assertEquals(false, rideService.AnyRidesArePending(passengers));
+    }
+
+    @Test
+    public void checkIfMoreThan9FavoriteLocations_ShouldReturnTrueIfPassengerHasMoreThanNineFavoriteLocations() {
+        Passenger passenger = Mockito.mock(Passenger.class);
+        Mockito.when(passenger.getId()).thenReturn(1L);
+
+        List<FavoriteLocation> favoriteLocations = new ArrayList<>();
+        for (int i = 0; i < 10; ++i) {
+            favoriteLocations.add(Mockito.mock(FavoriteLocation.class));
+        }
+
+        Mockito.when(favoriteLocationService.findByPassengerId(passenger.getId())).thenReturn(favoriteLocations);
+
+        assertEquals(true, rideService.checkIfMoreThan9FavoriteLocations(passenger.getId()));
+
+    }
+
+    @Test
+    public void checkIfMoreThan9FavoriteLocations_ShouldReturnFalseIfPassengerHasLessThanNineFavoriteLocations() {
+        Passenger passenger = Mockito.mock(Passenger.class);
+        Mockito.when(passenger.getId()).thenReturn(1L);
+
+        List<FavoriteLocation> favoriteLocations = new ArrayList<>();
+        for (int i = 0; i < 5; ++i) {
+            favoriteLocations.add(Mockito.mock(FavoriteLocation.class));
+        }
+
+        Mockito.when(favoriteLocationService.findByPassengerId(passenger.getId())).thenReturn(favoriteLocations);
+
+        assertEquals(false, rideService.checkIfMoreThan9FavoriteLocations(passenger.getId()));
+    }
+
+    @Test
+    public void createFavoriteLocation_ThrowsPassengerNotFoundErrorIfInvalidEmailIsPassed() {
+        Passenger passenger = Mockito.mock(Passenger.class);
+        Mockito.when(passenger.getEmailAddress()).thenReturn("email.that.does.not.exist@email.com");
+
+        FavoriteLocationDto favoriteLocationDto = Mockito.mock(FavoriteLocationDto.class);
+        Mockito.when(passengerRepository.findByEmailAddress(passenger.getEmailAddress())).thenReturn(Optional.ofNullable(null));
+
+        assertThrows(PassengerNotFoundException.class, () -> rideService.createFavoriteLocation(passenger.getEmailAddress(), favoriteLocationDto));
+    }
+
+    @Test
+    public void createFavoriteLocation_ThrowsTooManyFavoriteLocationException() {
+        Passenger passenger = Mockito.mock(Passenger.class);
+        Mockito.when(passenger.getId()).thenReturn(1L);
+        Mockito.when(passenger.getEmailAddress()).thenReturn("email.that.exists@email.com");
+
+        Mockito.when(passengerRepository.findByEmailAddress(passenger.getEmailAddress())).thenReturn(Optional.of(passenger));
+
+        List<FavoriteLocation> favoriteLocations = new ArrayList<>();
+        for (int i = 0; i < 10; ++i) {
+            favoriteLocations.add(Mockito.mock(FavoriteLocation.class));
+        }
+        Mockito.when(favoriteLocationService.findByPassengerId(passenger.getId())).thenReturn(favoriteLocations);
+
+        FavoriteLocationDto favoriteLocationDto = Mockito.mock(FavoriteLocationDto.class);
+        assertThrows(TooManyFavoriteRidesException.class, () -> rideService.createFavoriteLocation(passenger.getEmailAddress(), favoriteLocationDto));
+    }
+
+    @Test
+    public void createFavoriteLocation_ShouldCreateFavoriteLocationWithValidData() throws UserNotFoundException, PassengerNotFoundException, TooManyFavoriteRidesException {
+        Passenger passenger = Mockito.mock(Passenger.class);
+        Mockito.when(passenger.getId()).thenReturn(1L);
+        Mockito.when(passenger.getEmailAddress()).thenReturn("email.that.exists@email.com");
+        UserRefDto passengerRefDto = Mockito.mock(UserRefDto.class);
+        Mockito.when(passengerRefDto.getId()).thenReturn(1L);
+
+        RouteDto routeDto = Mockito.mock(RouteDto.class);
+        Mockito.when(routeDto.getDeparture()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
+        Mockito.when(routeDto.getDestination()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
+
+        FavoriteLocationDto favoriteLocationDto = Mockito.mock(FavoriteLocationDto.class);
+        Mockito.when(favoriteLocationDto.getFavoriteName()).thenReturn("Home - Work");
+        Mockito.when(favoriteLocationDto.getLocations()).thenReturn(Set.of(routeDto));
+        Mockito.when(favoriteLocationDto.getPassengers()).thenReturn(Set.of(passengerRefDto));
+        Mockito.when(favoriteLocationDto.getVehicleType()).thenReturn("STANDARD");
+
+        Mockito.when(passengerRepository.findByEmailAddress(passenger.getEmailAddress())).thenReturn(Optional.of(passenger));
+        Mockito.when(passengerRepository.findById(passenger.getId())).thenReturn(Optional.of(passenger));
+
+        VehicleType vehicleType = Mockito.mock(VehicleType.class);
+        Mockito.when(vehicleType.getName()).thenReturn("STANDARD");
+        Mockito.when(vehicleTypeRepository.findByName(favoriteLocationDto.getVehicleType())).thenReturn(Optional.of(vehicleType));
+
+        FavoriteLocationDto response = rideService.createFavoriteLocation(passenger.getEmailAddress(), favoriteLocationDto);
+        assertNotNull(response);
+        assertNotNull(response.getFavoriteName());
+        assertNotNull(response.getLocations());
+        assertNotNull(response.getPassengers());
+        assertNotNull(response.getVehicleType());
+    }
+
+    @Test
+    public void getFavoriteLocations_ShouldReturnNotEmptyListIfFavoriteLocationServiceDotGetAllReturnsNotEmptyList() {
+        VehicleType vehicleType = Mockito.mock(VehicleType.class);
+        Mockito.when(vehicleType.getName()).thenReturn("STANDARD");
+
+        FavoriteLocation favoriteLocation = Mockito.mock(FavoriteLocation.class);
+        Mockito.when(favoriteLocation.getRoutes()).thenReturn(new HashSet<>());
+        Mockito.when(favoriteLocation.getPassengers()).thenReturn(new HashSet<>());
+        Mockito.when(favoriteLocation.getVehicleType()).thenReturn(vehicleType);
+
+        Mockito.when(favoriteLocationService.getAll()).thenReturn(List.of(favoriteLocation));
+        assertTrue(rideService.getFavoriteLocations().size() > 0);
+    }
+
+    @Test
+    public void getFavoriteLocations_ShouldReturnEmptyListIfFavoriteLocationServiceDotGetAllReturnsEmptyList() {
+        Mockito.when(favoriteLocationService.getAll()).thenReturn(List.of());
+        assertEquals(0, rideService.getFavoriteLocations().size());
+    }
 }
