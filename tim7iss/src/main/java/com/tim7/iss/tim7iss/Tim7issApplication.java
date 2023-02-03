@@ -63,9 +63,6 @@ public class Tim7issApplication {
     private FavoriteLocationRepository favoriteLocationRepository;
 
 
-    @Autowired
-    private RequestService requestService;
-
     public static void main(String[] args) {
         SpringApplication.run(Tim7issApplication.class, args);
     }
@@ -78,10 +75,10 @@ public class Tim7issApplication {
     // DISCLAIMER: for testing purposes
     @Bean
     protected InitializingBean sendDatabase() {
-////        return this::testDataDjukanovic;
+        return this::testDataDjukanovic;
 ////        return this::testDataMartic;
 ////        return this::testDataStanojlovic;
-        return this::generateTestDataInDataBase;
+//        return this::generateTestDataInDataBase;
     }
 
     private void testDataDjukanovic() throws IOException {
@@ -322,8 +319,6 @@ public class Tim7issApplication {
         document.setName("Licna karta");
         document.setDriver(driver);
         documentRepository.save(document);
-
-
     }
 }
 
