@@ -37,8 +37,12 @@ public class Constants {
     }
 
     public static byte[] getPlaceHolderProfilePicture() throws IOException {
-        String pathToPlaceholder = "src/main/resources/static/pexels-pixabay-415829.jpg";
-        return Files.readAllBytes(Paths.get(pathToPlaceholder));
+        String pathToPlaceholder = "src/main/resources/static/passenger10.jpg";
+        return pictureStringToBytes(pathToPlaceholder);
+    }
+
+    public static byte[] pictureStringToBytes(String picturePath) throws IOException {
+        return Files.readAllBytes(Paths.get(picturePath));
     }
 
 
