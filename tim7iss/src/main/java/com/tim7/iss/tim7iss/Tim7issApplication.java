@@ -4,6 +4,7 @@ import com.tim7.iss.tim7iss.dto.UserDto;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
+import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -13,11 +14,11 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 @SpringBootApplication
 public class Tim7issApplication {
@@ -70,17 +71,15 @@ public class Tim7issApplication {
     // DISCLAIMER: for testing purposes
     @Bean
     protected InitializingBean sendDatabase() {
-        return this::testDataDjukanovic;
-////        return this::testDataMartic;
-////        return this::testDataStanojlovic;
+//        return this::testDataDjukanovic;
+//        return this::testDataMartic;
+//        return this::testDataStanojlovic;
 //        return this::generateTestDataInDataBase;
+        return this::projectDefenceTestData;
     }
 
     private void testDataDjukanovic() throws IOException {
         Random random = new Random();
-
-        // vehicle type creation
-
 
         // vehicle type creation
         VehicleType vehicleType = vehicleTypeRepository.save(new VehicleType(null, 100, "STANDARD"));
@@ -197,7 +196,7 @@ public class Tim7issApplication {
 
     }
 
-    public  void generateTestDataInDataBase() throws IOException {
+    private void generateTestDataInDataBase() throws IOException {
 
 
         Random random = new Random();
@@ -317,6 +316,318 @@ public class Tim7issApplication {
 
 
     }
+
+    private void projectDefenceTestData() throws IOException {
+
+        Random random = new Random();
+
+        // vehicle type creation
+        VehicleType standardVehicleType = vehicleTypeRepository.save(new VehicleType(null, 100, "STANDARD"));
+        VehicleType vanVehicleType = vehicleTypeRepository.save(new VehicleType(null, 50, "VAN"));
+        VehicleType luxuryVehicleType = vehicleTypeRepository.save(new VehicleType(null, 300, "LUXURY"));
+
+        // role creation
+        Role adminRole = roleRepository.save(new Role(null, "ROLE_ADMIN"));
+        Role driverRole = roleRepository.save(new Role(null, "ROLE_DRIVER"));
+        Role passengerRole = roleRepository.save(new Role(null, "ROLE_PASSENGER"));
+        Role anonymousRole = roleRepository.save(new Role(null, "ROLE_ANONYMOUS"));
+
+        // Admin creation
+        Admin admin = new Admin();
+        admin.setFirstName("Adonis");
+        admin.setLastName("Adonis");
+        admin.setProfilePicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
+        admin.setPhoneNumber("003814523423");
+        admin.setEmailAddress("admin@email.com");
+        admin.setPassword("$2a$12$c9cKc9F6WaOKIchi9bWCpOrWRnXTBEKTU4NFtS3azXhJWy4TAcTey");  // Admin123
+        admin.setEnabled(true);
+        admin.setRoles(List.of(adminRole));
+        adminRepository.save(admin);
+
+        // driver creation
+        Driver driver = new Driver(new UserDto(null, "Mika", "Mikic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372222", "mika.mikic@email.com", "Mikina adresa", "$2a$12$4z3y3x45WYUdy98AhcW5Vee6UmIAClGcs61e1yJZpwpaobzkm5asa"));  // Mika1234
+        driver.setEnabled(true);
+        driver.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, standardVehicleType, driver, new Location(null, "Fakultet tehnickih nauka Univerziteta u Novom Sadu, Trg Dositeja Obradovica, Novi Sad", 45.24648813f, 19.8516641f)));
+        driver.setWorkHours(Set.of(new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 19, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 19, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 20, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 20, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 21, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 21, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 22, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 22, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 23, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 23, 16, 0))));
+        driver.setRoles(List.of(driverRole));
+        driverRepository.save(driver);
+
+        Driver sasaMatic = new Driver(new UserDto(null, "Sasa", "Matic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/sasamaticprofilepicture.jpg")), "+3817278820", "sasa.matic@email.com", "Poklonite mi nju za rodjendan", "$2a$12$Y.3lrc0GizKJMHNnREtNPOqgJNglwezV.dwPVHn0NJ1xuxe4TlPbu"));  // Nekadaisad1
+        sasaMatic.setEnabled(true);
+        sasaMatic.setVehicle(new Vehicle(null, "BMW X2", "PGAA121", 5, true, true, luxuryVehicleType, sasaMatic, new Location(null, "Dunavski Park, Dunavska, Novi Sad, Srbija", 45.25539880319645f, 19.85058802720829f)));
+        sasaMatic.setWorkHours(Set.of(new WorkHour(null, sasaMatic, LocalDateTime.of(2022, Month.DECEMBER, 19, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 19, 16, 0)), new WorkHour(null, sasaMatic, LocalDateTime.of(2022, Month.DECEMBER, 20, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 20, 16, 0)), new WorkHour(null, sasaMatic, LocalDateTime.of(2022, Month.DECEMBER, 21, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 21, 16, 0)), new WorkHour(null, sasaMatic, LocalDateTime.of(2022, Month.DECEMBER, 22, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 22, 16, 0)), new WorkHour(null, sasaMatic, LocalDateTime.of(2022, Month.DECEMBER, 23, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 23, 16, 0))));
+        sasaMatic.setRoles(List.of(driverRole));
+        driverRepository.save(sasaMatic);
+
+        Driver dejanMatic = new Driver(new UserDto(null, "Dejan", "Matic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/dejanmaticprofilepicture.jpg")), "003817372222", "dejan.matic@email.com", "Nevidjena adresa", "$2a$12$LdmfGdNXFAPQjSZDTv4gHuE2UmqsjU5f4ZfTFFIzM/7HY1j67TJhS"));  // Burma123
+        dejanMatic.setEnabled(true);
+        dejanMatic.setVehicle(new Vehicle(null, "BMW X2", "PGAB111", 5, true, true, luxuryVehicleType, dejanMatic, new Location(null, "Prime Training Facility, Svetozara Miletića, Novi Sad, Srbija", 45.257847680306085f, 19.843377640699245f)));
+        dejanMatic.setWorkHours(Set.of(new WorkHour(null, dejanMatic, LocalDateTime.of(2022, Month.DECEMBER, 19, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 19, 16, 0)), new WorkHour(null, dejanMatic, LocalDateTime.of(2022, Month.DECEMBER, 20, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 20, 16, 0)), new WorkHour(null, dejanMatic, LocalDateTime.of(2022, Month.DECEMBER, 21, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 21, 16, 0)), new WorkHour(null, dejanMatic, LocalDateTime.of(2022, Month.DECEMBER, 22, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 22, 16, 0)), new WorkHour(null, dejanMatic, LocalDateTime.of(2022, Month.DECEMBER, 23, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 23, 16, 0))));
+        dejanMatic.setRoles(List.of(driverRole));
+        driverRepository.save(dejanMatic);
+
+        // passenger creation
+        Passenger passenger1 = new Passenger(new UserDto(null, "Petar", "Petrovic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/passenger1.jpg")), "003817372727", "petar.petrovic@email.com", "Petrova adresa", "$2a$12$lA8WEWzn3E7l53E2HYpX3ee0q.ZOVDjY34jNYTs/n9ucvebpY3v86")); // Petar123
+        passenger1.setRoles(List.of(passengerRole));
+        passenger1.setEnabled(true);
+        passengerRepository.save(passenger1);
+
+        Passenger passenger2 = new Passenger(new UserDto(null, "Jovan", "Jovanovic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/passenger2.jpg")), "003817379278", "jovan.jovanovic@email.com", "Jovanova adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passenger2.setRoles(List.of(passengerRole));
+        passenger2.setEnabled(true);
+        passengerRepository.save(passenger2);
+
+        Passenger passenger3 = new Passenger(new UserDto(null, "Mirko", "Mirkovic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/passenger3.jpg")), "00381737111", "mirko.mirkovic@email.com", "Mirkova adresa", "$2a$12$nYULTJpydL5pFRSxQ30DnOlhu/m/O6U4CoWLqea82PYKNsswHCEsG"));  // Mirko123
+        passenger3.setRoles(List.of(passengerRole));
+        passenger3.setEnabled(true);
+        passengerRepository.save(passenger3);
+
+        Passenger passenger4 = new Passenger(new UserDto(null, "Aleksandar", "Popovic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/passenger4.jpg")), "0038173724234", "aleksandar.popovic@email.com", "Aleksandrova adresa", "$2a$12$yNYY1KoO4DDFSLzqRBXPJ.EJU3us/O8ws5d45pQ856BoiS70mslyu"));  // Aleksandar123
+        passenger4.setRoles(List.of(passengerRole));
+        passenger4.setEnabled(true);
+        passengerRepository.save(passenger4);
+
+        Passenger passenger5 = new Passenger(new UserDto(null, "Vuk", "Perisic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/passenger5.jpg")), "003827372727", "vuk.perisic@email.com", "Vukova adresa", "$2a$12$fCHBcs11T5oI78NcRModiuCn5TjFE1QLn9x1awvf0meSO7LqSepc2"));  // Vuk12345
+        passenger5.setRoles(List.of(passengerRole));
+        passenger5.setEnabled(true);
+        passengerRepository.save(passenger5);
+
+        Passenger passenger6 = new Passenger(new UserDto(null, "Mitar", "Mitrovic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/passenger6.jpg")), "003812372727", "mitar.mitrovic@email.com", "Mitrova adresa", "$2a$12$8gG3n5awIfoIWc0DGuATb.7kLzzhxjAtkirQe7Aei0F6j7agjyYwa")); // Mitar123
+        passenger6.setRoles(List.of(passengerRole));
+        passenger6.setEnabled(true);
+        passengerRepository.save(passenger6);
+
+        Passenger passenger7 = new Passenger(new UserDto(null, "Marko", "Markovic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/passenger7.jpg")), "003817349278", "marko.markovic@email.com", "Markova adresa", "$2a$12$X2hJLrw8EIxWrahtYNVVyutfLy0DaHWAke36mffA4cQbOXTTYvDd6"));  // Marko123
+        passenger7.setRoles(List.of(passengerRole));
+        passenger7.setEnabled(true);
+        passengerRepository.save(passenger7);
+
+        Passenger passenger8 = new Passenger(new UserDto(null, "Sandra", "Sandric", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/passenger8.jpg")), "00381737119", "sandra.sandric@email.com", "Sandrina adresa", "$2a$12$HRhVDOTZUv5l7LqTbw0OpewCzzJ.0KcwvtLLIEJRr.6xMfdq7pyj6"));  // Sandra123
+        passenger8.setRoles(List.of(passengerRole));
+        passenger8.setEnabled(true);
+        passengerRepository.save(passenger8);
+
+        Passenger passenger9 = new Passenger(new UserDto(null, "Jelena", "Jelenic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/passenger9.jpg")), "0038172724234", "jelena.jelenic@email.com", "Jelenina adresa", "$2a$12$Hjvs0V.fzYWgsBoQlpnyZu5FdSUekzuQiSktCd4PkjwnazxpX/zOK"));  // Jelena123
+        passenger9.setRoles(List.of(passengerRole));
+        passenger9.setEnabled(true);
+        passengerRepository.save(passenger9);
+
+        Passenger passenger10 = new Passenger(new UserDto(null, "Bojana", "Bogdanovic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/passenger10.jpg")), "003817373333", "bojana.bogdanovic@email.com", "Bojanina adresa", "$2a$12$YURa0Fx5M.MU3lSN1H7os.TI62diTbuQwlAZCdaudAJAIebFZHt/O"));  // Bojana123
+        passenger10.setRoles(List.of(passengerRole));
+        passenger10.setEnabled(true);
+        passengerRepository.save(passenger10);
+
+        Passenger passenger11 = new Passenger(new UserDto(null, "Rada", "Manojlovic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/radamanojlovicprofilepicture.jpg")), "003817396933", "rada.manojlovic@email.com", "Nisam kriva sto sam kao vatra ziva. Nikako, nikako.", "$2a$12$e73GZnW5/D3AGR48li6aeeNLncvg78GSzV79F77XgKhG2BL9mKrey"));  // Vatraziva123
+        passenger11.setRoles(List.of(passengerRole));
+        passenger11.setEnabled(true);
+        passengerRepository.save(passenger11);
+
+        Passenger passenger12 = new Passenger(new UserDto(null, "Aleksandra", "Prijovic", DatatypeConverter.printBase64Binary(Constants.pictureStringToBytes("src/main/resources/static/aleksandraprijovicprofilepicture.jpg")), "003817373555", "aleksandra.prijovic@email.com", "Ko si ti", "$2a$12$/FyM8wqH0/XcOZhIqrNLN.Yg9NcH4GqyeaPRdmK.NDss9Y2Sb39wS"));  // Legitimno123
+        passenger12.setRoles(List.of(passengerRole));
+        passenger12.setEnabled(true);
+        passengerRepository.save(passenger12);
+
+        List<Passenger> passengers = List.of(passenger1, passenger2, passenger3, passenger4, passenger5, passenger6, passenger7, passenger8, passenger9, passenger10, passenger11, passenger12);
+
+        // declaring routes that will be saved when the ride that contains them gets created
+        Route route1 = new Route(null, 1000, 3, new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija", 45.24914205013315f, 19.843100056994654f), new Location(null, "Srpsko narodno pozorište, Pozorišni trg, Novi Sad, Srbija", 45.25510777309239f, 19.842949154190308f));
+        Route route2 = new Route(null, 1900, 5, new Location(null, "Katolicka Porta 4, Novi Sad", 45.25642044682303f, 19.845453240699275f), new Location(null, "Dunavski Park, Dunavska, Novi Sad, Srbija", 45.25539880319645f, 19.85058802720829f));
+        Route route3 = new Route(null, 3600, 9, new Location(null, "NTP NS, Fruškogorska, Novi Sad, Serbia", 45.24475880747688f, 19.84708251359552f), new Location(null, "Knin, Novi Sad, Serbia", 45.25433739645546f, 19.820878211862986f));
+        Route route4 = new Route(null, 6700, 10, new Location(null, "Prime Training Facility, Svetozara Miletića, Novi Sad, Srbija", 45.257847680306085f, 19.843377640699245f), new Location(null, "Police Academy, Železnička, Sremska Kamenica, Srbija", 45.22163647056052f, 19.850156546431652f));
+        Route route5 = new Route(null, 5400, 11, new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija", 45.24914205013315f, 19.843100056994654f), new Location(null, "Sportski Centar “Slana Bara”, Sentandrejski put, Novi Sad, Srbija", 45.29135042557076f, 19.824244340624777f));
+        Route route6 = new Route(null, 3600, 9, new Location(null, "Lidl, Temerinska 98A, Novi Sad 400706", 45.27209773331658f, 19.843144506684034f), new Location(null, "TOČIONICA Detelinara, Hadži Ruvimova 49, Novi Sad", 45.25663257309855f, 19.814734548340745f));
+        Route route7 = new Route(null, 4200, 9, new Location(null, "Kozmetički salon Ceca Skin Care Novi Sad, Draška Ređepa 6, Novi Sad 21000", 45.26074361074408f, 19.79649207161171f), new Location(null, "Formax Store, 21000, Novi Sad, Južno-bački okrug, Cara Dušana 47, Novi Sad 21000", 45.244036506388284f, 19.825288268059374f));
+        Route route8 = new Route(null, 9000, 16, new Location(null, "Lidl, Temerinska 98A, Novi Sad 400706", 45.271563834606305f, 19.84308115088968f), new Location(null, "Svečana sala Kristal, Ive Lole Ribara 4a, Veternik", 45.24995431340382f, 19.751432512138383f));
+        Route route9 = new Route(null, 11200, 19, new Location(null, "Hotel „Sole mio“, Sentandrejski put 165, Novi Sad 21000", 45.311287992288996f, 19.824607343808882f), new Location(null, "Castello Luxury Spa, Novi Sad", 45.24239236945359f, 19.792662991633424f));
+        Route route10 = new Route(null, 14400, 24, new Location(null, "Градско Гробље, Novi Sad", 45.274077132923246f, 19.792574980028654f), new Location(null, "Kafana Tako Je Suđeno, Ribnjak gornji put, Petrovaradin", 45.23220418666553f, 19.856089690524232f));
+
+        List<Route> routes = List.of(route1, route2, route3, route4, route5, route6, route7, route8, route9, route10);
+
+        // ride creation
+
+        // finished rides
+        final int RIDE_COUNT = 300;
+        List<Ride> rides = new ArrayList<>();
+        LocalDateTime sasaStartRide = LocalDateTime.of(2022, Month.OCTOBER, 3, 8, 5);
+        LocalDateTime dejanStartRide = LocalDateTime.of(2022, Month.OCTOBER, 5, 9, 32);
+        for (int i = 0; i < RIDE_COUNT; ++i) {
+            Route sasaRoute = routes.get(random.nextInt(routes.size())).clone();
+            Route dejanRoute = routes.get(random.nextInt(routes.size())).clone();
+            Set<Passenger> sasaPassengers = new HashSet<>();
+            Set<Passenger> dejanPassengers = new HashSet<>();
+            for (int j = 0; j < 6; j += 2) {
+                if (random.nextBoolean()) {
+                    int passengerIndex = random.nextBoolean() ? j : j + 1;
+                    sasaPassengers.add(passengers.get(passengerIndex));
+                }
+            }
+            if (sasaPassengers.isEmpty()) {
+                sasaPassengers.add(passenger1);
+            }
+            for (int j = 6; j < 12; j += 2) {
+                if (random.nextBoolean()) {
+                    int passengerIndex = random.nextBoolean() ? j : j + 1;
+                    dejanPassengers.add(passengers.get(passengerIndex));
+                }
+            }
+            if (dejanPassengers.isEmpty()) {
+                dejanPassengers.add(passenger11);
+            }
+            Ride rideSasa = rideRepository.save(
+                    new Ride(
+                            null,
+                            sasaMatic.getVehicle().getVehicleType().getPricePerKm() + sasaRoute.getDistanceInMeters() / 1000 * 120,
+                            sasaStartRide,
+                            sasaStartRide.plusMinutes(sasaRoute.getEstimatedTimeInMinutes()),
+                            sasaRoute.getEstimatedTimeInMinutes(),
+                            sasaMatic.getVehicle().isBabyAllowed(),
+                            sasaMatic.getVehicle().isPetsAllowed(),
+                            false,
+                            Enums.RideStatus.FINISHED,
+                            sasaMatic,
+                            sasaMatic.getVehicle().getVehicleType(),
+                            sasaPassengers,
+                            null,
+                            List.of(sasaRoute)
+                    )
+            );
+            Ride rideDejan = rideRepository.save(
+                    new Ride(
+                            null,
+                            dejanMatic.getVehicle().getVehicleType().getPricePerKm() + dejanRoute.getDistanceInMeters() / 1000 * 120,
+                            dejanStartRide,
+                            dejanStartRide.plusMinutes(dejanRoute.getEstimatedTimeInMinutes()),
+                            dejanRoute.getEstimatedTimeInMinutes(),
+                            dejanMatic.getVehicle().isBabyAllowed(),
+                            dejanMatic.getVehicle().isPetsAllowed(),
+                            false,
+                            Enums.RideStatus.FINISHED,
+                            dejanMatic,
+                            dejanMatic.getVehicle().getVehicleType(),
+                            dejanPassengers,
+                            null,
+                            List.of(dejanRoute)
+                    )
+            );
+
+            sasaStartRide = sasaStartRide.plusMinutes(sasaRoute.getEstimatedTimeInMinutes() + random.nextInt(30, 120));
+            dejanStartRide = dejanStartRide.plusMinutes(sasaRoute.getEstimatedTimeInMinutes() + random.nextInt(30, 120));
+            rides.add(rideSasa);
+            rides.add(rideDejan);
+
+//             this piece of code check if the startRide is on the weekend and if it is, it startRide goes to next monday
+            if (sasaStartRide.getHour() >= 16) {
+                sasaStartRide = LocalDateTime.of(sasaStartRide.toLocalDate().plusDays(1), LocalTime.of(8, 30));
+                if (sasaStartRide.getDayOfWeek() == (DayOfWeek.SATURDAY)) {
+                    sasaStartRide = LocalDateTime.of(sasaStartRide.toLocalDate().plusDays(2), LocalTime.of(8, 30));
+                }
+            }
+            if (dejanStartRide.getHour() >= 16) {
+                dejanStartRide = LocalDateTime.of(dejanStartRide.toLocalDate().plusDays(1), LocalTime.of(8, 30));
+                if (dejanStartRide.getDayOfWeek() == (DayOfWeek.SATURDAY)) {
+                    dejanStartRide = LocalDateTime.of(dejanStartRide.toLocalDate().plusDays(2), LocalTime.of(8, 30));
+                }
+            }
+
+        }
+
+        // accepted rides
+        sasaStartRide = LocalDateTime.now().plusMinutes(60);
+        dejanStartRide = LocalDateTime.now().plusMinutes(70);
+        for (int i = 0; i < 5; ++i) {
+            Route sasaRoute = routes.get(random.nextInt(routes.size())).clone();
+            Route dejanRoute = routes.get(random.nextInt(routes.size())).clone();
+            Set<Passenger> sasaPassengers = new HashSet<>();
+            Set<Passenger> dejanPassengers = new HashSet<>();
+            for (int j = 0; j < 6; j += 2) {
+                if (random.nextBoolean()) {
+                    int passengerIndex = random.nextBoolean() ? j : j + 1;
+                    sasaPassengers.add(passengers.get(passengerIndex));
+                }
+            }
+            if (sasaPassengers.isEmpty()) {
+                sasaPassengers.add(passenger1);
+            }
+            for (int j = 6; j < 12; j += 2) {
+                if (random.nextBoolean()) {
+                    int passengerIndex = random.nextBoolean() ? j : j + 1;
+                    dejanPassengers.add(passengers.get(passengerIndex));
+                }
+            }
+            if (dejanPassengers.isEmpty()) {
+                dejanPassengers.add(passenger11);
+            }
+            rideRepository.save(
+                    new Ride(
+                            null,
+                            sasaMatic.getVehicle().getVehicleType().getPricePerKm() + sasaRoute.getDistanceInMeters() / 1000 * 120,
+                            sasaStartRide,
+                            sasaStartRide.plusMinutes(sasaRoute.getEstimatedTimeInMinutes()),
+                            sasaRoute.getEstimatedTimeInMinutes(),
+                            sasaMatic.getVehicle().isBabyAllowed(),
+                            sasaMatic.getVehicle().isPetsAllowed(),
+                            false,
+                            Enums.RideStatus.ACCEPTED,
+                            sasaMatic,
+                            sasaMatic.getVehicle().getVehicleType(),
+                            sasaPassengers,
+                            null,
+                            List.of(sasaRoute)
+                    )
+            );
+            rideRepository.save(
+                    new Ride(
+                            null,
+                            dejanMatic.getVehicle().getVehicleType().getPricePerKm() + dejanRoute.getDistanceInMeters() / 1000 * 120,
+                            dejanStartRide,
+                            dejanStartRide.plusMinutes(dejanRoute.getEstimatedTimeInMinutes()),
+                            dejanRoute.getEstimatedTimeInMinutes(),
+                            dejanMatic.getVehicle().isBabyAllowed(),
+                            dejanMatic.getVehicle().isPetsAllowed(),
+                            false,
+                            Enums.RideStatus.ACCEPTED,
+                            dejanMatic,
+                            dejanMatic.getVehicle().getVehicleType(),
+                            dejanPassengers,
+                            null,
+                            List.of(dejanRoute)
+                    )
+            );
+            sasaStartRide = sasaStartRide.plusMinutes(sasaRoute.getEstimatedTimeInMinutes() + random.nextInt(15, 30));
+            dejanStartRide = dejanStartRide.plusMinutes(sasaRoute.getEstimatedTimeInMinutes() + random.nextInt(15, 30));
+        }
+
+
+        // creating vehicles
+        vehicleRepository.save(new Vehicle(null, "BMW iXM60", "PGAA112", 5, false, false, standardVehicleType, null, new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f)));
+        vehicleRepository.save(new Vehicle(null, "BMW iX3", "PGAA113", 5, true, true, standardVehicleType, null, new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f)));
+
+        // panic creation
+        // TODO: Enter valid date time according to ride start date
+        Ride rideToPanic = rides.get(random.nextInt(rides.size()));
+
+        panicRepository.save(new Panic(null, LocalDateTime.now(), false, "Driver is very uncomfortable and is making racist comments", rideToPanic, passenger9));
+
+        // review creation
+        Ride rideToRate = rides.get(random.nextInt(rides.size()));
+
+        DriverReview driverReview = new DriverReview();
+        driverReview.setRating(5f);
+        driverReview.setComment("This driver is awesome!");
+        driverReview.setRide(rideToRate);
+        driverReview.setPassenger(passenger6);
+        driverReview.setDriver(rideToRate.getDriver());
+        VehicleReview vehicleReview = new VehicleReview();
+        vehicleReview.setRating(5f);
+        vehicleReview.setComment("This car is very clean!");
+        vehicleReview.setRide(rideToRate);
+        vehicleReview.setPassenger(passenger6);
+        vehicleReview.setVehicle(rideToRate.getDriver().getVehicle());
+        driverReviewRepository.save(driverReview);
+        vehicleReviewRepository.save(vehicleReview);
+
+    }
+
 }
 
 
