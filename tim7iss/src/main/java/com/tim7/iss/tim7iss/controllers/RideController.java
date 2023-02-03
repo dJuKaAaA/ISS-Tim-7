@@ -105,7 +105,6 @@ public class RideController {
         return new ResponseEntity<>(rides.get(0), HttpStatus.OK);
     }
 
-    //Delete fixed id
     @GetMapping(value = "/passenger/{passengerId}/active")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PASSENGER')")
     public ResponseEntity<RideDto> getPassengersActiveRide(@PathVariable Long passengerId, @RequestHeader(value = "Authorization") String authHeader) throws RideNotFoundException {
@@ -122,8 +121,6 @@ public class RideController {
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
 
-    //Voznja moze da se prekine samo ukoliko je stanje voznje pending ili accepted,
-    //Radi testiranja validacija stanja je zakomentarisana
     @PutMapping(value = "/{id}/withdraw")
     @PreAuthorize("hasRole('PASSENGER')")
     public ResponseEntity<RideDto> cancelRideById(@PathVariable Long id, @RequestHeader(value = "Authorization") String authHeader) throws RideNotFoundException, RideCancelationException {
@@ -258,12 +255,5 @@ public class RideController {
         this.simpMessagingTemplate.convertAndSend("/socket-send-notification", message);
         return message;
     }
-
-
-//    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-//    @ExceptionHandler(Exception.class)
-//    public String badRequestException(){
-//        return "Invalid data";
-//    }
 
 }
