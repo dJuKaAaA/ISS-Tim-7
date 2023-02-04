@@ -261,7 +261,7 @@ public class RideService {
         Location rideStartLocation = new Location(rideCreationDto.getLocations().get(0).getDeparture());
         LocalDateTime estimatedRequestedEndTime = rideToSchedule.getStartTime().plusMinutes(rideToSchedule.getEstimatedTimeInMinutes());
 
-        for (Driver driver : driverService.getAll()) {
+        for (Driver driver : driverRepository.findAll()) {
 
             // if driver is inactive: check next driver
             if (!driver.isActive()) {
@@ -290,7 +290,7 @@ public class RideService {
                  * only if he is Constants.vehicleWaitTimeInMinutes minutes away from finishing his currently active ride */
                 if (alreadyScheduledRide.getStatus() == Enums.RideStatus.ACTIVE) {
                     LocalDateTime estimatedRideEndTime = alreadyScheduledRide.getStartTime().plusMinutes(alreadyScheduledRide.getEstimatedTimeInMinutes());
-                    long minutesUntil = LocalDateTime.now().until(estimatedRideEndTime, ChronoUnit.MINUTES);
+                    long minutesUntil = rideToSchedule.getStartTime().until(estimatedRideEndTime, ChronoUnit.MINUTES);
                     if (minutesUntil >= 0 && minutesUntil <= Constants.vehicleWaitTimeInMinutes) {
                         currentlyUnavailablePotentialDrivers.add(driver);
                     }
@@ -315,7 +315,7 @@ public class RideService {
         if (availablePotentialDriver != null) {
             rideToSchedule.setDriver(availablePotentialDriver);
         } else {
-            Driver driver = currentlyUnavailablePotentialDrivers.stream().max(Comparator.comparing((Driver d) -> mapService.getDistance(rideStartLocation.getLatitude(), rideStartLocation.getLongitude(), d.getVehicle().getLocation().getLatitude(), d.getVehicle().getLocation().getLongitude()))).orElse(null);
+            Driver driver = currentlyUnavailablePotentialDrivers.stream().min(Comparator.comparing((Driver d) -> mapService.getDistance(rideStartLocation.getLatitude(), rideStartLocation.getLongitude(), d.getVehicle().getLocation().getLatitude(), d.getVehicle().getLocation().getLongitude()))).orElse(null);
 
             if (driver == null) {
                 throw new DriverNotFoundException("There are no available drivers at that moment");
