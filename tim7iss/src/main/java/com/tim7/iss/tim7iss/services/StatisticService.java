@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -367,7 +366,7 @@ public class StatisticService {
         Collection<RideDto> rides = new ArrayList<>();
 
         if (user instanceof Driver driver) {
-            rideRepository.findRidesByDriverId(driver.getId()).forEach(ride -> rides.add(new RideDto(ride)));
+            rideRepository.findByDriverId(driver.getId()).forEach(ride -> rides.add(new RideDto(ride)));
         } else if (user instanceof Passenger passenger) {
             rideRepository.findRidesByPassengersId(passenger.getId()).forEach(ride -> rides.add(new RideDto(ride)));
         } else {
