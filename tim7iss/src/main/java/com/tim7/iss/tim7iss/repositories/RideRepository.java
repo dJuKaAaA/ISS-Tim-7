@@ -17,19 +17,13 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 
     List<Ride> findRidesByPassengersId(Long passengerId);
 
-    //    public Page<Ride> FindBypassenger_idAndDateBetweenAndOrderBysortingCollumn(Long passenger_id, String sortingCollumn, String startDate, String endDate, Pageable p);
-    @Query(value = "select * from ride where id in (select ride_id from passenger_rides where passenger_id = ?1)", nativeQuery = true)
-    List<Ride> findAll(Long passenger_id);
-
     @Query(value = "select r.* from ride r left join passenger_rides fr on r.id = fr.ride_id where fr.passenger_id = ?1 and r.status = ?2", nativeQuery = true)
     Optional<List<Ride>> findByPassengersIdAndStatus(Long passenger_id, Integer status);
 
     @Query(value = "select * from ride where driver_id = ?1 and status = ?2", nativeQuery = true)
     Optional<List<Ride>> findByDriverIdAndStatus(Long driver_id, Integer status);
 
-
     Long countByPassengersId(Long passengerId);
 
-    Ride findByStatus(Enums.RideStatus status);
 }
 

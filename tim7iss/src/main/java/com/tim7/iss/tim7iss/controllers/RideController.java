@@ -97,7 +97,7 @@ public class RideController {
         return new ResponseEntity("Successful deletion of favorite location!", HttpStatus.NO_CONTENT);
     }
 
-
+    //Milos
     @GetMapping(value = "/driver/{driverId}/active")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     public ResponseEntity<RideDto> getDriversActiveRide(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long driverId) throws UserNotFoundException, RideNotFoundException {
@@ -105,7 +105,6 @@ public class RideController {
         return new ResponseEntity<>(rides.get(0), HttpStatus.OK);
     }
 
-    //Delete fixed id
     @GetMapping(value = "/passenger/{passengerId}/active")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PASSENGER')")
     public ResponseEntity<RideDto> getPassengersActiveRide(@PathVariable Long passengerId, @RequestHeader(value = "Authorization") String authHeader) throws RideNotFoundException {
@@ -122,8 +121,7 @@ public class RideController {
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
 
-    //Voznja moze da se prekine samo ukoliko je stanje voznje pending ili accepted,
-    //Radi testiranja validacija stanja je zakomentarisana
+    //Milos
     @PutMapping(value = "/{id}/withdraw")
     @PreAuthorize("hasRole('PASSENGER')")
     public ResponseEntity<RideDto> cancelRideById(@PathVariable Long id, @RequestHeader(value = "Authorization") String authHeader) throws RideNotFoundException, RideCancelationException {
@@ -131,6 +129,7 @@ public class RideController {
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
 
+    //Milos
     @PutMapping(value = "/{rideId}/panic")
     @PreAuthorize("hasAnyRole('PASSENGER','DRIVER')")
     public ResponseEntity<PanicDetailsDto> creatingPanicProcedure(@RequestBody PanicCreateDto reason, @PathVariable Long rideId, @RequestHeader("Authorization") String authHeader) throws RideNotFoundException, UserNotFoundException {
@@ -162,6 +161,7 @@ public class RideController {
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
 
+    //Milos
     @PutMapping(value = "{id}/cancel")
     @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<RideDto> rejectRide(@PathVariable Long id, @Valid @RequestBody PanicCreateDto rideReject, @RequestHeader("Authorization") String authHeader) throws RideNotFoundException, RideCancelationException, DriverNotFoundException {
@@ -171,6 +171,7 @@ public class RideController {
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
 
+    //Milos
     @PreAuthorize("hasRole('DRIVER')")
     @PutMapping("/{id}/start")
     public ResponseEntity<RideDto> startRide(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) throws RideNotFoundException, RideCancelationException, DriverNotFoundException {
@@ -258,12 +259,5 @@ public class RideController {
         this.simpMessagingTemplate.convertAndSend("/socket-send-notification", message);
         return message;
     }
-
-
-//    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-//    @ExceptionHandler(Exception.class)
-//    public String badRequestException(){
-//        return "Invalid data";
-//    }
 
 }

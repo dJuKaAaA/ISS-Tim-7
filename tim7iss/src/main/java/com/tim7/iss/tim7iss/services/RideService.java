@@ -45,7 +45,7 @@ public class RideService {
 
 
     public List<Ride> findRideByPassengerId(Long id) {
-        return rideRepository.findAll(id);
+        return rideRepository.findRidesByPassengersId(id);
     }
 
 
@@ -75,7 +75,7 @@ public class RideService {
 
     public boolean AnyRidesArePending(List<UserRefDto> passengers) throws RideNotFoundException {
         for (UserRefDto passenger : passengers) {
-            List<Ride> rides = findByPassengerIdAndStatus(passenger.getId(), Enums.RideStatus.PENDING.ordinal());
+            List<Ride> rides = rideRepository.findByPassengersIdAndStatus(passenger.getId(), Enums.RideStatus.PENDING.ordinal()).orElseThrow(RideNotFoundException::new);
             if (rides.size() != 0) return true;
         }
         return false;
@@ -155,10 +155,12 @@ public class RideService {
         return rideDtos;
     }
 
+    // nemoj testirati
     public RideDto getRideById(Long id) throws RideNotFoundException {
         Ride ride = rideRepository.findById(id).orElseThrow(RideNotFoundException::new);
         return new RideDto(ride);
     }
+
 
     //Milos
     public RideDto cancelRideById(Long id) throws RideNotFoundException, RideCancelationException {
@@ -170,6 +172,7 @@ public class RideService {
         return new RideDto(ride);
     }
 
+
     //Milos
     public PanicDetailsDto creatingPanicProcedure(UserService userService, PanicService panicService, String userEmail, Long rideId, PanicCreateDto reason) throws UserNotFoundException, RideNotFoundException {
         User user = userService.findByEmailAddress(userEmail).orElseThrow(UserNotFoundException::new);
@@ -178,6 +181,7 @@ public class RideService {
         panicService.save(panic);
         return new PanicDetailsDto(panic);
     }
+
 
     //Milos
     public RideDto acceptRide(Long id, String userEmail) throws RideNotFoundException, RideCancelationException, DriverNotFoundException {
@@ -193,7 +197,6 @@ public class RideService {
         rideRepository.save(ride);
         return new RideDto(ride);
     }
-
 
     // Testirano
     public RideDto endRide(Long id, String userEmail) throws RideNotFoundException, RideCancelationException, DriverNotFoundException {
@@ -238,6 +241,7 @@ public class RideService {
         if (ride.getStatus() != Enums.RideStatus.ACCEPTED)
             throw new RideCancelationException("Cannot start a ride that is not in status ACCEPTED!");
         ride.setStatus(Enums.RideStatus.ACTIVE);
+        ride.setStartTime(LocalDateTime.now());
         save(ride);
         return new RideDto(ride);
     }

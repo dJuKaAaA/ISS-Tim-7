@@ -2,9 +2,8 @@ package com.tim7.iss.tim7iss;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tim7.iss.tim7iss.dto.ErrorDto;
-import com.tim7.iss.tim7iss.dto.FavoriteLocationDto;
-import com.tim7.iss.tim7iss.dto.RideDto;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.DriverDocumentRequestRepository;
@@ -30,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -72,9 +72,11 @@ public class RideControllerTests {
     void beforeAll() throws IOException {
         Admin admin = customTestData.getAdmin();
         Driver driver = customTestData.getDriver();
+        Driver driver2 = customTestData.getDriver2();
         Passenger passenger = customTestData.getPassenger1();
         customTestData.passenger1Token = login(passenger.getEmailAddress(), "Petar123");
         customTestData.driverToken = login(driver.getEmailAddress(), "Mika1234");
+        customTestData.driver2Token = login(driver2.getEmailAddress(), "Mika1234");
         customTestData.adminToken = login(admin.getEmailAddress(), "Admin123");
     }
 
@@ -320,7 +322,7 @@ public class RideControllerTests {
     }
 
 
-    //    DeleteFavoriteRide
+    //  DeleteFavoriteRide
     @Test
     public void deleteFavouriteRide_shouldBeUnauthorized() throws Exception {
         int favoriteLocationId = 1;
@@ -371,5 +373,354 @@ public class RideControllerTests {
         assertEquals("Successful deletion of favorite location!", responseMessage);
     }
 
+    @Test
+    public void startRide_forbiden() throws Exception {
+        Ride ride = customTestData.getRideForAcceptance();
+        String url = "/api/ride/"+ ride.getId() + "/start";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.passenger1Token;
+
+        mockMvc.perform(put(url).header(headerName, token)).andExpect(status().isForbidden()).andReturn();
+    }
+
+    @Test
+    public void startRide_unauthorized() throws Exception {
+        Ride ride = customTestData.getRideForAcceptance();
+        String url = "/api/ride/"+ ride.getId() + "/start";
+        String headerName = "Authorization";
+        String token = "Bearer ";
+
+        mockMvc.perform(put(url).header(headerName, token)).andExpect(status().isUnauthorized()).andReturn();
+    }
+
+    @Test
+    public void startRide_rideNotFound() throws Exception {
+        String url = "/api/ride/"+ 20 + "/start";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.driverToken;
+
+        MvcResult result = mockMvc.perform(put(url).header(headerName, token)).andExpect(status().isNotFound()).andReturn();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ErrorDto errorDto = objectMapper.readValue(result.getResponse().getContentAsString(), ErrorDto.class);
+
+        assertEquals("Ride does not exist!", errorDto.getMessage());
+    }
+
+    @Test
+    public void startRide_rideIsNotAccepted() throws Exception {
+        Ride ride = customTestData.getRideForAcceptance();
+        String url = "/api/ride/"+ ride.getId() + "/start";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.driverToken;
+
+        MvcResult result = mockMvc.perform(put(url).header(headerName, token)).andExpect(status().isBadRequest()).andReturn();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ErrorDto errorDto = objectMapper.readValue(result.getResponse().getContentAsString(), ErrorDto.class);
+
+        assertEquals("Cannot start a ride that is not in status ACCEPTED!", errorDto.getMessage());
+    }
+
+    @Test
+    public void startRide_happyCase() throws Exception {
+        Ride ride = customTestData.getRideForAcceptance();
+        String url = "/api/ride/"+ ride.getId() + "/start";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.driverToken;
+
+        MvcResult result = mockMvc.perform(put(url).header(headerName, token)).andExpect(status().isOk()).andReturn();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        RideDto startedRide = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<RideDto>() {});
+        assertEquals("ACTIVE", startedRide.getStatus());
+    }
+
+    @Test
+    public void cancelRide_forbidden() throws Exception {
+        Ride ride = customTestData.getRideForCancelation();
+        String url = "/api/ride/"+ ride.getId() + "/cancel";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.passenger1Token;
+        PanicCreateDto panicCreateDto = new PanicCreateDto();
+        panicCreateDto.setReason("Passengers haven't arrived");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String panicCreateDtoJson = ow.writeValueAsString(panicCreateDto);
+
+        mockMvc.perform(put(url).header(headerName, token).contentType(APPLICATION_JSON_UTF8).content(panicCreateDtoJson)).andExpect(status().isForbidden()).andReturn();
+    }
+    @Test
+    public void cancelRide_unauthorized() throws Exception {
+        Ride ride = customTestData.getRideForCancelation();
+        String url = "/api/ride/"+ ride.getId() + "/cancel";
+        String headerName = "Authorization";
+        String token = "Bearer ";
+        PanicCreateDto panicCreateDto = new PanicCreateDto();
+        panicCreateDto.setReason("Passengers haven't arrived");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String panicCreateDtoJson = ow.writeValueAsString(panicCreateDto);
+
+        mockMvc.perform(put(url).header(headerName, token).contentType(APPLICATION_JSON_UTF8).content(panicCreateDtoJson)).andExpect(status().isUnauthorized()).andReturn();
+    }
+
+    @Test
+    public void cancelRide_noRequestBody() throws Exception {
+        Ride ride = customTestData.getRideForCancelation();
+        String url = "/api/ride/"+ ride.getId() + "/cancel";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.driverToken;;
+
+        mockMvc.perform(put(url).header(headerName, token)).andExpect(status().isBadRequest()).andReturn();
+    }
+
+    @Test
+    public void cancelRide_rideNotFound() throws Exception {
+        String url = "/api/ride/"+ 20 + "/cancel";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.driverToken;
+        PanicCreateDto panicCreateDto = new PanicCreateDto();
+        panicCreateDto.setReason("Passengers haven't arrived");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String panicCreateDtoJson = ow.writeValueAsString(panicCreateDto);
+
+        MvcResult result = mockMvc.perform(put(url).header(headerName, token).contentType(APPLICATION_JSON_UTF8).content(panicCreateDtoJson)).andExpect(status().isNotFound()).andReturn();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ErrorDto errorDto = objectMapper.readValue(result.getResponse().getContentAsString(), ErrorDto.class);
+
+        assertEquals("Ride does not exist!", errorDto.getMessage());
+    }
+
+    @Test
+    public void cancelRide_rideIsNotPendingOrAccepted() throws Exception {
+        Ride ride = customTestData.getFinishedRide();
+        String url = "/api/ride/"+ ride.getId() + "/cancel";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.driverToken;
+        PanicCreateDto panicCreateDto = new PanicCreateDto();
+        panicCreateDto.setReason("Passengers haven't arrived");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String panicCreateDtoJson = ow.writeValueAsString(panicCreateDto);
+
+        MvcResult result = mockMvc.perform(put(url).header(headerName, token).contentType(APPLICATION_JSON_UTF8).content(panicCreateDtoJson)).andExpect(status().isBadRequest()).andReturn();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ErrorDto errorDto = objectMapper.readValue(result.getResponse().getContentAsString(), ErrorDto.class);
+
+        assertEquals("Cannot cancel a ride that is not in status PENDING or ACCEPTED!", errorDto.getMessage());
+    }
+
+    @Test
+    public void cancelRide_happyCase() throws Exception {
+        Ride ride = customTestData.getRideForCancelation();
+        String url = "/api/ride/"+ ride.getId() + "/cancel";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.driverToken;
+        PanicCreateDto panicCreateDto = new PanicCreateDto();
+        panicCreateDto.setReason("Passengers haven't arrived");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String panicCreateDtoJson = ow.writeValueAsString(panicCreateDto);
+
+        MvcResult result = mockMvc.perform(put(url).header(headerName, token).content(panicCreateDtoJson).contentType(APPLICATION_JSON_UTF8)).andExpect(status().isOk()).andReturn();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        RideDto startedRide = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<RideDto>() {});
+        assertEquals("CANCELED", startedRide.getStatus());
+    }
+
+    @Test
+    public void creatingPanicProcedure_unathorized() throws Exception {
+        Ride ride = customTestData.getRideForWithdrawal();
+        String url = "/api/ride/"+ ride.getId() + "/panic";
+        String headerName = "Authorization";
+        String token = "Bearer ";
+        PanicCreateDto panicCreateDto = new PanicCreateDto();
+        panicCreateDto.setReason("Passengers haven't arrived");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String panicCreateDtoJson = ow.writeValueAsString(panicCreateDto);
+
+        mockMvc.perform(put(url).header(headerName, token).contentType(APPLICATION_JSON_UTF8).content(panicCreateDtoJson)).andExpect(status().isUnauthorized()).andReturn();
+
+    }
+
+    @Test
+    public void creatingPanicProcedure_forbidden() throws Exception {
+        Ride ride = customTestData.getRideForWithdrawal();
+        String url = "/api/ride/"+ ride.getId() + "/panic";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.adminToken;
+        PanicCreateDto panicCreateDto = new PanicCreateDto();
+        panicCreateDto.setReason("Passengers haven't arrived");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String panicCreateDtoJson = ow.writeValueAsString(panicCreateDto);
+
+        mockMvc.perform(put(url).header(headerName, token).contentType(APPLICATION_JSON_UTF8).content(panicCreateDtoJson)).andExpect(status().isForbidden()).andReturn();
+
+    }
+
+    @Test
+    public void creatingPanicProcedure_rideNotFound() throws Exception {
+        String url = "/api/ride/"+ 20 + "/panic";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.driverToken;
+        PanicCreateDto panicCreateDto = new PanicCreateDto();
+        panicCreateDto.setReason("Passengers haven't arrived");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String panicCreateDtoJson = ow.writeValueAsString(panicCreateDto);
+
+        MvcResult result = mockMvc.perform(put(url).header(headerName, token).contentType(APPLICATION_JSON_UTF8).content(panicCreateDtoJson)).andExpect(status().isNotFound()).andReturn();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ErrorDto errorDto = objectMapper.readValue(result.getResponse().getContentAsString(), ErrorDto.class);
+
+        assertEquals("Ride does not exist!", errorDto.getMessage());
+    }
+
+    @Test
+    public void creatingPanicProcedure_driverHappyCase() throws Exception {
+        Ride ride = customTestData.getRideForWithdrawal();
+        Driver driver = customTestData.getDriver();
+
+        String url = "/api/ride/"+ ride.getId() + "/panic";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.driverToken;
+
+        PanicCreateDto panicCreateDto = new PanicCreateDto();
+        panicCreateDto.setReason("Passengers haven't arrived");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String panicCreateDtoJson = ow.writeValueAsString(panicCreateDto);
+
+        PanicDetailsDto panicDetailsDto = new PanicDetailsDto(null, new UserDto(driver), new RideDto(ride), null, panicCreateDto.getReason(), false);
+
+        MvcResult result = mockMvc.perform(put(url).header(headerName, token).content(panicCreateDtoJson).contentType(APPLICATION_JSON_UTF8)).andExpect(status().isOk()).andReturn();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        PanicDetailsDto panicDetailsDtoResponse = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PanicDetailsDto>() {});
+        panicDetailsDto.setId(panicDetailsDtoResponse.getId());
+        panicDetailsDto.setTime(panicDetailsDtoResponse.getTime());
+        assertEquals(panicDetailsDto, panicDetailsDtoResponse);
+    }
+
+    @Test
+    public void creatingPanicProcedure_passengerHappyCase() throws Exception {
+        Ride ride = customTestData.getFinishedRide();
+        Passenger passenger = customTestData.getPassenger1();
+
+        String url = "/api/ride/"+ ride.getId() + "/panic";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.passenger1Token;
+
+        PanicCreateDto panicCreateDto = new PanicCreateDto();
+        panicCreateDto.setReason("Passengers haven't arrived");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String panicCreateDtoJson = ow.writeValueAsString(panicCreateDto);
+
+        PanicDetailsDto panicDetailsDto = new PanicDetailsDto(null, new UserDto(passenger), new RideDto(ride), null, panicCreateDto.getReason(), false);
+
+        MvcResult result = mockMvc.perform(put(url).header(headerName, token).content(panicCreateDtoJson).contentType(APPLICATION_JSON_UTF8)).andExpect(status().isOk()).andReturn();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        PanicDetailsDto panicDetailsDtoResponse = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PanicDetailsDto>() {});
+        panicDetailsDto.setId(panicDetailsDtoResponse.getId());
+        panicDetailsDto.setTime(panicDetailsDtoResponse.getTime());
+        assertEquals(panicDetailsDto, panicDetailsDtoResponse);
+    }
+
+    @Test
+    public void withdrawRide_forbidden() throws Exception {
+        Ride ride = customTestData.getRideForWithdrawal();
+        String url = "/api/ride/"+ ride.getId() + "/withdraw";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.driver2Token;
+
+        mockMvc.perform(put(url).header(headerName, token)).andExpect(status().isForbidden()).andReturn();
+    }
+
+    @Test
+    public void withdrawRide_unauthorized() throws Exception {
+        Ride ride = customTestData.getRideForWithdrawal();
+        String url = "/api/ride/"+ ride.getId() + "/withdraw";
+        String headerName = "Authorization";
+        String token = "Bearer ";
+
+        mockMvc.perform(put(url).header(headerName, token)).andExpect(status().isUnauthorized()).andReturn();
+    }
+
+    @Test
+    public void withdrawRide_rideNotFound() throws Exception {
+        String url = "/api/ride/"+ 20 + "/withdraw";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.passenger1Token;
+
+        MvcResult result = mockMvc.perform(put(url).header(headerName, token)).andExpect(status().isNotFound()).andReturn();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ErrorDto errorDto = objectMapper.readValue(result.getResponse().getContentAsString(), ErrorDto.class);
+
+        assertEquals("Ride does not exist!", errorDto.getMessage());
+    }
+
+    @Test
+    public void withdrawRide_rideIsNotPendingOrActive() throws Exception {
+        Ride ride = customTestData.getFinishedRide();
+        String url = "/api/ride/"+ ride.getId() + "/withdraw";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.passenger1Token;
+
+        MvcResult result = mockMvc.perform(put(url).header(headerName, token)).andExpect(status().isBadRequest()).andReturn();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ErrorDto errorDto = objectMapper.readValue(result.getResponse().getContentAsString(), ErrorDto.class);
+
+        assertEquals("Cannot cancel a ride that is not in status PENDING or STARTED!", errorDto.getMessage());
+    }
+
+    @Test
+    public void withdrawRide_happyCase() throws Exception {
+        Ride ride = customTestData.getRideForWithdrawal();
+        String url = "/api/ride/"+ ride.getId() + "/withdraw";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.passenger1Token;
+
+        MvcResult result = mockMvc.perform(put(url).header(headerName, token)).andExpect(status().isOk()).andReturn();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        RideDto startedRide = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<RideDto>() {});
+        assertEquals("REJECTED", startedRide.getStatus());
+    }
+
+    @Test
+    public void getDriversActiveRide_unauthorized() throws Exception {
+        Driver driver = customTestData.getDriver2();
+        String url = "/api/ride/driver/"+ driver.getId() + "/active";
+        String headerName = "Authorization";
+        String token = "Bearer ";
+
+        mockMvc.perform(get(url).header(headerName, token)).andExpect(status().isUnauthorized()).andReturn();
+    }
+
+    @Test
+    public void getDriversActiveRide_driverNotFound() throws Exception {
+        String url = "/api/ride/driver/20/active";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.driver2Token;
+
+        mockMvc.perform(get(url).header(headerName, token)).andExpect(status().isNotFound()).andReturn();
+    }
+
+    @Test
+    public void getDriversActiveRide_happyCase() throws Exception {
+        Ride activeRide = customTestData.getDriver2ActiveRide();
+        Driver driver = customTestData.getDriver2();
+        String url = "/api/ride/driver/"+ driver.getId() + "/active";
+        String headerName = "Authorization";
+        String token = "Bearer " + customTestData.driver2Token;
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        MvcResult result = mockMvc.perform(get(url).header(headerName, token)).andExpect(status().isOk()).andReturn();
+
+        RideDto activeRideResponse = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<RideDto>() {});
+        assertEquals(new RideDto(activeRide), activeRideResponse);
+    }
 
 }
