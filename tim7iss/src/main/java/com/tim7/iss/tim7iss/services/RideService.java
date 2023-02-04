@@ -246,7 +246,7 @@ public class RideService {
 
         // driver that has an active ride at the moment but is 5 minutes away from finishing
         Driver currentlyUnavailablePotentialDriver = null;
-        List<Driver> currentlyUnavailablePotentialDrivers = new ArrayList<>();
+        Map<Driver, Location> currentlyUnavailablePotentialDrivers = new HashMap<>();
         Integer distanceFromStartLocationUnavailableDriver = null;
 
         // initializing the ride according to the ride creation dto
@@ -287,12 +287,13 @@ public class RideService {
             // if there is a ride already scheduled at that date: check next driver
             if (alreadyScheduledRide != null) {
                 /* driver is put into consideration to be given the new scheduled ride
-                 * only if he is Constants.vehicleWaitTimeInMinutes minutes away from finishing his currently active ride */
+                 * only if he is Constants.vehicleWaitTimeInMinutes minutes away from
+                 * finishing his currently active ride depending on the scheduled time */
                 if (alreadyScheduledRide.getStatus() == Enums.RideStatus.ACTIVE) {
                     LocalDateTime estimatedRideEndTime = alreadyScheduledRide.getStartTime().plusMinutes(alreadyScheduledRide.getEstimatedTimeInMinutes());
                     long minutesUntil = rideToSchedule.getStartTime().until(estimatedRideEndTime, ChronoUnit.MINUTES);
                     if (minutesUntil >= 0 && minutesUntil <= Constants.vehicleWaitTimeInMinutes) {
-                        currentlyUnavailablePotentialDrivers.add(driver);
+                        currentlyUnavailablePotentialDrivers.put(driver, alreadyScheduledRide.getRoutes().get(alreadyScheduledRide.getRoutes().size() - 1).getEndPoint());
                     }
                 }
                 continue;
@@ -315,13 +316,35 @@ public class RideService {
         if (availablePotentialDriver != null) {
             rideToSchedule.setDriver(availablePotentialDriver);
         } else {
-            Driver driver = currentlyUnavailablePotentialDrivers.stream().min(Comparator.comparing((Driver d) -> mapService.getDistance(rideStartLocation.getLatitude(), rideStartLocation.getLongitude(), d.getVehicle().getLocation().getLatitude(), d.getVehicle().getLocation().getLongitude()))).orElse(null);
+            Driver driverForAssigning = null;
+            Integer distanceFromDeparture = null;
+            for (Driver driver : currentlyUnavailablePotentialDrivers.keySet()) {
+                Location driverFutureLocation = currentlyUnavailablePotentialDrivers.get(driver);
+                if (distanceFromDeparture == null) {
+                    driverForAssigning = driver;
+                    distanceFromDeparture = mapService.getDistance(
+                            rideStartLocation.getLatitude(),
+                            rideStartLocation.getLongitude(),
+                            driverFutureLocation.getLatitude(),
+                            driverFutureLocation.getLongitude());
+                    continue;
+                }
+                Integer nextDistanceFromDeparture = mapService.getDistance(
+                        rideStartLocation.getLatitude(),
+                        rideStartLocation.getLongitude(),
+                        driverFutureLocation.getLatitude(),
+                        driverFutureLocation.getLongitude());
+                if (nextDistanceFromDeparture < distanceFromDeparture) {
+                    driverForAssigning = driver;
+                    distanceFromDeparture = nextDistanceFromDeparture;
+                }
+            }
 
-            if (driver == null) {
+            if (driverForAssigning == null) {
                 throw new DriverNotFoundException("There are no available drivers at that moment");
             }
 
-            rideToSchedule.setDriver(driver);
+            rideToSchedule.setDriver(driverForAssigning);
 
             // if the driver is initially busy then the start ride is moved by 5 minutes
             rideToSchedule.setStartTime(rideToSchedule.getStartTime().plusMinutes(Constants.vehicleWaitTimeInMinutes));

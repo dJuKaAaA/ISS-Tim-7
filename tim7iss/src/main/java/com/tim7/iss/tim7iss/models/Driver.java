@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -28,6 +29,14 @@ public class Driver extends User {
     @OneToMany(mappedBy = "driver", fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private Set<WorkHour> workHours = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Driver driver = (Driver) o;
+        return Objects.equals(this.getId(), driver.getId());
+    }
 
     public Driver(UserDto driverRequestBodyDto) {
         this.setFirstName(driverRequestBodyDto.getName());

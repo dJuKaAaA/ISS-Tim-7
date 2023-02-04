@@ -923,15 +923,15 @@ public class RideServiceTests {
         Mockito.when(vehicleType.getName()).thenReturn("STANDARD");
         Mockito.when(vehicleTypeRepository.findByName("STANDARD")).thenReturn(Optional.of(vehicleType));
 
-        LocationForRideDto route = Mockito.mock(LocationForRideDto.class);
-        Mockito.when(route.getEstimatedTimeInMinutes()).thenReturn(10);
-        Mockito.when(route.getDistanceInMeters()).thenReturn(8000);
-        Mockito.when(route.getDeparture()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
-        Mockito.when(route.getDestination()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
+        LocationForRideDto locationForRideDto = Mockito.mock(LocationForRideDto.class);
+        Mockito.when(locationForRideDto.getEstimatedTimeInMinutes()).thenReturn(10);
+        Mockito.when(locationForRideDto.getDistanceInMeters()).thenReturn(8000);
+        Mockito.when(locationForRideDto.getDeparture()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
+        Mockito.when(locationForRideDto.getDestination()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
 
         RideCreationDto rideCreationDto = Mockito.mock(RideCreationDto.class);
         Mockito.when(rideCreationDto.getScheduledTime()).thenReturn(LocalDateTime.now().plusMinutes(30).format(Constants.customDateTimeFormat));
-        Mockito.when(rideCreationDto.getLocations()).thenReturn(List.of(route));
+        Mockito.when(rideCreationDto.getLocations()).thenReturn(List.of(locationForRideDto));
         Mockito.when(rideCreationDto.getPassengers()).thenReturn(List.of(Mockito.mock(UserRefDto.class)));
         Mockito.when(rideCreationDto.getVehicleType()).thenReturn("STANDARD");
         Mockito.when(rideCreationDto.getBabyTransport()).thenReturn(false);
@@ -939,7 +939,7 @@ public class RideServiceTests {
 
         RideDto rideDto = rideService.scheduleRide(rideCreationDto);
         assertEquals(rideCreationDto.getScheduledTime(), rideDto.getStartTime());
-        assertEquals(route.getEstimatedTimeInMinutes(), rideDto.getEstimatedTimeInMinutes());
+        assertEquals(locationForRideDto.getEstimatedTimeInMinutes(), rideDto.getEstimatedTimeInMinutes());
         assertEquals(rideCreationDto.getVehicleType(), rideDto.getVehicleType());
         assertEquals(rideCreationDto.getBabyTransport(), rideDto.getBabyTransport());
         assertEquals(rideCreationDto.getPetTransport(), rideDto.getPetTransport());
@@ -953,7 +953,14 @@ public class RideServiceTests {
         Mockito.when(driver.getId()).thenReturn(1L);
         Mockito.when(driver.isActive()).thenReturn(true);
 
+        Location endLocation = Mockito.mock(Location.class);
+        Mockito.when(endLocation.getLatitude()).thenReturn(45.0f);
+        Mockito.when(endLocation.getLongitude()).thenReturn(19.0f);
+        Route route = Mockito.mock(Route.class);
+        Mockito.when(route.getEndPoint()).thenReturn(endLocation);
+
         Ride currentRideOfDriver = Mockito.mock(Ride.class);
+        Mockito.when(currentRideOfDriver.getRoutes()).thenReturn(List.of(route));
         Mockito.when(currentRideOfDriver.getStatus()).thenReturn(Enums.RideStatus.ACTIVE);
         Mockito.when(currentRideOfDriver.getStartTime()).thenReturn(LocalDateTime.now());
         Mockito.when(currentRideOfDriver.getEstimatedTimeInMinutes()).thenReturn(33);
@@ -970,15 +977,15 @@ public class RideServiceTests {
         Mockito.when(vehicleType.getName()).thenReturn("STANDARD");
         Mockito.when(vehicleTypeRepository.findByName("STANDARD")).thenReturn(Optional.of(vehicleType));
 
-        LocationForRideDto route = Mockito.mock(LocationForRideDto.class);
-        Mockito.when(route.getEstimatedTimeInMinutes()).thenReturn(10);
-        Mockito.when(route.getDistanceInMeters()).thenReturn(8000);
-        Mockito.when(route.getDeparture()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
-        Mockito.when(route.getDestination()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
+        LocationForRideDto locationForRideDto = Mockito.mock(LocationForRideDto.class);
+        Mockito.when(locationForRideDto.getEstimatedTimeInMinutes()).thenReturn(10);
+        Mockito.when(locationForRideDto.getDistanceInMeters()).thenReturn(8000);
+        Mockito.when(locationForRideDto.getDeparture()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
+        Mockito.when(locationForRideDto.getDestination()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
 
         RideCreationDto rideCreationDto = Mockito.mock(RideCreationDto.class);
         Mockito.when(rideCreationDto.getScheduledTime()).thenReturn(LocalDateTime.now().plusMinutes(30).format(Constants.customDateTimeFormat));
-        Mockito.when(rideCreationDto.getLocations()).thenReturn(List.of(route));
+        Mockito.when(rideCreationDto.getLocations()).thenReturn(List.of(locationForRideDto));
         Mockito.when(rideCreationDto.getPassengers()).thenReturn(List.of(Mockito.mock(UserRefDto.class)));
         Mockito.when(rideCreationDto.getVehicleType()).thenReturn("STANDARD");
         Mockito.when(rideCreationDto.getBabyTransport()).thenReturn(false);
@@ -990,7 +997,7 @@ public class RideServiceTests {
                 .plusMinutes(Constants.vehicleWaitTimeInMinutes)
                 .format(Constants.customDateTimeFormat);
         assertEquals(expectedStartTime, rideDto.getStartTime());
-        assertEquals(route.getEstimatedTimeInMinutes(), rideDto.getEstimatedTimeInMinutes());
+        assertEquals(locationForRideDto.getEstimatedTimeInMinutes(), rideDto.getEstimatedTimeInMinutes());
         assertEquals(rideCreationDto.getVehicleType(), rideDto.getVehicleType());
         assertEquals(rideCreationDto.getBabyTransport(), rideDto.getBabyTransport());
         assertEquals(rideCreationDto.getPetTransport(), rideDto.getPetTransport());
@@ -1053,15 +1060,15 @@ public class RideServiceTests {
         Mockito.when(vehicleType.getName()).thenReturn("STANDARD");
         Mockito.when(vehicleTypeRepository.findByName("STANDARD")).thenReturn(Optional.of(vehicleType));
 
-        LocationForRideDto route = Mockito.mock(LocationForRideDto.class);
-        Mockito.when(route.getEstimatedTimeInMinutes()).thenReturn(10);
-        Mockito.when(route.getDistanceInMeters()).thenReturn(8000);
-        Mockito.when(route.getDeparture()).thenReturn(departureLocation);
-        Mockito.when(route.getDestination()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
+        LocationForRideDto locationForRideDto = Mockito.mock(LocationForRideDto.class);
+        Mockito.when(locationForRideDto.getEstimatedTimeInMinutes()).thenReturn(10);
+        Mockito.when(locationForRideDto.getDistanceInMeters()).thenReturn(8000);
+        Mockito.when(locationForRideDto.getDeparture()).thenReturn(departureLocation);
+        Mockito.when(locationForRideDto.getDestination()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
 
         RideCreationDto rideCreationDto = Mockito.mock(RideCreationDto.class);
         Mockito.when(rideCreationDto.getScheduledTime()).thenReturn(LocalDateTime.now().plusMinutes(30).format(Constants.customDateTimeFormat));
-        Mockito.when(rideCreationDto.getLocations()).thenReturn(List.of(route));
+        Mockito.when(rideCreationDto.getLocations()).thenReturn(List.of(locationForRideDto));
         Mockito.when(rideCreationDto.getPassengers()).thenReturn(List.of(Mockito.mock(UserRefDto.class)));
         Mockito.when(rideCreationDto.getVehicleType()).thenReturn("STANDARD");
         Mockito.when(rideCreationDto.getBabyTransport()).thenReturn(false);
@@ -1070,7 +1077,7 @@ public class RideServiceTests {
         RideDto rideDto = rideService.scheduleRide(rideCreationDto);
 
         assertEquals(rideCreationDto.getScheduledTime(), rideDto.getStartTime());
-        assertEquals(route.getEstimatedTimeInMinutes(), rideDto.getEstimatedTimeInMinutes());
+        assertEquals(locationForRideDto.getEstimatedTimeInMinutes(), rideDto.getEstimatedTimeInMinutes());
         assertEquals(rideCreationDto.getVehicleType(), rideDto.getVehicleType());
         assertEquals(rideCreationDto.getBabyTransport(), rideDto.getBabyTransport());
         assertEquals(rideCreationDto.getPetTransport(), rideDto.getPetTransport());
@@ -1083,14 +1090,10 @@ public class RideServiceTests {
         Location driver1Location = Mockito.mock(Location.class);
         Mockito.when(driver1Location.getLongitude()).thenReturn(19.0f);
         Mockito.when(driver1Location.getLatitude()).thenReturn(45.0f);
-        Vehicle vehicle1 = Mockito.mock(Vehicle.class);
-        Mockito.when(vehicle1.getLocation()).thenReturn(driver1Location);
 
         Location driver2Location = Mockito.mock(Location.class);
         Mockito.when(driver2Location.getLongitude()).thenReturn(19.9f);
         Mockito.when(driver2Location.getLatitude()).thenReturn(45.9f);
-        Vehicle vehicle2 = Mockito.mock(Vehicle.class);
-        Mockito.when(vehicle2.getLocation()).thenReturn(driver2Location);
 
         GeoCoordinateDto departureLocation = Mockito.mock(GeoCoordinateDto.class);
         Mockito.when(departureLocation.getLongitude()).thenReturn(20.0f);
@@ -1099,23 +1102,35 @@ public class RideServiceTests {
         Driver driver1 = Mockito.mock(Driver.class);
         Mockito.when(driver1.getId()).thenReturn(1L);
         Mockito.when(driver1.isActive()).thenReturn(true);
-        Mockito.when(driver1.getVehicle()).thenReturn(vehicle1);
 
         Driver driver2 = Mockito.mock(Driver.class);
         Mockito.when(driver2.getId()).thenReturn(2L);
         Mockito.when(driver2.isActive()).thenReturn(true);
-        Mockito.when(driver2.getVehicle()).thenReturn(vehicle2);
+
+        Location endLocation1 = Mockito.mock(Location.class);
+        Mockito.when(endLocation1.getLatitude()).thenReturn(45.0f);
+        Mockito.when(endLocation1.getLongitude()).thenReturn(19.0f);
+        Route route1 = Mockito.mock(Route.class);
+        Mockito.when(route1.getEndPoint()).thenReturn(endLocation1);
 
         Ride currentRideOfDriver1 = Mockito.mock(Ride.class);
+        Mockito.when(currentRideOfDriver1.getRoutes()).thenReturn(List.of(route1));
         Mockito.when(currentRideOfDriver1.getStatus()).thenReturn(Enums.RideStatus.ACTIVE);
         Mockito.when(currentRideOfDriver1.getStartTime()).thenReturn(LocalDateTime.now());
         Mockito.when(currentRideOfDriver1.getEstimatedTimeInMinutes()).thenReturn(33);
         Mockito.when(rideRepository.findByDriverId(driver1.getId())).thenReturn(List.of(currentRideOfDriver1));
 
+        Location endLocation2 = Mockito.mock(Location.class);
+        Mockito.when(endLocation2.getLatitude()).thenReturn(45.9f);
+        Mockito.when(endLocation2.getLongitude()).thenReturn(19.9f);
+        Route route2 = Mockito.mock(Route.class);
+        Mockito.when(route2.getEndPoint()).thenReturn(endLocation2);
+
         Ride currentRideOfDriver2 = Mockito.mock(Ride.class);
+        Mockito.when(currentRideOfDriver2.getRoutes()).thenReturn(List.of(route2));
         Mockito.when(currentRideOfDriver2.getStatus()).thenReturn(Enums.RideStatus.ACTIVE);
         Mockito.when(currentRideOfDriver2.getStartTime()).thenReturn(LocalDateTime.now());
-        Mockito.when(currentRideOfDriver2.getEstimatedTimeInMinutes()).thenReturn(33);
+        Mockito.when(currentRideOfDriver2.getEstimatedTimeInMinutes()).thenReturn(32);
         Mockito.when(rideRepository.findByDriverId(driver2.getId())).thenReturn(List.of(currentRideOfDriver2));
 
         Mockito.when(mapService
@@ -1145,15 +1160,15 @@ public class RideServiceTests {
         Mockito.when(vehicleType.getName()).thenReturn("STANDARD");
         Mockito.when(vehicleTypeRepository.findByName("STANDARD")).thenReturn(Optional.of(vehicleType));
 
-        LocationForRideDto route = Mockito.mock(LocationForRideDto.class);
-        Mockito.when(route.getEstimatedTimeInMinutes()).thenReturn(10);
-        Mockito.when(route.getDistanceInMeters()).thenReturn(8000);
-        Mockito.when(route.getDeparture()).thenReturn(departureLocation);
-        Mockito.when(route.getDestination()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
+        LocationForRideDto locationForRideDto = Mockito.mock(LocationForRideDto.class);
+        Mockito.when(locationForRideDto.getEstimatedTimeInMinutes()).thenReturn(10);
+        Mockito.when(locationForRideDto.getDistanceInMeters()).thenReturn(8000);
+        Mockito.when(locationForRideDto.getDeparture()).thenReturn(departureLocation);
+        Mockito.when(locationForRideDto.getDestination()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
 
         RideCreationDto rideCreationDto = Mockito.mock(RideCreationDto.class);
         Mockito.when(rideCreationDto.getScheduledTime()).thenReturn(LocalDateTime.now().plusMinutes(30).format(Constants.customDateTimeFormat));
-        Mockito.when(rideCreationDto.getLocations()).thenReturn(List.of(route));
+        Mockito.when(rideCreationDto.getLocations()).thenReturn(List.of(locationForRideDto));
         Mockito.when(rideCreationDto.getPassengers()).thenReturn(List.of(Mockito.mock(UserRefDto.class)));
         Mockito.when(rideCreationDto.getVehicleType()).thenReturn("STANDARD");
         Mockito.when(rideCreationDto.getBabyTransport()).thenReturn(false);
@@ -1165,7 +1180,7 @@ public class RideServiceTests {
                 .plusMinutes(Constants.vehicleWaitTimeInMinutes)
                 .format(Constants.customDateTimeFormat);
         assertEquals(expectedStartTime, rideDto.getStartTime());
-        assertEquals(route.getEstimatedTimeInMinutes(), rideDto.getEstimatedTimeInMinutes());
+        assertEquals(locationForRideDto.getEstimatedTimeInMinutes(), rideDto.getEstimatedTimeInMinutes());
         assertEquals(rideCreationDto.getVehicleType(), rideDto.getVehicleType());
         assertEquals(rideCreationDto.getBabyTransport(), rideDto.getBabyTransport());
         assertEquals(rideCreationDto.getPetTransport(), rideDto.getPetTransport());

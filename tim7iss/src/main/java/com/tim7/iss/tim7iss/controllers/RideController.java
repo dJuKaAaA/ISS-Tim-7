@@ -54,7 +54,7 @@ public class RideController {
 
     @PostMapping
     @PreAuthorize("hasRole('PASSENGER')")
-    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto, @RequestHeader("Authorization") String authHeader) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException {
+    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException {
         RideDto ride = rideService.scheduleRide(rideCreationDto);
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
@@ -72,7 +72,7 @@ public class RideController {
     // TESTIRANO
     @GetMapping(value = "/favorites")
     @PreAuthorize("hasRole('PASSENGER')")
-    public ResponseEntity<List<FavoriteLocationDto>> getFavoriteLocations(@RequestHeader(value = "Authorization") String authHeader) {
+    public ResponseEntity<List<FavoriteLocationDto>> getFavoriteLocations() {
         List<FavoriteLocationDto> favoriteLocationsDto = rideService.getFavoriteLocations();
         return new ResponseEntity<>(favoriteLocationsDto, HttpStatus.OK);
     }
@@ -92,7 +92,7 @@ public class RideController {
     // TESTIRANO
     @DeleteMapping(value = "/favorites/{id}")
     @PreAuthorize("hasAnyRole('PASSENGER','ADMIN')")
-    public ResponseEntity<String> deleteFavoriteLocation(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id) throws FavoriteLocationNotFoundException {
+    public ResponseEntity<String> deleteFavoriteLocation(@PathVariable Long id) throws FavoriteLocationNotFoundException {
         rideService.deleteFavoriteLocation(id);
         return new ResponseEntity("Successful deletion of favorite location!", HttpStatus.NO_CONTENT);
     }
@@ -100,14 +100,14 @@ public class RideController {
 
     @GetMapping(value = "/driver/{driverId}/active")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
-    public ResponseEntity<RideDto> getDriversActiveRide(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long driverId) throws UserNotFoundException, RideNotFoundException {
+    public ResponseEntity<RideDto> getDriversActiveRide(@PathVariable Long driverId) throws UserNotFoundException, RideNotFoundException {
         List<RideDto> rides = rideService.getDriversActiveRide(driverId);
         return new ResponseEntity<>(rides.get(0), HttpStatus.OK);
     }
 
     @GetMapping(value = "/passenger/{passengerId}/active")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PASSENGER')")
-    public ResponseEntity<RideDto> getPassengersActiveRide(@PathVariable Long passengerId, @RequestHeader(value = "Authorization") String authHeader) throws RideNotFoundException {
+    public ResponseEntity<RideDto> getPassengersActiveRide(@PathVariable Long passengerId) throws RideNotFoundException {
         List<RideDto> rides = rideService.getPassengersActiveRide(passengerId);
         return new ResponseEntity<>(rides.get(0), HttpStatus.OK);
     }
@@ -116,14 +116,14 @@ public class RideController {
     // TESTIRANO
     @GetMapping(value = "/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'PASSENGER', 'DRIVER')")
-    public ResponseEntity<RideDto> getRideById(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id) throws RideNotFoundException {
+    public ResponseEntity<RideDto> getRideById(@PathVariable Long id) throws RideNotFoundException {
         RideDto ride = rideService.getRideById(id);
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
 
     @PutMapping(value = "/{id}/withdraw")
     @PreAuthorize("hasRole('PASSENGER')")
-    public ResponseEntity<RideDto> cancelRideById(@PathVariable Long id, @RequestHeader(value = "Authorization") String authHeader) throws RideNotFoundException, RideCancelationException {
+    public ResponseEntity<RideDto> cancelRideById(@PathVariable Long id) throws RideNotFoundException, RideCancelationException {
         RideDto ride = rideService.cancelRideById(id);
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }

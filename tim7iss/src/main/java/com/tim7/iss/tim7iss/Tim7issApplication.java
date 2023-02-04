@@ -272,6 +272,15 @@ public class Tim7issApplication {
         passengerWhoIsNotSupposedToHaveAnyAcceptedRides.setEnabled(true);
         passengerRepository.save(passengerWhoIsNotSupposedToHaveAnyAcceptedRides);
 
+        // id = 8
+        Driver hopefullyAvailableDriver = new Driver(new UserDto(null, "Pera", "Peric", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372222", "pera.peric@email.com", "Perina adresa", "$2a$12$YzM..B5oG29ezUdF3pC6qexJQpw4UJSxdoaQD9Y.aiURFBuU4/3Qe"));  // Pera1234
+        hopefullyAvailableDriver.setEnabled(true);
+        hopefullyAvailableDriver.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, vehicleType, hopefullyAvailableDriver, new Location(null, "Bistrica, Novi Sad", 45.25207768500065f, 19.799845506488243f)));
+        hopefullyAvailableDriver.setRoles(List.of(driverRole));
+        hopefullyAvailableDriver.setEnabled(true);
+        hopefullyAvailableDriver.setActive(true);
+        driverRepository.save(hopefullyAvailableDriver);
+
         // declaring routes that will be saved when the ride that contains them gets created
         // id = 1
         Route route1 = new Route(null, 1000, 10, new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija", 45.24914205013315f, 19.843100056994654f), new Location(null, "Srpsko narodno pozoriste, Pozorisni trg, Novi Sad, Srbija", 45.25510777309239f, 19.842949154190308f));
@@ -321,6 +330,7 @@ public class Tim7issApplication {
         document.setName("Licna karta");
         document.setDriver(driver);
         documentRepository.save(document);
+
 
     }
 
