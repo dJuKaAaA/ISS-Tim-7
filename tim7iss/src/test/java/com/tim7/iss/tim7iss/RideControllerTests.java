@@ -371,5 +371,33 @@ public class RideControllerTests {
         assertEquals("Successful deletion of favorite location!", responseMessage);
     }
 
+    /* Schedule ride tests:
+    * 1. No auth
+    * 2. Forbidden
+    * 3. Happy flow
+    * 4. Bad request all data is bad
+    * 5. Bad date format
+    * 6. No locations
+    * 7. No passengers
+    * 8. Null vehicle type
+    * 9. Wrong vehicle type */
+
+    /* Create favorite location tests:
+    * 1. No auth
+    * 2. Forbidden
+    * 3. Happy flow
+    * 4. Bad request all data is bad
+    * 4. Empty favorite name
+    * 5. No locations
+    * 6. No passenger
+    * 7. Null vehicle type
+    * 8. Wrong vehicle type */
+
+    /* Get active ride for driver tests:
+    * 1. No auth
+    * 2. Forbidden
+    * 3. Happy flow
+    * 4. User not found
+    * 5. Ride not found */
 
 }

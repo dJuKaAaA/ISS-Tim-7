@@ -54,7 +54,7 @@ public class RideController {
 
     @PostMapping
     @PreAuthorize("hasRole('PASSENGER')")
-    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto, @RequestHeader("Authorization") String authHeader) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException, PassengerNotFoundException {
+    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto, @RequestHeader("Authorization") String authHeader) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException {
         RideDto ride = rideService.scheduleRide(rideCreationDto);
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }

@@ -1281,4 +1281,39 @@ public class RideServiceTests {
 
         assertThrows(DriverNotFoundException.class, () -> rideService.scheduleRide(rideCreationDto));
     }
+
+    @Test
+    public void scheduleRide_ShouldThrowRideAlreadyPendingExceptionIfAnyPassengerHasPendingRides() {
+        UserRefDto passenger1 = Mockito.mock(UserRefDto.class);
+        Mockito.when(passenger1.getId()).thenReturn(1L);
+
+        List<UserRefDto> passengers = List.of(passenger1);
+
+        Ride pendingRide = Mockito.mock(Ride.class);
+        Mockito.when(rideRepository.findByPassengersIdAndStatus(passenger1.getId(), Enums.RideStatus.PENDING.ordinal()))
+                .thenReturn(List.of(pendingRide));
+
+        RideCreationDto rideCreationDto = Mockito.mock(RideCreationDto.class);
+        Mockito.when(rideCreationDto.getPassengers()).thenReturn(passengers);
+
+        assertThrows(RideAlreadyPendingException.class, () -> rideService.scheduleRide(rideCreationDto));
+    }
+
+    @Test
+    public void scheduleRide_ShouldThrowSchedulingRideAtInvalidDateExceptionIfStartTimeIsInPast() {
+        LocationForRideDto route = Mockito.mock(LocationForRideDto.class);
+        Mockito.when(route.getEstimatedTimeInMinutes()).thenReturn(30);
+        Mockito.when(route.getDistanceInMeters()).thenReturn(8000);
+        Mockito.when(route.getDeparture()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
+        Mockito.when(route.getDestination()).thenReturn(Mockito.mock(GeoCoordinateDto.class));
+
+        RideCreationDto rideCreationDto = Mockito.mock(RideCreationDto.class);
+        Mockito.when(rideCreationDto.getScheduledTime()).thenReturn(LocalDateTime.now().minusMinutes(30).format(Constants.customDateTimeFormat));
+        Mockito.when(rideCreationDto.getLocations()).thenReturn(List.of(route));
+        Mockito.when(rideCreationDto.getPassengers()).thenReturn(List.of(Mockito.mock(UserRefDto.class)));
+        Mockito.when(rideCreationDto.getBabyTransport()).thenReturn(false);
+        Mockito.when(rideCreationDto.getPetTransport()).thenReturn(false);
+
+        assertThrows(SchedulingRideAtInvalidDateException.class, () -> rideService.scheduleRide(rideCreationDto));
+    }
 }
