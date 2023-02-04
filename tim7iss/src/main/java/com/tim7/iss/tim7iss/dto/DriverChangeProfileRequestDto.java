@@ -1,5 +1,7 @@
 package com.tim7.iss.tim7iss.dto;
 
+import com.tim7.iss.tim7iss.models.DriverDocumentChangeRequest;
+import com.tim7.iss.tim7iss.models.DriverProfileChangeRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class DriverChangeProfileRequestDto {
 
+    private Long id;
     @NotBlank(message = "Name must be provided")
     private String firstName;
     @NotBlank(message = "Surname must be provided")
@@ -38,6 +41,21 @@ public class DriverChangeProfileRequestDto {
     private Set<DriverChangeDocumentRequestDto> documents;
 
 
+    public DriverChangeProfileRequestDto(DriverProfileChangeRequest request) {
+        this.id = request.getId();
+        this.firstName = request.getFirstName();
+        this.lastName = request.getLastName();
+        this.profilePicture = request.getProfilePicture();
+        this.phoneNumber = request.getPhoneNumber();
+        this.email = request.getEmail();
+        this.address = request.getAddress();
+        this.status = request.getStatus();
+        this.isMessageDisplayed = request.isMessageDisplayed();
+        this.documents = new HashSet<>();
+        for(DriverDocumentChangeRequest documentRequest: request.getDriverDocumentChangeRequests()){
+            documents.add(new DriverChangeDocumentRequestDto(documentRequest));
+        }
+    }
 }
 
 

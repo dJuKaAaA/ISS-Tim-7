@@ -1,9 +1,12 @@
 package com.tim7.iss.tim7iss.services;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.tim7.iss.tim7iss.dto.DriverChangeDocumentRequestDto;
 import com.tim7.iss.tim7iss.dto.DriverChangeProfileRequestDto;
+import com.tim7.iss.tim7iss.dto.ErrorDto;
 import com.tim7.iss.tim7iss.exceptions.DocumentNotFoundException;
 import com.tim7.iss.tim7iss.exceptions.DriverNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.Document;
 import com.tim7.iss.tim7iss.models.Driver;
 import com.tim7.iss.tim7iss.models.DriverDocumentChangeRequest;
@@ -12,11 +15,15 @@ import com.tim7.iss.tim7iss.repositories.DocumentRepository;
 import com.tim7.iss.tim7iss.repositories.DriverDocumentRequestRepository;
 import com.tim7.iss.tim7iss.repositories.DriverRepository;
 import com.tim7.iss.tim7iss.repositories.DriverRequestRepository;
+import org.apache.tomcat.util.json.JSONParser;
+import org.openqa.selenium.json.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +49,24 @@ public class RequestService {
 
         // TODO dodati
         return new ResponseEntity<>(new DriverChangeProfileRequestDto(), HttpStatus.OK);
+    }
+
+    public ResponseEntity<List<DriverChangeProfileRequestDto>> getAllRequests(){
+        List<DriverProfileChangeRequest> requests = driverRequestRepository.findAll();
+        List<DriverChangeProfileRequestDto> requestsDto = new ArrayList<>();
+        for(DriverProfileChangeRequest request: requests){
+            requestsDto.add(new DriverChangeProfileRequestDto(request));
+        }
+        return new ResponseEntity<>(requestsDto, HttpStatus.OK);
+    }
+
+    public ResponseEntity<List<DriverChangeProfileRequestDto>> getAllPendingRequests() {
+        List<DriverProfileChangeRequest> requests = driverRequestRepository.findDriverProfileChangeRequestsByStatus("PENDING");
+        List<DriverChangeProfileRequestDto> requestsDto = new ArrayList<>();
+        for (DriverProfileChangeRequest request : requests) {
+            requestsDto.add(new DriverChangeProfileRequestDto(request));
+        }
+        return new ResponseEntity<>(requestsDto, HttpStatus.OK);
     }
 
     public void deleteRequest(Long requestId) {
@@ -104,4 +129,16 @@ public class RequestService {
         return HttpStatus.OK;
     }
 
+    public ResponseEntity<ErrorDto> changeRequestStatus(Long requestId, String status) throws UserNotFoundException {
+        if(status == "denied"){
+            deleteRequest(requestId);
+            return new ResponseEntity<>(new ErrorDto("Request deleted"),HttpStatus.OK);
+        }
+        DriverProfileChangeRequest driverProfileChangeRequest = driverRequestRepository.findById(requestId).orElse(null);
+        Driver driver = driverRepository.findById(driverProfileChangeRequest.getDriver().getId()).orElseThrow(UserNotFoundException::new);
+        driver.setData(driverProfileChangeRequest, documentRepository);
+        JSONParser jsonParser = new JSONParser("Profile changed");
+        deleteRequest(requestId);
+        return new ResponseEntity<>(new ErrorDto("Profile changed"), HttpStatus.OK);
+    }
 }

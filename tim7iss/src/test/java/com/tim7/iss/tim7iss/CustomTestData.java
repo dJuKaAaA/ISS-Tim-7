@@ -17,6 +17,7 @@ import java.util.Set;
 
 public class CustomTestData {
 
+    public String driver2Token = "";
     public String driverToken = "";
     public String passenger1Token = "";
     public String adminToken = "";
@@ -174,6 +175,60 @@ public class CustomTestData {
 
         return rideDto;
     }
+
+    public Driver getDriver2() throws IOException {
+        VehicleType vehicleType = getVehicleType();
+
+        Driver driver2 = new Driver(new UserDto(null, "Pera", "Peric", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "pera@email.com", "Perina adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));
+        driver2.setEnabled(true);
+        driver2.setId(7L);
+
+        driver2.setVehicle(new Vehicle(5L, "BMW X2", "PGAA111", 5, false, true, vehicleType, driver2, new Location(null, "Fakultet tehnickih nauka Univerziteta u Novom Sadu, Trg Dositeja Obradovica, Novi Sad", 45.24648813f, 19.8516641f)));
+
+        return driver2;
+    }
+
+    public Ride getRideForWithdrawal() throws IOException {
+        Driver driver = getDriver();
+        Passenger passenger1 = getPassenger1();
+        Route route = getRoute();
+        route.setId(6L);
+
+        Ride pendingRide = new Ride(6L, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route));
+
+        return pendingRide;
+    }
+    public Ride getRideForCancelation() throws IOException {
+        Driver driver = getDriver();
+        Passenger passenger1 = getPassenger1();
+        Route route = getRoute();
+        route.setId(1L);
+
+        Ride pendingRide = new Ride(7L, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route));
+
+        return pendingRide;
+    }
+    public Ride getRideForAcceptance() throws IOException {
+        Driver driver = getDriver();
+        Passenger passenger1 = getPassenger1();
+        Route route = getRoute();
+        route.setId(1L);
+
+        Ride pendingRide = new Ride(8L, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route));
+
+        return pendingRide;
+    }
+    public Ride getDriver2ActiveRide() throws IOException {
+        Driver driver = getDriver2();
+        Passenger passenger2 = getPassenger2();
+        Route route = getRoute();
+        route.setId(1L);
+
+        Ride pendingRide = new Ride(9L, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACTIVE, driver, driver.getVehicle().getVehicleType(), Set.of(passenger2), null, List.of(route));
+
+        return pendingRide;
+    }
+
 
 
 }

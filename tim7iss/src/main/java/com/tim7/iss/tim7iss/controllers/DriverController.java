@@ -3,10 +3,7 @@ package com.tim7.iss.tim7iss.controllers;
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.global.Constants;
-import com.tim7.iss.tim7iss.models.Document;
-import com.tim7.iss.tim7iss.models.Driver;
-import com.tim7.iss.tim7iss.models.Vehicle;
-import com.tim7.iss.tim7iss.models.WorkHour;
+import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.DriverRepository;
 import com.tim7.iss.tim7iss.services.*;
 import com.tim7.iss.tim7iss.util.TokenUtils;
@@ -219,6 +216,30 @@ public class DriverController {
         return new ResponseEntity<>(isActiveDto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/request")
+    public ResponseEntity<List<DriverChangeProfileRequestDto>>getAllRequests(){
+        return requestService.getAllRequests();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/request/pending")
+    public ResponseEntity<List<DriverChangeProfileRequestDto>>getAllPendingRequests(){
+        return requestService.getAllRequests();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/request/{requestId}/approve")
+    public ResponseEntity<ErrorDto>approverRequestStatus(@PathVariable Long requestId) throws UserNotFoundException {
+        return requestService.changeRequestStatus(requestId, "approved");
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/request/{requestId}/deny")
+    public ResponseEntity<ErrorDto>denyRequestStatus(@PathVariable Long requestId) throws UserNotFoundException {
+        return requestService.changeRequestStatus(requestId, "denied");
+    }
+
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @PutMapping("/{id}/activity")
     public ResponseEntity<ActivityDto> changeActivity(@PathVariable Long id, @Valid @RequestBody ActivityDto activity) throws DriverNotFoundException {
@@ -228,7 +249,7 @@ public class DriverController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @GetMapping("/{id}/rides/scheduled")
-    public ResponseEntity<Collection<RideDto>> getPendingRides(@PathVariable Long id) throws DriverNotFoundException {
+    public ResponseEntity<Collection<RideDto>> getPendingRides(@PathVariable Long id) throws DriverNotFoundException, RideNotFoundException {
         Collection<RideDto> scheduledRides = rideService.getScheduledRidesForDriverAsDto(id);
         return new ResponseEntity<>(scheduledRides, HttpStatus.OK);
     }

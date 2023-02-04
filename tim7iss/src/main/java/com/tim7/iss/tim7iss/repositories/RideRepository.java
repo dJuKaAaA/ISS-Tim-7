@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RideRepository extends JpaRepository<Ride, Long> {
 
@@ -17,10 +18,10 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     List<Ride> findRidesByPassengersId(Long passengerId);
 
     @Query(value = "select r.* from ride r left join passenger_rides fr on r.id = fr.ride_id where fr.passenger_id = ?1 and r.status = ?2", nativeQuery = true)
-    List<Ride> findByPassengersIdAndStatus(Long passenger_id, Integer status);
+    Optional<List<Ride>> findByPassengersIdAndStatus(Long passenger_id, Integer status);
 
     @Query(value = "select * from ride where driver_id = ?1 and status = ?2", nativeQuery = true)
-    List<Ride> findByDriverIdAndStatus(Long driver_id, Integer status);
+    Optional<List<Ride>> findByDriverIdAndStatus(Long driver_id, Integer status);
 
     Long countByPassengersId(Long passengerId);
 

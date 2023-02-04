@@ -35,4 +35,9 @@ public class Document {
         this.driver = driver;
     }
 
+    public Document(DriverDocumentChangeRequest driverDocumentChangeRequest, Driver driver) {
+        this.driver = driver;
+        this.picture = driverDocumentChangeRequest.getDocumentImage();
+        this.name = driverDocumentChangeRequest.getDocumentName();
+    }
 }
