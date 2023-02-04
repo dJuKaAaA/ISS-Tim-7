@@ -4,7 +4,6 @@ import com.tim7.iss.tim7iss.dto.UserDto;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.*;
-import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -54,7 +53,11 @@ public class Tim7issApplication {
     @Autowired
     private VehicleTypeRepository vehicleTypeRepository;
     @Autowired
+    private UserActivationRepository userActivationRepository;
+
+    @Autowired
     private DocumentRepository documentRepository;
+
     @Autowired
     private FavoriteLocationRepository favoriteLocationRepository;
 
@@ -74,8 +77,8 @@ public class Tim7issApplication {
 //        return this::testDataDjukanovic;
 //        return this::testDataMartic;
 //        return this::testDataStanojlovic;
-        return this::generateTestDataInDataBase;
-//        return this::projectDefenceTestData;
+//        return this::generateTestDataInDataBase;
+        return this::projectDefenceTestData;
     }
 
     private void testDataDjukanovic() throws IOException {
@@ -310,6 +313,26 @@ public class Tim7issApplication {
         // id = 7
         Ride rideForDriverAtThatMomentTest = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.MAY, 19, 8, 1), null, route1.getEstimatedTimeInMinutes(), false, false, false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
 
+        // Ride for withdrawal id = 6
+        Ride rideForWithdrawal = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
+
+        //Ride for cancelation id = 7
+        Ride rideForCancelation = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
+
+        //Ride for acceptance id = 8
+        Ride rideForAcceptance = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
+
+        // id = 7
+        Driver driver2 = new Driver(new UserDto(null, "Pera", "Peric", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "pera@email.com", "Perina adresa", "$2a$12$4z3y3x45WYUdy98AhcW5Vee6UmIAClGcs61e1yJZpwpaobzkm5asa"));
+        driver2.setRoles(List.of(driverRole));
+        driver2.setEnabled(true);
+        driver2.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, vehicleType, driver2, new Location(null, "Fakultet tehnickih nauka Univerziteta u Novom Sadu, Trg Dositeja Obradovica, Novi Sad", 45.24648813f, 19.8516641f)));
+        driver2.setWorkHours(Set.of(new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 19, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 19, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 20, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 20, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 21, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 21, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 22, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 22, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 23, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 23, 16, 0))));
+        driverRepository.save(driver2);
+
+        //Driver2 acive ride id = 9
+        Ride driver2ActiveRide = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACTIVE, driver2, driver2.getVehicle().getVehicleType(), Set.of(passenger2), null, List.of(route1.clone())));
+
         // Favorite location
         // id = 1
         FavoriteLocation favoriteLocation = new FavoriteLocation();
@@ -330,7 +353,6 @@ public class Tim7issApplication {
         document.setName("Licna karta");
         document.setDriver(driver);
         documentRepository.save(document);
-
 
     }
 
@@ -450,6 +472,7 @@ public class Tim7issApplication {
         passenger12.setRoles(List.of(passengerRole));
         passenger12.setEnabled(true);
         passengerRepository.save(passenger12);
+
 
         List<Passenger> passengers = List.of(passenger1, passenger2, passenger3, passenger4, passenger5, passenger6, passenger7, passenger8, passenger9, passenger10, passenger11, passenger12);
         //

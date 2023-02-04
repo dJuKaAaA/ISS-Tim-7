@@ -54,7 +54,7 @@ public class RideController {
 
     @PostMapping
     @PreAuthorize("hasRole('PASSENGER')")
-    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException {
+    public ResponseEntity<RideDto> scheduleRide(@Valid @RequestBody RideCreationDto rideCreationDto) throws SchedulingRideAtInvalidDateException, DriverNotFoundException, RideAlreadyPendingException, RideNotFoundException {
         RideDto ride = rideService.scheduleRide(rideCreationDto);
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
@@ -84,7 +84,7 @@ public class RideController {
     }
 
     @GetMapping(value = "/passenger/{id}/favorites")
-    public ResponseEntity<List<FavoriteLocationDto>> getFavoriteLocationsByPassengerId(@PathVariable Long id) {
+    public ResponseEntity<List<FavoriteLocationDto>> getFavoriteLocationsByPassengerId(@PathVariable Long id) throws UserNotFoundException {
         List<FavoriteLocationDto> favoriteLocationsDto = rideService.getFavoriteLocationsByPassengerId(id);
         return new ResponseEntity<>(favoriteLocationsDto, HttpStatus.OK);
     }
@@ -97,7 +97,7 @@ public class RideController {
         return new ResponseEntity("Successful deletion of favorite location!", HttpStatus.NO_CONTENT);
     }
 
-
+    //Milos
     @GetMapping(value = "/driver/{driverId}/active")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     public ResponseEntity<RideDto> getDriversActiveRide(@PathVariable Long driverId) throws UserNotFoundException, RideNotFoundException {
@@ -121,6 +121,7 @@ public class RideController {
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
 
+    //Milos
     @PutMapping(value = "/{id}/withdraw")
     @PreAuthorize("hasRole('PASSENGER')")
     public ResponseEntity<RideDto> cancelRideById(@PathVariable Long id) throws RideNotFoundException, RideCancelationException {
@@ -128,6 +129,7 @@ public class RideController {
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
 
+    //Milos
     @PutMapping(value = "/{rideId}/panic")
     @PreAuthorize("hasAnyRole('PASSENGER','DRIVER')")
     public ResponseEntity<PanicDetailsDto> creatingPanicProcedure(@RequestBody PanicCreateDto reason, @PathVariable Long rideId, @RequestHeader("Authorization") String authHeader) throws RideNotFoundException, UserNotFoundException {
@@ -159,6 +161,7 @@ public class RideController {
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
 
+    //Milos
     @PutMapping(value = "{id}/cancel")
     @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<RideDto> rejectRide(@PathVariable Long id, @Valid @RequestBody PanicCreateDto rideReject, @RequestHeader("Authorization") String authHeader) throws RideNotFoundException, RideCancelationException, DriverNotFoundException {
@@ -168,6 +171,7 @@ public class RideController {
         return new ResponseEntity<>(ride, HttpStatus.OK);
     }
 
+    //Milos
     @PreAuthorize("hasRole('DRIVER')")
     @PutMapping("/{id}/start")
     public ResponseEntity<RideDto> startRide(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) throws RideNotFoundException, RideCancelationException, DriverNotFoundException {

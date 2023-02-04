@@ -46,6 +46,20 @@ public class RideService {
         return rideRepository.findRidesByPassengersId(id);
     }
 
+
+    public List<Ride> findByPassengerIdAndStatus(Long id, Integer status) throws RideNotFoundException {
+        List<Ride> rides = rideRepository.findByPassengersIdAndStatus(id, status);
+        if (rides.size() == 0) {
+            throw new RideNotFoundException();
+        }
+        return rides;
+    }
+
+    public Ride findById(Long id) {
+        return rideRepository.findById(id).orElse(null);
+    }
+
+
     public Ride driverRideAtMoment(Long driverId, LocalDateTime moment) {
         List<Ride> rides = rideRepository.findByDriverId(driverId);
         rides = rides.stream().filter((Ride ride) -> {
@@ -61,7 +75,7 @@ public class RideService {
         return rides.size() == 0 ? null : rides.get(0);
     }
 
-    public boolean AnyRidesArePending(List<UserRefDto> passengers) {
+    public boolean AnyRidesArePending(List<UserRefDto> passengers)  {
         for (UserRefDto passenger : passengers) {
             List<Ride> rides = rideRepository.findByPassengersIdAndStatus(passenger.getId(), Enums.RideStatus.PENDING.ordinal());
             if (rides.size() != 0) return true;
@@ -70,7 +84,7 @@ public class RideService {
     }
 
 
-    public boolean checkIfMoreThan9FavoriteLocations(Long id) {
+    public boolean checkIfMoreThan9FavoriteLocations(Long id) throws UserNotFoundException {
         List<FavoriteLocation> locations = favoriteLocationService.findByPassengerId(id);
         return locations.size() > 9;
     }
@@ -81,9 +95,9 @@ public class RideService {
         if (checkIfMoreThan9FavoriteLocations(passengerThatSubmitted.getId())) {
             throw new TooManyFavoriteRidesException();
         }
-        Set<Passenger> passengers = new HashSet<>();
-        addPassengerFromFavoriteLocation(passengers, favoriteLocationDto);
+        Set<Passenger> passengers = addPassengerFromFavoriteLocation(favoriteLocationDto);
         VehicleType vehicleType = vehicleTypeRepository.findByName(favoriteLocationDto.getVehicleType()).orElse(null);
+
         FavoriteLocation favoriteLocation = new FavoriteLocation(favoriteLocationDto, passengers, vehicleType, passengerThatSubmitted);
         favoriteLocationService.save(favoriteLocation);
         return new FavoriteLocationDto(favoriteLocation);
@@ -98,15 +112,15 @@ public class RideService {
         return favoriteLocationsDto;
     }
 
-    // nemoj testirati
+    //Milos
     public FavoriteLocationDto getFavoriteLocationById(Long id) throws FavoriteLocationNotFoundException {
         FavoriteLocation favoriteLocation = favoriteLocationService.findById(id);
         if (favoriteLocation == null) throw new FavoriteLocationNotFoundException();
         return new FavoriteLocationDto(favoriteLocation);
     }
 
-    // nemoj testirati
-    public List<FavoriteLocationDto> getFavoriteLocationsByPassengerId(Long id) {
+    //Milos
+    public List<FavoriteLocationDto> getFavoriteLocationsByPassengerId(Long id) throws UserNotFoundException {
         List<FavoriteLocation> favoriteLocations = favoriteLocationService.findByPassengerId(id);
         List<FavoriteLocationDto> favoriteLocationsDto = new ArrayList<>();
         for (FavoriteLocation favoriteLocation : favoriteLocations) {
@@ -115,29 +129,31 @@ public class RideService {
         return favoriteLocationsDto;
     }
 
-    // nemoj testirati
+    //Milos
     public void deleteFavoriteLocation(Long id) throws FavoriteLocationNotFoundException {
         if (favoriteLocationService.findById(id) == null) throw new FavoriteLocationNotFoundException();
         favoriteLocationService.delete(id);
     }
 
-    // nemoj testirati
+    //Milos
     public List<RideDto> getDriversActiveRide(Long driverId) throws UserNotFoundException, RideNotFoundException {
         driverService.getById(driverId).orElseThrow(() -> new UserNotFoundException("Driver not found"));
-        List<RideDto> rides = rideRepository.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACTIVE.ordinal()).stream().map(RideDto::new).toList();
-        if (rides.size() == 0) {
+        List<Ride> rides = rideRepository.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACTIVE.ordinal());
+        List<RideDto> rideDtos = rides.stream().map(RideDto::new).toList();
+        if (rideDtos.size() == 0) {
             throw new RideNotFoundException("Active ride does not exist!");
         }
-        return rides;
+        return rideDtos;
     }
 
-    // nemoj testirati
+    //Milos
     public List<RideDto> getPassengersActiveRide(Long passengerId) throws RideNotFoundException {
-        List<RideDto> rides = rideRepository.findByPassengersIdAndStatus(passengerId, Enums.RideStatus.ACTIVE.ordinal()).stream().map(RideDto::new).toList();
-        if (rides.size() == 0) {
+        List<Ride> rides = rideRepository.findByPassengersIdAndStatus(passengerId, Enums.RideStatus.ACTIVE.ordinal());
+        List<RideDto> rideDtos = rides.stream().map(RideDto::new).toList();
+        if (rideDtos.size() == 0) {
             throw new RideNotFoundException("Active ride does not exist!");
         }
-        return rides;
+        return rideDtos;
     }
 
     // nemoj testirati
@@ -146,7 +162,8 @@ public class RideService {
         return new RideDto(ride);
     }
 
-    // nemoj testirati
+
+    //Milos
     public RideDto cancelRideById(Long id) throws RideNotFoundException, RideCancelationException {
         Ride ride = rideRepository.findById(id).orElseThrow(RideNotFoundException::new);
         if (ride.getStatus() != Enums.RideStatus.PENDING && ride.getStatus() != Enums.RideStatus.ACTIVE)
@@ -156,7 +173,8 @@ public class RideService {
         return new RideDto(ride);
     }
 
-    // nemoj testirati
+
+    //Milos
     public PanicDetailsDto creatingPanicProcedure(UserService userService, PanicService panicService, String userEmail, Long rideId, PanicCreateDto reason) throws UserNotFoundException, RideNotFoundException {
         User user = userService.findByEmailAddress(userEmail).orElseThrow(UserNotFoundException::new);
         Ride ride = rideRepository.findById(rideId).orElseThrow(RideNotFoundException::new);
@@ -165,7 +183,8 @@ public class RideService {
         return new PanicDetailsDto(panic);
     }
 
-    // nemoj testirati
+
+    //Milos
     public RideDto acceptRide(Long id, String userEmail) throws RideNotFoundException, RideCancelationException, DriverNotFoundException {
         Ride ride = rideRepository.findById(id).orElseThrow(RideNotFoundException::new);
         User driver = driverService.getByEmailAddress(userEmail).orElseThrow(DriverNotFoundException::new);
@@ -176,7 +195,7 @@ public class RideService {
             throw new RideCancelationException("Cannot accept a ride that is not in status PENDING!");
 
         ride.setStatus(Enums.RideStatus.ACCEPTED);
-        save(ride);
+        rideRepository.save(ride);
         return new RideDto(ride);
     }
 
@@ -239,7 +258,9 @@ public class RideService {
 
 
     public RideDto scheduleRide(RideCreationDto rideCreationDto) throws RideAlreadyPendingException, SchedulingRideAtInvalidDateException, DriverNotFoundException {
-        if (AnyRidesArePending(rideCreationDto.getPassengers())) throw new RideAlreadyPendingException();
+        if (AnyRidesArePending(rideCreationDto.getPassengers())) {
+            throw new RideAlreadyPendingException();
+        }
         // driver that doesn't have an active ride at the moment
         Driver availablePotentialDriver = null;
         Integer distanceFromStartLocationAvailableDriver = null;
@@ -375,12 +396,16 @@ public class RideService {
         return new RideDto(rideToSchedule);
     }
 
-    // Testirano
-    private void addPassengerFromFavoriteLocation(Set<Passenger> passengers, FavoriteLocationDto favoriteLocationDto) throws UserNotFoundException {
+    //Milos
+    public Set<Passenger> addPassengerFromFavoriteLocation(FavoriteLocationDto favoriteLocationDto) throws UserNotFoundException {
+        if(favoriteLocationDto == null)
+            return new HashSet<>();
+        Set<Passenger>passengers = new HashSet<>();
         for (UserRefDto pass : favoriteLocationDto.getPassengers()) {
             Passenger passenger = passengerRepository.findById(pass.getId()).orElseThrow(UserNotFoundException::new);
             passengers.add(passenger);
         }
+        return passengers;
     }
 
     // Testirano
@@ -443,16 +468,18 @@ public class RideService {
     public Collection<RideDto> getScheduledRidesForDriverAsDto(Long driverId) throws DriverNotFoundException {
         driverRepository.findById(driverId).orElseThrow(DriverNotFoundException::new);
 
-        Collection<RideDto> pendingRides = rideRepository.findByDriverIdAndStatus(driverId, Enums.RideStatus.PENDING.ordinal()).stream().map(RideDto::new).toList();
+        List<Ride> pendingRides = rideRepository.findByDriverIdAndStatus(driverId, Enums.RideStatus.PENDING.ordinal());
+        Collection<RideDto> pendingRidesDto = pendingRides.stream().map(RideDto::new).toList();
 
-        Collection<RideDto> acceptedRides = rideRepository.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACCEPTED.ordinal()).stream().map((Ride ride) -> {
+        List<Ride> acceptedRides = rideRepository.findByDriverIdAndStatus(driverId, Enums.RideStatus.ACCEPTED.ordinal());
+        Collection<RideDto> acceptedRidesDto = acceptedRides.stream().map((Ride ride) -> {
             ride.setRoutes(ride.getRoutes().stream().sorted(Comparator.comparing(Route::getId)).toList());
             return new RideDto(ride);
         }).toList();
 
         Collection<RideDto> rides = new ArrayList<>();
-        rides.addAll(pendingRides);
-        rides.addAll(acceptedRides);
+        rides.addAll(pendingRidesDto);
+        rides.addAll(acceptedRidesDto);
         return rides.stream().sorted(Comparator.comparing((RideDto ride) -> LocalDateTime.parse(ride.getStartTime(), Constants.customDateTimeFormat))).toList();
     }
 

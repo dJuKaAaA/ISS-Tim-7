@@ -2,8 +2,8 @@ package com.tim7.iss.tim7iss.services;
 
 import com.tim7.iss.tim7iss.dto.UserDto;
 import com.tim7.iss.tim7iss.exceptions.PassengerNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.Passenger;
-import com.tim7.iss.tim7iss.models.Vehicle;
 import com.tim7.iss.tim7iss.repositories.PassengerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PassengerService {
@@ -43,8 +42,8 @@ public class PassengerService {
     }
 
 
-    public Optional<Passenger> findByEmailAddress(String emailAddress) {
-        return passengerRepository.findByEmailAddress(emailAddress);
+    public Passenger findByEmailAddress(String emailAddress) throws UserNotFoundException {
+        return passengerRepository.findByEmailAddress(emailAddress).orElseThrow(UserNotFoundException::new);
     }
 
     public ResponseEntity<UserDto> getPassengerByEmail(String email) throws PassengerNotFoundException {

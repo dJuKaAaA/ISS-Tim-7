@@ -41,10 +41,12 @@ public class PassengerController {
     private RoleService roleService;
 
     @PostMapping
-    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto passengerRequestDto) throws EmailAlreadyExistsException {
-        Optional p = passengerService.findByEmailAddress(passengerRequestDto.getEmail());
-        if(!p.isEmpty()){
+    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto passengerRequestDto) throws EmailAlreadyExistsException, UserNotFoundException {
+        try {
+            passengerService.findByEmailAddress(passengerRequestDto.getEmail());
             throw new EmailAlreadyExistsException();
+        }
+        catch (UserNotFoundException ex){
         }
         Passenger passenger = new Passenger(passengerRequestDto);
         String encodedPassword = bCryptPasswordEncoder.encode(passengerRequestDto.getPassword());
@@ -137,7 +139,7 @@ public class PassengerController {
 
     @PostMapping("/by-email")
     public ResponseEntity<UserRefDto> fetchPassengerByEmail(@Valid @RequestBody UserRefDto passenger) throws UserNotFoundException {
-        Passenger passengerByEmail = passengerService.findByEmailAddress(passenger.getEmail()).orElseThrow(() -> new UserNotFoundException("Passenger not found"));
+        Passenger passengerByEmail = passengerService.findByEmailAddress(passenger.getEmail());
         return new ResponseEntity<>(new UserRefDto(passengerByEmail), HttpStatus.OK);
     }
 

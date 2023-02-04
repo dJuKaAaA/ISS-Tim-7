@@ -1,6 +1,10 @@
 package com.tim7.iss.tim7iss.models;
 
+import com.tim7.iss.tim7iss.dto.DriverChangeDocumentRequestDto;
 import com.tim7.iss.tim7iss.dto.UserDto;
+import com.tim7.iss.tim7iss.repositories.DocumentRepository;
+import com.tim7.iss.tim7iss.repositories.DriverDocumentRequestRepository;
+import com.tim7.iss.tim7iss.services.RequestService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -50,4 +54,27 @@ public class Driver extends User {
         this.setBlocked(false);
     }
 
+    public void setData(DriverProfileChangeRequest driverProfileChangeRequest, DocumentRepository documentRepository) {
+        this.setFirstName(driverProfileChangeRequest.getFirstName());
+        this.setLastName(driverProfileChangeRequest.getLastName());
+        this.setProfilePicture(driverProfileChangeRequest.getProfilePicture());
+        this.setPhoneNumber(driverProfileChangeRequest.getPhoneNumber());
+        this.setEmailAddress(driverProfileChangeRequest.getEmail());
+        this.setAddress(driverProfileChangeRequest.getAddress());
+        this.documents = new HashSet<>();
+        for(DriverDocumentChangeRequest driverDocumentChangeRequest: driverProfileChangeRequest.getDriverDocumentChangeRequests()){
+            if(driverDocumentChangeRequest.getDocument() != null){
+                driverDocumentChangeRequest.getDocument().setName(driverDocumentChangeRequest.getDocumentName());
+                driverDocumentChangeRequest.getDocument().setPicture(driverDocumentChangeRequest.getDocumentImage());
+                documentRepository.save(driverDocumentChangeRequest.getDocument());
+            }
+            else {
+                Document document = new Document(driverDocumentChangeRequest, this);
+                documents.add(document);
+                documentRepository.save(document);
+            }
+        }
+        this.setActive(false);
+        this.setBlocked(false);
+    }
 }

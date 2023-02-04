@@ -1,5 +1,7 @@
 package com.tim7.iss.tim7iss;
 
+import com.tim7.iss.tim7iss.exceptions.RideNotFoundException;
+import com.tim7.iss.tim7iss.exceptions.UserNotFoundException;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.DriverRepository;
 import com.tim7.iss.tim7iss.repositories.PassengerRepository;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -127,6 +130,34 @@ public class RideRepositoryTests {
     public void findByPassengersIdAndStatus_ShouldNotFindAnyRide() {
         List<Ride> rides = rideRepository.findByPassengersIdAndStatus(7L, Enums.RideStatus.ACCEPTED.ordinal());
         assertEquals(0, rides.size());
+    }
+
+    @Test
+    public void updateRide_happyFlow() throws RideNotFoundException {
+        Ride ride = rideRepository.findById(1L).orElseThrow(RideNotFoundException::new);
+
+        ride.setPrice(3000);
+
+        assertEquals(rideRepository.save(ride).getPrice(), 3000);
+    }
+
+    @Test
+    public void findRidesByPassengerId_passengerNotFound(){
+        assertEquals(0, rideRepository.findRidesByPassengersId(4231L).size());
+    }
+
+    @Test
+    public void findRidesByPassengerId_passengerHasNoRides() throws IOException, UserNotFoundException {
+        Long passengerIdWithNoRides = passengerRepository.findById(6L).orElseThrow(UserNotFoundException::new).getId();
+
+        assertEquals(0, rideRepository.findRidesByPassengersId(passengerIdWithNoRides).size());
+    }
+
+    @Test
+    public void findRidesByPassengerId_happyCase() throws UserNotFoundException {
+        Long passengerIdWithNoRides = passengerRepository.findById(4L).orElseThrow(UserNotFoundException::new).getId();
+
+        assertEquals(3, rideRepository.findRidesByPassengersId(passengerIdWithNoRides).size());
     }
 
 
