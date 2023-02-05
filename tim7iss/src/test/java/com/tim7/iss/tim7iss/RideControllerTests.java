@@ -1,21 +1,28 @@
 package com.tim7.iss.tim7iss;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.global.Constants;
 import com.tim7.iss.tim7iss.models.*;
 import com.tim7.iss.tim7iss.repositories.DriverDocumentRequestRepository;
 import com.tim7.iss.tim7iss.repositories.DriverRequestRepository;
+import com.tim7.iss.tim7iss.repositories.PassengerRepository;
+import com.tim7.iss.tim7iss.repositories.RideRepository;
 import com.tim7.iss.tim7iss.util.TokenUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockReset;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,7 +33,11 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
@@ -44,6 +55,11 @@ public class RideControllerTests {
 
     @Autowired
     DriverDocumentRequestRepository driverDocumentRequestRepository;
+
+    @Autowired
+    private PassengerRepository passengerRepository;
+    @Autowired
+    private RideRepository rideRepository;
 
     @Autowired
     DriverRequestRepository driverRequestRepository;
@@ -374,6 +390,531 @@ public class RideControllerTests {
     }
 
     @Test
+    public void scheduleRide_ShouldThrow401Error() throws Exception {
+        String pathUrl = "/api/ride";
+        mockMvc.perform(post(pathUrl)).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void scheduleRide_ShouldThrow403Error() throws Exception {
+        LocationForRideDto location = new LocationForRideDto(
+                new GeoCoordinateDto("", 45f, 20f),
+                new GeoCoordinateDto("", 43f, 21f),
+                8000,
+                10
+        );
+        Passenger passenger = customTestData.getPassenger1();
+        RideCreationDto rideCreationDto = new RideCreationDto(
+                LocalDateTime.now().plusMinutes(6).format(Constants.customDateTimeFormat),
+                List.of(location),
+                List.of(new UserRefDto(passenger)),
+                "STANDARD",
+                false,
+                false
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(rideCreationDto);
+
+        String pathUrl = "/api/ride";
+        mockMvc.perform(post(pathUrl)
+                .header("Authorization", "Bearer " + customTestData.driverToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void scheduleRide_ShouldSuccessfullyScheduleRide() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        LocationForRideDto location = new LocationForRideDto(
+                new GeoCoordinateDto("", 45f, 20f),
+                new GeoCoordinateDto("", 43f, 21f),
+                8000,
+                10
+        );
+        Passenger passenger = passengerRepository.findById(7L).get();
+        RideCreationDto rideCreationDto = new RideCreationDto(
+                LocalDateTime.now().plusMinutes(6).format(Constants.customDateTimeFormat),
+                List.of(location),
+                List.of(new UserRefDto(passenger)),
+                "STANDARD",
+                false,
+                false
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(rideCreationDto);
+
+        String pathUrl = "/api/ride";
+        mockMvc.perform(post(pathUrl)
+                .header("Authorization", "Bearer " + jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson)).andExpect(status().isOk());
+    }
+
+    @Test
+    public void scheduleRide_ShouldThrowBadRequestIfEntireRequestBodyIsInvalid() throws Exception {
+        RideCreationDto rideCreationDto = new RideCreationDto(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(rideCreationDto);
+
+        String pathUrl = "/api/ride";
+        mockMvc.perform(post(pathUrl)
+                .header("Authorization", "Bearer " + customTestData.driverToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void scheduleRide_ShouldThrowBadRequestIfDateFormatIsBad() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        LocationForRideDto location = new LocationForRideDto(
+                new GeoCoordinateDto("", 45f, 20f),
+                new GeoCoordinateDto("", 43f, 21f),
+                8000,
+                10
+        );
+        Passenger passenger = passengerRepository.findById(7L).get();
+        RideCreationDto rideCreationDto = new RideCreationDto(
+                "dsijnodfgsijodfgshiodfgs",
+                List.of(location),
+                List.of(new UserRefDto(passenger)),
+                "STANDARD",
+                false,
+                false
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(rideCreationDto);
+
+        String pathUrl = "/api/ride";
+        mockMvc.perform(post(pathUrl)
+                .header("Authorization", "Bearer " + jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void scheduleRide_ShouldThrowBadRequestIfLocationsIsEmpty() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        Passenger passenger = passengerRepository.findById(7L).get();
+        RideCreationDto rideCreationDto = new RideCreationDto(
+                LocalDateTime.now().plusMinutes(6).format(Constants.customDateTimeFormat),
+                new ArrayList<>(),
+                List.of(new UserRefDto(passenger)),
+                "STANDARD",
+                false,
+                false
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(rideCreationDto);
+
+        String pathUrl = "/api/ride";
+        mockMvc.perform(post(pathUrl)
+                .header("Authorization", "Bearer " + jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void scheduleRide_ShouldThrowBadRequestIfPassengersIsEmpty() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        LocationForRideDto location = new LocationForRideDto(
+                new GeoCoordinateDto("", 45f, 20f),
+                new GeoCoordinateDto("", 43f, 21f),
+                8000,
+                10
+        );
+        RideCreationDto rideCreationDto = new RideCreationDto(
+                LocalDateTime.now().plusMinutes(6).format(Constants.customDateTimeFormat),
+                List.of(location),
+                new ArrayList<>(),
+                "STANDARD",
+                false,
+                false
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(rideCreationDto);
+
+        String pathUrl = "/api/ride";
+        mockMvc.perform(post(pathUrl)
+                .header("Authorization", "Bearer " + jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void scheduleRide_ShouldThrowBadRequestIfVehicleTypeIsNull() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        LocationForRideDto location = new LocationForRideDto(
+                new GeoCoordinateDto("", 45f, 20f),
+                new GeoCoordinateDto("", 43f, 21f),
+                8000,
+                10
+        );
+        Passenger passenger = passengerRepository.findById(7L).get();
+        RideCreationDto rideCreationDto = new RideCreationDto(
+                LocalDateTime.now().plusMinutes(6).format(Constants.customDateTimeFormat),
+                List.of(location),
+                List.of(new UserRefDto(passenger)),
+                null,
+                false,
+                false
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(rideCreationDto);
+
+        String pathUrl = "/api/ride";
+        mockMvc.perform(post(pathUrl)
+                .header("Authorization", "Bearer " + jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void scheduleRide_ShouldThrowBadRequestIfVehicleTypeIsNotRecognized() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        LocationForRideDto location = new LocationForRideDto(
+                new GeoCoordinateDto("", 45f, 20f),
+                new GeoCoordinateDto("", 43f, 21f),
+                8000,
+                10
+        );
+        Passenger passenger = passengerRepository.findById(7L).get();
+        RideCreationDto rideCreationDto = new RideCreationDto(
+                LocalDateTime.now().plusMinutes(6).format(Constants.customDateTimeFormat),
+                List.of(location),
+                List.of(new UserRefDto(passenger)),
+                "ULTRA_MEGA_SUPER_DUPER",
+                false,
+                false
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(rideCreationDto);
+
+        String pathUrl = "/api/ride";
+        mockMvc.perform(post(pathUrl)
+                .header("Authorization", "Bearer " + jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createFavoriteLocation_ShouldThrow401Error() throws Exception {
+        String pathUrl = "/api/ride/favorites";
+        mockMvc.perform(post(pathUrl)).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void createFavoriteLocation_ShouldThrow403Error() throws Exception {
+        RouteDto route = new RouteDto(
+                new GeoCoordinateDto("", 45f, 20f),
+                new GeoCoordinateDto("", 43f, 21f)
+        );
+        Passenger passenger = passengerRepository.findById(7L).get();
+        FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(
+                null,
+                "Home to University",
+                Set.of(route),
+                Set.of(new UserRefDto(passenger)),
+                "STANDARD",
+                false,
+                false,
+                LocalDateTime.now().plusMinutes(6).format(Constants.customDateTimeFormat)
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(favoriteLocationDto);
+
+        String pathUrl = "/api/ride/favorites";
+        mockMvc.perform(post(pathUrl)
+                .header("Authorization", "Bearer " + customTestData.driverToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void createFavoriteLocation_ShouldCreateFavoriteLocation() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        RouteDto route = new RouteDto(
+                new GeoCoordinateDto("", 45f, 20f),
+                new GeoCoordinateDto("", 43f, 21f)
+        );
+        Passenger passenger = passengerRepository.findById(7L).get();
+        FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(
+                null,
+                "Home to University",
+                Set.of(route),
+                Set.of(new UserRefDto(passenger)),
+                "STANDARD",
+                false,
+                false,
+                LocalDateTime.now().plusMinutes(6).format(Constants.customDateTimeFormat)
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(favoriteLocationDto);
+
+        String pathUrl = "/api/ride/favorites";
+        mockMvc.perform(post(pathUrl)
+                        .header("Authorization", "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void createFavoriteLocation_ShouldThrowBadRequestIfRequestBodyIsInvalid() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                false,
+                null
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(favoriteLocationDto);
+
+        String pathUrl = "/api/ride/favorites";
+        mockMvc.perform(post(pathUrl)
+                        .header("Authorization", "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createFavoriteLocation_ShouldThrowBadRequestIfFavoriteNameIsEmpty() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        RouteDto route = new RouteDto(
+                new GeoCoordinateDto("", 45f, 20f),
+                new GeoCoordinateDto("", 43f, 21f)
+        );
+        Passenger passenger = passengerRepository.findById(7L).get();
+        FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(
+                null,
+                "",
+                Set.of(route),
+                Set.of(new UserRefDto(passenger)),
+                "STANDARD",
+                false,
+                false,
+                LocalDateTime.now().plusMinutes(6).format(Constants.customDateTimeFormat)
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(favoriteLocationDto);
+
+        String pathUrl = "/api/ride/favorites";
+        mockMvc.perform(post(pathUrl)
+                        .header("Authorization", "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createFavoriteLocation_ShouldThrowBadRequestIfLocationsAreEmpty() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        Passenger passenger = passengerRepository.findById(7L).get();
+        FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(
+                null,
+                "Home to University",
+                new HashSet<>(),
+                Set.of(new UserRefDto(passenger)),
+                "STANDARD",
+                false,
+                false,
+                LocalDateTime.now().plusMinutes(6).format(Constants.customDateTimeFormat)
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(favoriteLocationDto);
+
+        String pathUrl = "/api/ride/favorites";
+        mockMvc.perform(post(pathUrl)
+                        .header("Authorization", "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createFavoriteLocation_ShouldThrowBadRequestIfPassengersAreEmpty() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        RouteDto route = new RouteDto(
+                new GeoCoordinateDto("", 45f, 20f),
+                new GeoCoordinateDto("", 43f, 21f)
+        );
+        FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(
+                null,
+                "Home to University",
+                Set.of(route),
+                new HashSet<>(),
+                "STANDARD",
+                false,
+                false,
+                LocalDateTime.now().plusMinutes(6).format(Constants.customDateTimeFormat)
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(favoriteLocationDto);
+
+        String pathUrl = "/api/ride/favorites";
+        mockMvc.perform(post(pathUrl)
+                        .header("Authorization", "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createFavoriteLocation_ShouldThrowBadRequestIfVehicleTypeIsNull() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        RouteDto route = new RouteDto(
+                new GeoCoordinateDto("", 45f, 20f),
+                new GeoCoordinateDto("", 43f, 21f)
+        );
+        Passenger passenger = passengerRepository.findById(7L).get();
+        FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(
+                null,
+                "Home to University",
+                Set.of(route),
+                Set.of(new UserRefDto(passenger)),
+                null,
+                false,
+                false,
+                LocalDateTime.now().plusMinutes(6).format(Constants.customDateTimeFormat)
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(favoriteLocationDto);
+
+        String pathUrl = "/api/ride/favorites";
+        mockMvc.perform(post(pathUrl)
+                        .header("Authorization", "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createFavoriteLocation_ShouldThrowBadRequestIfVehicleTypeIsNotRecognized() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        RouteDto route = new RouteDto(
+                new GeoCoordinateDto("", 45f, 20f),
+                new GeoCoordinateDto("", 43f, 21f)
+        );
+        Passenger passenger = passengerRepository.findById(7L).get();
+        FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(
+                null,
+                "Home to University",
+                Set.of(route),
+                Set.of(new UserRefDto(passenger)),
+                "ULTRA_MEGA_SUPER_DUPER",
+                false,
+                false,
+                LocalDateTime.now().plusMinutes(6).format(Constants.customDateTimeFormat)
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(favoriteLocationDto);
+
+        String pathUrl = "/api/ride/favorites";
+        mockMvc.perform(post(pathUrl)
+                        .header("Authorization", "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getPassengersActiveRide_ShouldThrow401Error() throws Exception {
+        String urlPath = "/api/ride/passenger/7/active";
+        mockMvc.perform(get(urlPath)).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void getPassengersActiveRide_ShouldThrow403Error() throws Exception {
+        String urlPath = "/api/ride/passenger/7/active";
+        mockMvc.perform(get(urlPath).header("Authorization", "Bearer " + customTestData.driverToken)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getPassengersActiveRide_ShouldThrowUserNotFoundExceptionIfUserDoesNotExist() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        Long nonExistentId = 23456789234568245L;
+        String urlPath = "/api/ride/passenger/" + nonExistentId + "/active";
+        mockMvc.perform(get(urlPath).header("Authorization", "Bearer " + jwt)).andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    public void getPassengersActiveRide_ShouldThrowRideNotFoundExceptionIfPassengerHasNoActiveRides() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        String urlPath = "/api/ride/passenger/7/active";
+        mockMvc.perform(get(urlPath).header("Authorization", "Bearer " + jwt)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getPassengersActiveRide_ShouldFetchActiveRideForPassenger() throws Exception {
+        String jwt = login("neko.nekic@email.com", "Jovan123");
+
+        Passenger passenger = passengerRepository.findById(7L).get();
+        rideRepository.save(new Ride(null, 1000, LocalDateTime.now(), null, 10, false, false, false, Enums.RideStatus.ACTIVE, customTestData.getDriver(), customTestData.getVehicleType(), Set.of(passenger), null, null));
+        String urlPath = "/api/ride/passenger/" + passenger.getId() + "/active";
+        mockMvc.perform(get(urlPath).header("Authorization", "Bearer " + jwt)).andExpect(status().isOk());
+    }
+
     public void startRide_forbiden() throws Exception {
         Ride ride = customTestData.getRideForAcceptance();
         String url = "/api/ride/"+ ride.getId() + "/start";

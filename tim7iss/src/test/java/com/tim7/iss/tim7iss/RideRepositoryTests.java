@@ -41,7 +41,7 @@ public class RideRepositoryTests {
     public void findRidesByDriverId_shouldReturnListOfRidesForGivenDriverId() throws IOException {
         Long driverId = customTestData.getDriver().getId();
         int numberOfExpectedRides = 5;
-        List<Ride> rides = rideRepository.findRidesByDriverId(driverId);
+        List<Ride> rides = rideRepository.findByDriverId(driverId);
         assertEquals(numberOfExpectedRides, rides.size());
 
         for (Ride ride : rides) {
@@ -55,14 +55,14 @@ public class RideRepositoryTests {
     public void findRidesByDriverId_shouldReturnEmptyListForGivenDriverId() throws IOException {
         Long driverIdWithNoRides = customTestData.getDriverWithNoRides().getId();
         int numberOfExpectedRides = 0;
-        List<Ride> rides = rideRepository.findRidesByDriverId(driverIdWithNoRides);
+        List<Ride> rides = rideRepository.findByDriverId(driverIdWithNoRides);
         assertEquals(numberOfExpectedRides, rides.size());
     }
 
     @Test
     public void findRidesByDriverId_shouldReturnEmptyListForNonExistingDriverId() {
         Long nonExistingDriverId = 123123L;
-        List<Ride> rides = rideRepository.findRidesByDriverId(nonExistingDriverId);
+        List<Ride> rides = rideRepository.findByDriverId(nonExistingDriverId);
         assertTrue(rides.isEmpty());
 
     }
@@ -114,6 +114,25 @@ public class RideRepositoryTests {
     }
 
     @Test
+    public void delete_ShouldDeleteRide() {
+        Ride ride = rideRepository.findById(6L).get();
+        rideRepository.delete(ride);
+        assertTrue(true);
+    }
+
+    @Test
+    public void findByPassengersIdAndStatus_ShouldFind() {
+        List<Ride> ride = rideRepository.findByPassengersIdAndStatus(3L, Enums.RideStatus.ACCEPTED.ordinal());
+        assertTrue(ride.size() > 0);
+    }
+
+    @Test
+    public void findByPassengersIdAndStatus_ShouldNotFindAnyRide() {
+        List<Ride> rides = rideRepository.findByPassengersIdAndStatus(7L, Enums.RideStatus.ACCEPTED.ordinal());
+        assertEquals(0, rides.size());
+    }
+
+    @Test
     public void updateRide_happyFlow() throws RideNotFoundException {
         Ride ride = rideRepository.findById(1L).orElseThrow(RideNotFoundException::new);
 
@@ -138,7 +157,7 @@ public class RideRepositoryTests {
     public void findRidesByPassengerId_happyCase() throws UserNotFoundException {
         Long passengerIdWithNoRides = passengerRepository.findById(4L).orElseThrow(UserNotFoundException::new).getId();
 
-        assertEquals(1, rideRepository.findRidesByPassengersId(passengerIdWithNoRides).size());
+        assertEquals(3, rideRepository.findRidesByPassengersId(passengerIdWithNoRides).size());
     }
 
 

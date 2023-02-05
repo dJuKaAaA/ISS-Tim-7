@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,11 +20,12 @@ public class FavoriteLocationDto {
     private Long id;
     @NotEmpty
     private String favoriteName;
-    @NotNull
+    @NotEmpty
     private Set<RouteDto> locations = new HashSet<>();
-    @NotNull
+    @NotEmpty
     private Set<UserRefDto> passengers = new HashSet<>();
     @NotNull
+    @Pattern(regexp = "^STANDARD|LUXURY|VAN$", message = "Invalid vehicle type... Must be STANDARD, LUXURY or VAN")
     private String vehicleType;
     @NotNull(message = "Baby transport must be provided")
     private boolean babyTransport;
