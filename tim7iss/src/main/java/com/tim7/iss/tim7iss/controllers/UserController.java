@@ -192,7 +192,7 @@ public class UserController {
 
     @GetMapping("api/user/{id}/messages")
     public ResponseEntity<List<MessageDto>> fetchLastMessages(@PathVariable Long id) {
-        List<Message> messages = messageRepository.findAllByLastMessagedSent(id);
+        List<Message> messages = messageRepository.findLastMessage(id);
         List<MessageDto> messageDtos = new ArrayList<>();
         for (Message message : messages) {
             messageDtos.add(new MessageDto(message));
