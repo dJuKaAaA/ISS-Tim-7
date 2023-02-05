@@ -48,10 +48,9 @@ public class UnregisteredUserPage {
         return !classValue.contains("ng-invalid");
     }
 
-    public boolean isPasswordValid(){
+    public boolean isPasswordValid() {
         String classValue = passwordInput.getAttribute("class");
         return !classValue.contains("ng-invalid");
     }
-
 
 }
