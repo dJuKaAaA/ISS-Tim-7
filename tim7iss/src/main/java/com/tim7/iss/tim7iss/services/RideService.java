@@ -41,7 +41,6 @@ public class RideService {
         rideRepository.save(ride);
     }
 
-
     public List<Ride> findRideByPassengerId(Long id) {
         return rideRepository.findRidesByPassengersId(id);
     }

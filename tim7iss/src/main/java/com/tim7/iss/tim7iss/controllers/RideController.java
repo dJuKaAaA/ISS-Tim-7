@@ -3,9 +3,12 @@ package com.tim7.iss.tim7iss.controllers;
 import com.tim7.iss.tim7iss.dto.*;
 import com.tim7.iss.tim7iss.exceptions.*;
 import com.tim7.iss.tim7iss.global.Constants;
+import com.tim7.iss.tim7iss.models.Ride;
+import com.tim7.iss.tim7iss.repositories.RideRepository;
 import com.tim7.iss.tim7iss.services.*;
 import com.tim7.iss.tim7iss.util.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -50,7 +53,6 @@ public class RideController {
 
     @Autowired
     private UserService userService;
-
 
     @PostMapping
     @PreAuthorize("hasRole('PASSENGER')")
@@ -258,6 +260,19 @@ public class RideController {
     public String sendNotification(@RequestBody String message) {
         this.simpMessagingTemplate.convertAndSend("/socket-send-notification", message);
         return message;
+    }
+
+
+    @Autowired
+    private RideRepository rideRepository;
+    @GetMapping("/everybody")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PaginatedResponseDto<RideDto>> getAllRides(Pageable pageable) {
+        List<RideDto> rides = rideRepository.findAll(pageable)
+                .stream()
+                .map(RideDto::new)
+                .toList();
+        return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);
     }
 
 }

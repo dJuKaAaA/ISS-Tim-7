@@ -26,4 +26,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     // vjerovatno bi trebalo da prima page, ali nemam vise zivaca iskr
     @Query(value = "select * from message where (sender_id = :senderId and receiver_id = :receiverId) or (sender_id = :receiverId and receiver_id = :senderId) order by sent_date asc;", nativeQuery = true)
     List<Message> findConversation(@Param("senderId") Long senderId, @Param("receiverId") Long receiverId);
+
+    @Query(value = "SELECT m.* FROM message m JOIN (SELECT LEAST(sender_id, receiver_id) AS user_id1, GREATEST(sender_id, receiver_id) AS user_id2, MAX(sent_date) AS max_sent_date FROM message GROUP BY LEAST(sender_id, receiver_id), GREATEST(sender_id, receiver_id)) m2 ON ((m.sender_id = m2.user_id1 AND m.receiver_id = m2.user_id2 and (m.receiver_id = ?1 or sender_id = ?1)) OR (m.sender_id = m2.user_id2 AND m.receiver_id = m2.user_id1) and (m.receiver_id = ?1 or sender_id = ?1)) AND m.sent_date = m2.max_sent_date;", nativeQuery = true)
+    List<Message> findLastMessage(Long id);
 }
