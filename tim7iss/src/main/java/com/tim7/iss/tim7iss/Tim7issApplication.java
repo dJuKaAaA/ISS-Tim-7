@@ -77,8 +77,8 @@ public class Tim7issApplication {
 //        return this::testDataDjukanovic;
 //        return this::testDataMartic;
 //        return this::testDataStanojlovic;
-//        return this::generateTestDataInDataBase;
-        return this::projectDefenceTestData;
+        return this::generateTestDataInDataBase;
+//        return this::projectDefenceTestData;
     }
 
     private void testDataDjukanovic() throws IOException {
@@ -209,6 +209,7 @@ public class Tim7issApplication {
         // vehicle type creation
         // id = 1
         VehicleType vehicleType = vehicleTypeRepository.save(new VehicleType(null, 100, "STANDARD"));
+        VehicleType vehicleTypeLuxury = vehicleTypeRepository.save(new VehicleType(null, 300, "LUXURY"));
 
         // role creation
         Role adminRole = roleRepository.save(new Role(null, "ROLE_ADMIN"));
@@ -299,7 +300,6 @@ public class Tim7issApplication {
         // PENDING id = 1
         Ride pendingRide = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1, passenger2), null, List.of(route1.clone())));
 
-
         // ACTIVE id = 2
         Ride activeRide = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACTIVE, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
 
@@ -361,6 +361,8 @@ public class Tim7issApplication {
         document.setDriver(driver);
         documentRepository.save(document);
 
+
+
         // schedule ride selenium tests
         // DO NOT TOUCH !!!
         Passenger passengerSeleniumTestImmediateSchedule = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "immediate.schedule.success@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
@@ -395,6 +397,11 @@ public class Tim7issApplication {
         passengerSeleniumTestSetFavoriteScheduling.setRoles(List.of(passengerRole));
         passengerSeleniumTestSetFavoriteScheduling.setEnabled(true);
         passengerRepository.save(passengerSeleniumTestSetFavoriteScheduling);
+        Passenger passengerSeleniumTestLuxuryVehicleTypeRequest = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "luxury.vehicle.type.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passengerSeleniumTestLuxuryVehicleTypeRequest.setRoles(List.of(passengerRole));
+        passengerSeleniumTestLuxuryVehicleTypeRequest.setEnabled(true);
+        passengerRepository.save(passengerSeleniumTestLuxuryVehicleTypeRequest);
+
     }
 
     private void projectDefenceTestData() throws IOException {
