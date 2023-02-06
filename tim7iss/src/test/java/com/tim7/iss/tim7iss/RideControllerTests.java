@@ -633,9 +633,11 @@ public class RideControllerTests {
 
     @Test
     public void createFavoriteLocation_ShouldThrow403Error() throws Exception {
-        RouteDto route = new RouteDto(
+        LocationForRideDto route = new LocationForRideDto(
                 new GeoCoordinateDto("", 45f, 20f),
-                new GeoCoordinateDto("", 43f, 21f)
+                new GeoCoordinateDto("", 43f, 21f),
+                8000,
+                10
         );
         Passenger passenger = passengerRepository.findById(7L).get();
         FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(
@@ -665,9 +667,11 @@ public class RideControllerTests {
     public void createFavoriteLocation_ShouldCreateFavoriteLocation() throws Exception {
         String jwt = login("neko.nekic@email.com", "Jovan123");
 
-        RouteDto route = new RouteDto(
+        LocationForRideDto route = new LocationForRideDto(
                 new GeoCoordinateDto("", 45f, 20f),
-                new GeoCoordinateDto("", 43f, 21f)
+                new GeoCoordinateDto("", 43f, 21f),
+                8000,
+                10
         );
         Passenger passenger = passengerRepository.findById(7L).get();
         FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(
@@ -724,9 +728,11 @@ public class RideControllerTests {
     public void createFavoriteLocation_ShouldThrowBadRequestIfFavoriteNameIsEmpty() throws Exception {
         String jwt = login("neko.nekic@email.com", "Jovan123");
 
-        RouteDto route = new RouteDto(
+        LocationForRideDto route = new LocationForRideDto(
                 new GeoCoordinateDto("", 45f, 20f),
-                new GeoCoordinateDto("", 43f, 21f)
+                new GeoCoordinateDto("", 43f, 21f),
+                8000,
+                10
         );
         Passenger passenger = passengerRepository.findById(7L).get();
         FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(
@@ -784,9 +790,11 @@ public class RideControllerTests {
     public void createFavoriteLocation_ShouldThrowBadRequestIfPassengersAreEmpty() throws Exception {
         String jwt = login("neko.nekic@email.com", "Jovan123");
 
-        RouteDto route = new RouteDto(
+        LocationForRideDto route = new LocationForRideDto(
                 new GeoCoordinateDto("", 45f, 20f),
-                new GeoCoordinateDto("", 43f, 21f)
+                new GeoCoordinateDto("", 43f, 21f),
+                8000,
+                10
         );
         FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(
                 null,
@@ -815,9 +823,11 @@ public class RideControllerTests {
     public void createFavoriteLocation_ShouldThrowBadRequestIfVehicleTypeIsNull() throws Exception {
         String jwt = login("neko.nekic@email.com", "Jovan123");
 
-        RouteDto route = new RouteDto(
+        LocationForRideDto route = new LocationForRideDto(
                 new GeoCoordinateDto("", 45f, 20f),
-                new GeoCoordinateDto("", 43f, 21f)
+                new GeoCoordinateDto("", 43f, 21f),
+                8000,
+                10
         );
         Passenger passenger = passengerRepository.findById(7L).get();
         FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(
@@ -847,9 +857,11 @@ public class RideControllerTests {
     public void createFavoriteLocation_ShouldThrowBadRequestIfVehicleTypeIsNotRecognized() throws Exception {
         String jwt = login("neko.nekic@email.com", "Jovan123");
 
-        RouteDto route = new RouteDto(
+        LocationForRideDto route = new LocationForRideDto(
                 new GeoCoordinateDto("", 45f, 20f),
-                new GeoCoordinateDto("", 43f, 21f)
+                new GeoCoordinateDto("", 43f, 21f),
+                8000,
+                10
         );
         Passenger passenger = passengerRepository.findById(7L).get();
         FavoriteLocationDto favoriteLocationDto = new FavoriteLocationDto(

@@ -288,6 +288,16 @@ public class RideService {
                 continue;
             }
 
+            // if driver doesn't have an assigned vehicle: check next driver
+            if (driver.getVehicle() == null) {
+                continue;
+            } else {
+                // if driver has an assigned vehicle but is not the type the passenger requested: check next driver
+                if (!driver.getVehicle().getVehicleType().getName().equals(rideCreationDto.getVehicleType())) {
+                    continue;
+                }
+            }
+
             // if the has an ongoing shift but has worked more than 8 hours: check next driver
             if (workHourService.hoursWorked(driver.getId(), LocalDate.now()) >= 8) {
                 continue;

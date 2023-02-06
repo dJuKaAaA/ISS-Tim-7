@@ -170,7 +170,7 @@ public class SeleniumTests {
     }
 
     @Test
-    public void scheduleRide1_schedulingImmediately() {
+    public void scheduleRide1_SchedulingImmediately() {
         String email = "immediate.schedule.success@email.com";
         String password = "Jovan123";
         String passengerHomePageUrl = "http://localhost:4200/passenger-home";
@@ -191,7 +191,7 @@ public class SeleniumTests {
     }
 
     @Test
-    public void scheduleRide2_cannotScheduleIfPassengerHasPendingRide() {
+    public void scheduleRide2_CannotScheduleIfPassengerHasPendingRide() {
         String email = "immediate.schedule.success@email.com";
         String password = "Jovan123";
         String passengerHomePageUrl = "http://localhost:4200/passenger-home";
@@ -212,7 +212,7 @@ public class SeleniumTests {
     }
 
     @Test
-    public void scheduleRide3_notSettingRoutesScheduling() {
+    public void scheduleRide3_NotSettingRoutesScheduling() {
         String email = "immediate.schedule.success@email.com";
         String password = "Jovan123";
         String passengerHomePageUrl = "http://localhost:4200/passenger-home";
@@ -232,7 +232,7 @@ public class SeleniumTests {
     }
 
     @Test
-    public void scheduleRide4_noDriversAvailableWhenScheduling() {
+    public void scheduleRide4_NoDriversAvailableWhenScheduling() {
         String email = "clearing.routes.schedule@email.com";
         String password = "Jovan123";
         String passengerHomePageUrl = "http://localhost:4200/passenger-home";
@@ -254,7 +254,7 @@ public class SeleniumTests {
 
 
     @Test
-    public void scheduleRide5_schedulingAtALaterTimeShouldBeSuccessful() {
+    public void scheduleRide5_SchedulingAtALaterTimeShouldBeSuccessful() {
         String email = "later.time.schedule@email.com";
         String password = "Jovan123";
         String passengerHomePageUrl = "http://localhost:4200/passenger-home";
@@ -276,7 +276,7 @@ public class SeleniumTests {
     }
 
     @Test
-    public void scheduleRide6_settingRouteClearingRouteSettingRouteAgainScheduling() {
+    public void scheduleRide6_SettingRouteClearingRouteSettingRouteAgainScheduling() {
         String email = "clearing.routes.schedule@email.com";
         String password = "Jovan123";
         String passengerHomePageUrl = "http://localhost:4200/passenger-home";
@@ -300,7 +300,7 @@ public class SeleniumTests {
     }
 
     @Test
-    public void scheduleRide7_schedulingAtPastTimeShouldNotSchedule() {
+    public void scheduleRide7_SchedulingAtPastTimeShouldNotSchedule() {
         String email = "past.time.schedule@email.com";
         String password = "Jovan123";
         String passengerHomePageUrl = "http://localhost:4200/passenger-home";
@@ -322,7 +322,7 @@ public class SeleniumTests {
     }
 
     @Test
-    public void scheduleRide8_schedulingWithPassengersInvited() {
+    public void scheduleRide8_SchedulingWithPassengersInvited() {
         String email = "passenger.inviting.schedule@email.com";
         String password = "Jovan123";
         String passengerHomePageUrl = "http://localhost:4200/passenger-home";
@@ -345,7 +345,7 @@ public class SeleniumTests {
     }
 
     @Test
-    public void scheduleRide9_schedulingWithPassengerInvitedThenRemovePassenger() {
+    public void scheduleRide9_SchedulingWithPassengerInvitedThenRemovePassenger() {
         String email = "remove.guest.schedule@email.com";
         String password = "Jovan123";
         String passengerHomePageUrl = "http://localhost:4200/passenger-home";
@@ -369,7 +369,7 @@ public class SeleniumTests {
     }
 
     @Test
-    public void scheduleRide10_schedulingWhileSettingAsFavorite() {
+    public void scheduleRide10_SchedulingWhileSettingAsFavorite() {
         String email = "set.favorite.schedule@email.com";
         String password = "Jovan123";
         String passengerHomePageUrl = "http://localhost:4200/passenger-home";
@@ -395,7 +395,7 @@ public class SeleniumTests {
     }
 
     @Test
-    public void scheduleRide11_schedulingWhileSettingAsFavoriteButLeavingNameEmpty() {
+    public void scheduleRide11_SchedulingWhileSettingAsFavoriteButLeavingNameEmpty() {
         String email = "set.favorite.schedule@email.com";
         String password = "Jovan123";
         String passengerHomePageUrl = "http://localhost:4200/passenger-home";
@@ -411,6 +411,28 @@ public class SeleniumTests {
         passengerHomePage.markAsFavorite();
         passengerHomePage.schedule();
         assert passengerHomePage.favoriteLocationNameMustBeProvided();
+        passengerHomePage.closeDialog();
+
+        driver.quit();
+    }
+
+    @Test
+    public void scheduleRide12_UnsuccessfulScheduleWhenDriversWhoHaveThatVehicleTypeAreUnavailable() {
+        String email = "luxury.vehicle.type.schedule@email.com";
+        String password = "Jovan123";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
+
+        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
+        unregisteredUserPage.login(email, password);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        wait.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        PassengerHomePage passengerHomePage = new PassengerHomePage(driver);
+        passengerHomePage.setRideRoutes();
+        passengerHomePage.setVehicleTypeAsLuxury();
+        passengerHomePage.schedule();
+        assert passengerHomePage.noAvailableDrivers();
         passengerHomePage.closeDialog();
 
         driver.quit();
@@ -433,4 +455,5 @@ public class SeleniumTests {
         wait.until(ExpectedConditions.urlToBe(driverHomePageUrl));
         driver.quit();
     }
+
 }

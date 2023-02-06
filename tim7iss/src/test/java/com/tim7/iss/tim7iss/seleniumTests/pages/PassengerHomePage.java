@@ -75,6 +75,12 @@ public class PassengerHomePage {
     @FindBy(xpath = "/html/body/div[2]/div[5]/div/mat-dialog-container/div/div/app-dialog/div[2]/button")
     private WebElement closeDialogButton2;  // close button for the dialog that will open at the same time as the main dialog to let the passenger know the ride was added to favorites
 
+    @FindBy(xpath = "/html/body/app-root/app-passenger-home/app-schedule-ride/div/div[2]/div[4]/button")
+    private WebElement vehicleTypeSelection;
+
+    @FindBy(xpath = "/html/body/div[2]/div[2]/div/div/div/div[2]/button")
+    private WebElement luxuryVehicleTypeSelectionButton;
+
     public PassengerHomePage(WebDriver driver) {
         this.driver = driver;
         driver.get(PAGE_URL);
@@ -180,6 +186,11 @@ public class PassengerHomePage {
     public boolean noAvailableDrivers() {
         wait.until(ExpectedConditions.visibilityOf(dialogMessageDiv));
         return dialogMessageDiv.getText().equals("There are no available drivers at that moment");
+    }
+
+    public void setVehicleTypeAsLuxury() {
+        vehicleTypeSelection.click();
+        luxuryVehicleTypeSelectionButton.click();
     }
 
 }
