@@ -77,8 +77,8 @@ public class Tim7issApplication {
 //        return this::testDataDjukanovic;
 //        return this::testDataMartic;
 //        return this::testDataStanojlovic;
-        return this::generateTestDataInDataBase;
-//        return this::projectDefenceTestData;
+//        return this::generateTestDataInDataBase;
+        return this::projectDefenceTestData;
     }
 
     private void testDataDjukanovic() throws IOException {

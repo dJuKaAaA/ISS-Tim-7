@@ -21,7 +21,7 @@ public class FavoriteLocationDto {
     @NotEmpty
     private String favoriteName;
     @NotEmpty
-    private Set<RouteDto> locations = new HashSet<>();
+    private Set<LocationForRideDto> locations = new HashSet<>();
     @NotEmpty
     private Set<UserRefDto> passengers = new HashSet<>();
     @NotNull
@@ -38,7 +38,7 @@ public class FavoriteLocationDto {
         this.id = favoriteLocation.getId();
         this.favoriteName = favoriteLocation.getFavoriteName();
         for(Route route : favoriteLocation.getRoutes()){
-            this.locations.add(new RouteDto(route));
+            this.locations.add(new LocationForRideDto(route));
         }
         for(Passenger passenger : favoriteLocation.getPassengers()){
             this.passengers.add(new UserRefDto(passenger));

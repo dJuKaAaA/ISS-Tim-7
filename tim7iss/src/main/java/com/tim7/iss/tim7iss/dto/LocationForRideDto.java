@@ -17,7 +17,6 @@ public class LocationForRideDto {
     @NotNull(message = "Departure not provided")
     private GeoCoordinateDto departure;
     @NotNull(message = "Destination not provided")
-
     private GeoCoordinateDto destination;
     private Integer distanceInMeters;
     private Integer estimatedTimeInMinutes;
