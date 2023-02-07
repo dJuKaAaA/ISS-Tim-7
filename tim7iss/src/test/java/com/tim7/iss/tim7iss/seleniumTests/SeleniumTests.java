@@ -1,10 +1,9 @@
 package com.tim7.iss.tim7iss.seleniumTests;
 
 import com.tim7.iss.tim7iss.CustomTestData;
-import com.tim7.iss.tim7iss.models.User;
-import com.tim7.iss.tim7iss.seleniumTests.pages.ActiveRidePage;
+import com.tim7.iss.tim7iss.seleniumTests.pages.DriverActiveRidePage;
+import com.tim7.iss.tim7iss.seleniumTests.pages.PassengerActiveRidePage;
 import com.tim7.iss.tim7iss.seleniumTests.pages.UnregisteredUserPage;
-import com.tim7.iss.tim7iss.util.TokenUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,13 +12,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
-import javax.management.remote.JMXAuthenticator;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -167,19 +160,38 @@ public class SeleniumTests {
 
     @Test
     public void finishRide_happyCase() throws IOException {
-        String email = customTestData.getDriver2().getEmailAddress();
-        String password = "Mika1234";
+        String driverEmail = customTestData.getDriver2().getEmailAddress();
+        String driverPassword = "Mika1234";
+        String passengerEmail = customTestData.getPassenger2().getEmailAddress();
+        String passengerPassword = "Jovan123";
         String driverHomePageUrl = "http://localhost:4200/driver-home";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
 
-        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
-        unregisteredUserPage.login(email, password);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
-        wait.until(ExpectedConditions.urlToBe(driverHomePageUrl));
+        WebDriver passengerDriver = new ChromeDriver();
+        passengerDriver.manage().window().maximize();
 
-        ActiveRidePage activeRidePage = new ActiveRidePage(driver);
-        activeRidePage.finishRide();
+        passengerDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-        wait.until(ExpectedConditions.urlToBe(driverHomePageUrl));
+        UnregisteredUserPage unregisteredUserPageForDriver = new UnregisteredUserPage(driver);
+        unregisteredUserPageForDriver.login(driverEmail, driverPassword);
+
+        UnregisteredUserPage unregisteredUserPageForPassenger = new UnregisteredUserPage(passengerDriver);
+        unregisteredUserPageForPassenger.login(passengerEmail, passengerPassword);
+
+        WebDriverWait waitDriver = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        WebDriverWait waitPassenger = new WebDriverWait(passengerDriver, Duration.ofSeconds(3L));
+
+        waitDriver.until(ExpectedConditions.urlToBe(driverHomePageUrl));
+        waitPassenger.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        DriverActiveRidePage driverActiveRidePage = new DriverActiveRidePage(driver);
+        PassengerActiveRidePage passengerActiveRidePage = new PassengerActiveRidePage(passengerDriver);
+
+        driverActiveRidePage.finishRide();
+        waitDriver.until(ExpectedConditions.urlToBe(driverHomePageUrl));
+
+        Assertions.assertTrue(passengerActiveRidePage.checkIfFinished());
+        Assertions.assertEquals(driverHomePageUrl, driver.getCurrentUrl());
         driver.quit();
     }
 }
