@@ -54,14 +54,16 @@ public class FavoriteLocation {
     public FavoriteLocation(FavoriteLocationDto favoriteLocationDto, Set<Passenger> passengers, VehicleType vehicleType, Passenger passenger){
         this.submittedBy = passenger;
         this.favoriteName = favoriteLocationDto.getFavoriteName();
-        for(RouteDto routeDto : favoriteLocationDto.getLocations()){
+        for(LocationForRideDto routeDto : favoriteLocationDto.getLocations()){
             float departureLatitude = routeDto.getDeparture().getLatitude();
             float departureLongitude = routeDto.getDeparture().getLongitude();
             float destinationLatitude = routeDto.getDestination().getLatitude();
             float destinationLongitude = routeDto.getDestination().getLongitude();
             Location departureLocation = new Location(routeDto.getDeparture().getAddress(), departureLongitude, departureLatitude);
+            departureLocation.setName(routeDto.getDeparture().getAddress());
             Location destinationLocation = new Location(routeDto.getDestination().getAddress(), destinationLongitude, destinationLatitude);
-            this.routes.add(new Route(departureLocation, destinationLocation));
+            destinationLocation.setName(routeDto.getDestination().getAddress());
+            this.routes.add(new Route(departureLocation, destinationLocation, routeDto.getDistanceInMeters(), routeDto.getEstimatedTimeInMinutes()));
         }
         this.passengers = passengers;
         this.vehicleType = vehicleType;

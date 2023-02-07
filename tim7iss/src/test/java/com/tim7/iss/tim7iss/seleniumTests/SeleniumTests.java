@@ -3,11 +3,16 @@ package com.tim7.iss.tim7iss.seleniumTests;
 import com.tim7.iss.tim7iss.CustomTestData;
 import com.tim7.iss.tim7iss.seleniumTests.pages.DriverActiveRidePage;
 import com.tim7.iss.tim7iss.seleniumTests.pages.PassengerActiveRidePage;
+import com.tim7.iss.tim7iss.seleniumTests.pages.PassengerHomePage;
+import com.tim7.iss.tim7iss.seleniumTests.pages.UnregisteredUserPage;
+import org.junit.FixMethodOrder;
+import com.tim7.iss.tim7iss.models.User;
 import com.tim7.iss.tim7iss.seleniumTests.pages.UnregisteredUserPage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.runners.MethodSorters;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -18,6 +23,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SeleniumTests {
 
 
@@ -157,6 +163,274 @@ public class SeleniumTests {
         driver.quit();
     }
 
+    @Test
+    public void scheduleRide1_SchedulingImmediately() {
+        String email = "immediate.schedule.success@email.com";
+        String password = "Jovan123";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
+
+        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
+        unregisteredUserPage.login(email, password);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        wait.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        PassengerHomePage passengerHomePage = new PassengerHomePage(driver);
+        passengerHomePage.setRideRoutes();
+        passengerHomePage.schedule();
+        assert passengerHomePage.successfulRideSchedule();
+        passengerHomePage.closeDialog();
+
+        driver.quit();
+    }
+
+    @Test
+    public void scheduleRide2_CannotScheduleIfPassengerHasPendingRide() {
+        String email = "immediate.schedule.success@email.com";
+        String password = "Jovan123";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
+
+        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
+        unregisteredUserPage.login(email, password);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        wait.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        PassengerHomePage passengerHomePage = new PassengerHomePage(driver);
+        passengerHomePage.setRideRoutes();
+        passengerHomePage.schedule();
+        assert passengerHomePage.passengerHasPendingRide();
+        passengerHomePage.closeDialog();
+
+        driver.quit();
+    }
+
+    @Test
+    public void scheduleRide3_NotSettingRoutesScheduling() {
+        String email = "immediate.schedule.success@email.com";
+        String password = "Jovan123";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
+
+        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
+        unregisteredUserPage.login(email, password);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        wait.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        PassengerHomePage passengerHomePage = new PassengerHomePage(driver);
+        passengerHomePage.schedule();
+        assert passengerHomePage.notSpecifiedAnyRoutes();
+        passengerHomePage.closeDialog();
+
+        driver.quit();
+    }
+
+    @Test
+    public void scheduleRide4_NoDriversAvailableWhenScheduling() {
+        String email = "clearing.routes.schedule@email.com";
+        String password = "Jovan123";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
+
+        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
+        unregisteredUserPage.login(email, password);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        wait.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        PassengerHomePage passengerHomePage = new PassengerHomePage(driver);
+        passengerHomePage.setRideRoutes();
+        passengerHomePage.schedule();
+        assert passengerHomePage.noAvailableDrivers();
+        passengerHomePage.closeDialog();
+
+        driver.quit();
+    }
+
+
+    @Test
+    public void scheduleRide5_SchedulingAtALaterTimeShouldBeSuccessful() {
+        String email = "later.time.schedule@email.com";
+        String password = "Jovan123";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
+
+        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
+        unregisteredUserPage.login(email, password);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        wait.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        PassengerHomePage passengerHomePage = new PassengerHomePage(driver);
+        passengerHomePage.setRideRoutes();
+        passengerHomePage.setLaterTimeOnTimePicker();
+        passengerHomePage.schedule();
+        assert passengerHomePage.successfulRideSchedule();
+        passengerHomePage.closeDialog();
+
+        driver.quit();
+    }
+
+    @Test
+    public void scheduleRide6_SettingRouteClearingRouteSettingRouteAgainScheduling() {
+        String email = "clearing.routes.schedule@email.com";
+        String password = "Jovan123";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
+
+        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
+        unregisteredUserPage.login(email, password);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        wait.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        PassengerHomePage passengerHomePage = new PassengerHomePage(driver);
+        passengerHomePage.setRideRoutes();
+        // TODO: Set time here
+        passengerHomePage.clearRoutes();
+        passengerHomePage.setRideRoutes();
+        passengerHomePage.schedule();
+        assert passengerHomePage.successfulRideSchedule();
+        passengerHomePage.closeDialog();
+
+        driver.quit();
+    }
+
+    @Test
+    public void scheduleRide7_SchedulingAtPastTimeShouldNotSchedule() {
+        String email = "past.time.schedule@email.com";
+        String password = "Jovan123";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
+
+        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
+        unregisteredUserPage.login(email, password);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        wait.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        PassengerHomePage passengerHomePage = new PassengerHomePage(driver);
+        passengerHomePage.setRideRoutes();
+        passengerHomePage.setPastTimeOnTimePicker();
+        passengerHomePage.schedule();
+        assert passengerHomePage.tryingToScheduleRideInPast();
+        passengerHomePage.closeDialog();
+
+        driver.quit();
+    }
+
+    @Test
+    public void scheduleRide8_SchedulingWithPassengersInvited() {
+        String email = "passenger.inviting.schedule@email.com";
+        String password = "Jovan123";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
+
+        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
+        unregisteredUserPage.login(email, password);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        wait.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        PassengerHomePage passengerHomePage = new PassengerHomePage(driver);
+        passengerHomePage.setRideRoutes();
+        // TODO: Set time here
+        passengerHomePage.invitePassenger();
+        passengerHomePage.schedule();
+        assert passengerHomePage.successfulRideSchedule();
+        passengerHomePage.closeDialog();
+
+        driver.quit();
+    }
+
+    @Test
+    public void scheduleRide9_SchedulingWithPassengerInvitedThenRemovePassenger() {
+        String email = "remove.guest.schedule@email.com";
+        String password = "Jovan123";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
+
+        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
+        unregisteredUserPage.login(email, password);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        wait.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        PassengerHomePage passengerHomePage = new PassengerHomePage(driver);
+        passengerHomePage.setRideRoutes();
+        // TODO: Set time here
+        passengerHomePage.invitePassenger();
+        passengerHomePage.removeInvitedPassenger();
+        passengerHomePage.schedule();
+        assert passengerHomePage.successfulRideSchedule();
+        passengerHomePage.closeDialog();
+
+        driver.quit();
+    }
+
+    @Test
+    public void scheduleRide10_SchedulingWhileSettingAsFavorite() {
+        String email = "set.favorite.schedule@email.com";
+        String password = "Jovan123";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
+
+        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
+        unregisteredUserPage.login(email, password);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        wait.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        PassengerHomePage passengerHomePage = new PassengerHomePage(driver);
+        passengerHomePage.setRideRoutes();
+        // TODO: Set time here
+        passengerHomePage.markAsFavorite();
+        passengerHomePage.setFavoriteLocationName();
+        passengerHomePage.schedule();
+        assert passengerHomePage.successfullyAddedRideToFavorites();
+        passengerHomePage.closeDialog2();
+        assert passengerHomePage.successfulRideSchedule();
+        passengerHomePage.closeDialog();
+
+        driver.quit();
+    }
+
+    @Test
+    public void scheduleRide11_SchedulingWhileSettingAsFavoriteButLeavingNameEmpty() {
+        String email = "set.favorite.schedule@email.com";
+        String password = "Jovan123";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
+
+        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
+        unregisteredUserPage.login(email, password);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        wait.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        PassengerHomePage passengerHomePage = new PassengerHomePage(driver);
+        passengerHomePage.setRideRoutes();
+        passengerHomePage.markAsFavorite();
+        passengerHomePage.schedule();
+        assert passengerHomePage.favoriteLocationNameMustBeProvided();
+        passengerHomePage.closeDialog();
+
+        driver.quit();
+    }
+
+    @Test
+    public void scheduleRide12_UnsuccessfulScheduleWhenDriversWhoHaveThatVehicleTypeAreUnavailable() {
+        String email = "luxury.vehicle.type.schedule@email.com";
+        String password = "Jovan123";
+        String passengerHomePageUrl = "http://localhost:4200/passenger-home";
+
+        UnregisteredUserPage unregisteredUserPage = new UnregisteredUserPage(driver);
+        unregisteredUserPage.login(email, password);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3L));
+        wait.until(ExpectedConditions.urlToBe(passengerHomePageUrl));
+
+        PassengerHomePage passengerHomePage = new PassengerHomePage(driver);
+        passengerHomePage.setRideRoutes();
+        passengerHomePage.setVehicleTypeAsLuxury();
+        passengerHomePage.schedule();
+        assert passengerHomePage.noAvailableDrivers();
+        passengerHomePage.closeDialog();
+
+        driver.quit();
+    }
 
     @Test
     public void finishRide_happyCase() throws IOException {
@@ -194,4 +468,5 @@ public class SeleniumTests {
         Assertions.assertEquals(driverHomePageUrl, driver.getCurrentUrl());
         driver.quit();
     }
+
 }

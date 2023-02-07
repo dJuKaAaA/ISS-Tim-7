@@ -41,7 +41,6 @@ public class RideService {
         rideRepository.save(ride);
     }
 
-
     public List<Ride> findRideByPassengerId(Long id) {
         return rideRepository.findRidesByPassengersId(id);
     }
@@ -287,6 +286,16 @@ public class RideService {
             // if driver is inactive: check next driver
             if (!driver.isActive()) {
                 continue;
+            }
+
+            // if driver doesn't have an assigned vehicle: check next driver
+            if (driver.getVehicle() == null) {
+                continue;
+            } else {
+                // if driver has an assigned vehicle but is not the type the passenger requested: check next driver
+                if (!driver.getVehicle().getVehicleType().getName().equals(rideCreationDto.getVehicleType())) {
+                    continue;
+                }
             }
 
             // if the has an ongoing shift but has worked more than 8 hours: check next driver

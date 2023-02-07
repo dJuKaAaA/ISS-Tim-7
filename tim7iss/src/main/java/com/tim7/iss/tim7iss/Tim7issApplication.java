@@ -209,6 +209,7 @@ public class Tim7issApplication {
         // vehicle type creation
         // id = 1
         VehicleType vehicleType = vehicleTypeRepository.save(new VehicleType(null, 100, "STANDARD"));
+        VehicleType vehicleTypeLuxury = vehicleTypeRepository.save(new VehicleType(null, 300, "LUXURY"));
 
         // role creation
         Role adminRole = roleRepository.save(new Role(null, "ROLE_ADMIN"));
@@ -275,6 +276,7 @@ public class Tim7issApplication {
         passengerWhoIsNotSupposedToHaveAnyAcceptedRides.setEnabled(true);
         passengerRepository.save(passengerWhoIsNotSupposedToHaveAnyAcceptedRides);
 
+
         // id = 8
         Driver hopefullyAvailableDriver = new Driver(new UserDto(null, "Pera", "Peric", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372222", "pera.peric@email.com", "Perina adresa", "$2a$12$YzM..B5oG29ezUdF3pC6qexJQpw4UJSxdoaQD9Y.aiURFBuU4/3Qe"));  // Pera1234
         hopefullyAvailableDriver.setEnabled(true);
@@ -284,6 +286,12 @@ public class Tim7issApplication {
         hopefullyAvailableDriver.setActive(true);
         driverRepository.save(hopefullyAvailableDriver);
 
+        // id = 9
+        Passenger anotherPassengerWhoIsNotSupposedToHaveAnyAcceptedRides = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "neko2.nekic@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        anotherPassengerWhoIsNotSupposedToHaveAnyAcceptedRides.setRoles(List.of(passengerRole));
+        anotherPassengerWhoIsNotSupposedToHaveAnyAcceptedRides.setEnabled(true);
+        passengerRepository.save(anotherPassengerWhoIsNotSupposedToHaveAnyAcceptedRides);
+
         // declaring routes that will be saved when the ride that contains them gets created
         // id = 1
         Route route1 = new Route(null, 1000, 10, new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija", 45.24914205013315f, 19.843100056994654f), new Location(null, "Srpsko narodno pozoriste, Pozorisni trg, Novi Sad, Srbija", 45.25510777309239f, 19.842949154190308f));
@@ -291,7 +299,6 @@ public class Tim7issApplication {
         // ride creation
         // PENDING id = 1
         Ride pendingRide = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1, passenger2), null, List.of(route1.clone())));
-
 
         // ACTIVE id = 2
         Ride activeRide = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACTIVE, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
@@ -353,6 +360,47 @@ public class Tim7issApplication {
         document.setName("Licna karta");
         document.setDriver(driver);
         documentRepository.save(document);
+
+
+
+        // schedule ride selenium tests
+        // DO NOT TOUCH !!!
+        Passenger passengerSeleniumTestImmediateSchedule = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "immediate.schedule.success@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passengerSeleniumTestImmediateSchedule.setRoles(List.of(passengerRole));
+        passengerSeleniumTestImmediateSchedule.setEnabled(true);
+        passengerRepository.save(passengerSeleniumTestImmediateSchedule);
+        Passenger passengerSeleniumTestClearingRoutesSchedule = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "clearing.routes.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passengerSeleniumTestClearingRoutesSchedule.setRoles(List.of(passengerRole));
+        passengerSeleniumTestClearingRoutesSchedule.setEnabled(true);
+        passengerRepository.save(passengerSeleniumTestClearingRoutesSchedule);
+        Passenger passengerSeleniumTestPastTimeScheduling = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "past.time.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passengerSeleniumTestPastTimeScheduling.setRoles(List.of(passengerRole));
+        passengerSeleniumTestPastTimeScheduling.setEnabled(true);
+        passengerRepository.save(passengerSeleniumTestPastTimeScheduling);
+        Passenger passengerSeleniumTestPassengerInvitedSchedule = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "passenger.inviting.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passengerSeleniumTestPassengerInvitedSchedule.setRoles(List.of(passengerRole));
+        passengerSeleniumTestPassengerInvitedSchedule.setEnabled(true);
+        passengerRepository.save(passengerSeleniumTestPassengerInvitedSchedule);
+        Passenger passengerSeleniumTestGuestPassenger = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "guest.passenger.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passengerSeleniumTestGuestPassenger.setRoles(List.of(passengerRole));
+        passengerSeleniumTestGuestPassenger.setEnabled(true);
+        passengerRepository.save(passengerSeleniumTestGuestPassenger);
+        Passenger passengerSeleniumTestLaterTimeScheduling = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "later.time.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passengerSeleniumTestLaterTimeScheduling.setRoles(List.of(passengerRole));
+        passengerSeleniumTestLaterTimeScheduling.setEnabled(true);
+        passengerRepository.save(passengerSeleniumTestLaterTimeScheduling);
+        Passenger passengerSeleniumTestInviteThenRemoveGuest = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "remove.guest.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passengerSeleniumTestInviteThenRemoveGuest.setRoles(List.of(passengerRole));
+        passengerSeleniumTestInviteThenRemoveGuest.setEnabled(true);
+        passengerRepository.save(passengerSeleniumTestInviteThenRemoveGuest);
+        Passenger passengerSeleniumTestSetFavoriteScheduling = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "set.favorite.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passengerSeleniumTestSetFavoriteScheduling.setRoles(List.of(passengerRole));
+        passengerSeleniumTestSetFavoriteScheduling.setEnabled(true);
+        passengerRepository.save(passengerSeleniumTestSetFavoriteScheduling);
+        Passenger passengerSeleniumTestLuxuryVehicleTypeRequest = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "luxury.vehicle.type.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
+        passengerSeleniumTestLuxuryVehicleTypeRequest.setRoles(List.of(passengerRole));
+        passengerSeleniumTestLuxuryVehicleTypeRequest.setEnabled(true);
+        passengerRepository.save(passengerSeleniumTestLuxuryVehicleTypeRequest);
 
     }
 
