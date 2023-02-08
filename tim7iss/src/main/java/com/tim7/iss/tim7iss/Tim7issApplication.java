@@ -77,8 +77,8 @@ public class Tim7issApplication {
 //        return this::testDataDjukanovic;
 //        return this::testDataMartic;
 //        return this::testDataStanojlovic;
-        return this::generateTestDataInDataBase;
-//        return this::projectDefenceTestData;
+//        return this::generateTestDataInDataBase;
+        return this::projectDefenceTestData;
     }
 
     private void testDataDjukanovic() throws IOException {
@@ -787,6 +787,30 @@ public class Tim7issApplication {
                 }
             }
         }
+        Ride ride = new Ride(
+                null,
+                1500,
+                null,
+                null,
+                15,
+                sasaMatic.getVehicle().isBabyAllowed(),
+                sasaMatic.getVehicle().isPetsAllowed(),
+                false,
+                Enums.RideStatus.FINISHED,
+                sasaMatic,
+                sasaMatic.getVehicle().getVehicleType(),
+                new HashSet<>(Arrays.asList(passenger1,passenger2,passenger3)),
+                null,
+                new ArrayList<>()
+        );
+        rideRepository.save(ride);
+
+        messageRepository.save(new Message(null, LocalDateTime.of(2023, Month.OCTOBER, 8, 9, 32), "Ride", "Sta se radi", passenger2, sasaMatic, ride));
+        messageRepository.save(new Message(null, LocalDateTime.of(2023, Month.OCTOBER, 8, 10, 32), "Ride", "Evo nista", sasaMatic, passenger2, ride));
+        messageRepository.save(new Message(null, LocalDateTime.of(2023, Month.OCTOBER, 8, 11, 32), "Panic", "He is crazy", passenger2, admin, null));
+        messageRepository.save(new Message(null, LocalDateTime.of(2023, Month.OCTOBER, 8, 12, 32), "Support", "I need help with something", passenger2, admin, null));
+
+
         //
         //
         // review creation

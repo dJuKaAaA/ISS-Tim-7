@@ -123,9 +123,10 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(Long id) throws UserNotFoundException {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-        Collection<MessageDto> messages = getAllMessages(user)
+    public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(Long user1Id, Long user2Id) throws UserNotFoundException {
+        User sender = userRepository.findById(user1Id).orElseThrow(UserNotFoundException::new);
+        User receiver = userRepository.findById(user2Id).orElseThrow(UserNotFoundException::new);
+        Collection<MessageDto> messages = getAllMessagesBetween(sender, receiver)
                 .stream()
                 .sorted(Comparator.comparing(Message::getSentDate))
                 .map(MessageDto::new)
@@ -133,6 +134,17 @@ public class UserService implements UserDetailsService {
         return new ResponseEntity<>(new PaginatedResponseDto<>(messages.size(), messages), HttpStatus.OK);
 
     }
+
+    private List<Message> getAllMessagesBetween(User sender, User receiver) {
+        List<Message> sentMessages = messageRepository.findAllBySenderIdAndReceiverId(sender.getId(), receiver.getId());
+        List<Message> receivedMessages = messageRepository.findAllBySenderIdAndReceiverId(receiver.getId(), sender.getId());
+
+        List<Message> allMessages = new ArrayList<>();
+        allMessages.addAll(sentMessages);
+        allMessages.addAll(receivedMessages);
+        return allMessages;
+    }
+
 
     public ResponseEntity<MessageDto> sendMessage(Long id, String senderEmail, @Valid MessageDto messageDTO) throws RideNotFoundException, UserNotFoundException {
 

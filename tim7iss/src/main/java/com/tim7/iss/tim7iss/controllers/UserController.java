@@ -110,11 +110,11 @@ public class UserController {
         return ResponseEntity.ok(new TokenResponseDto(jwt, ""));
     }
 
-    @GetMapping("/api/user/{id}/message")
+    @GetMapping("/api/user/{senderId}/message/{receiverId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER') or hasRole('PASSENGER')")
-    public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(@PathVariable("id") Long id) throws UserNotFoundException {
+    public ResponseEntity<PaginatedResponseDto<MessageDto>> getMessages(@PathVariable("senderId") Long senderId, @PathVariable("receiverId") Long receiverId) throws UserNotFoundException {
         LOGGER.info("get messages");
-        return userService.getMessages(id);
+        return userService.getMessages(senderId, receiverId);
     }
 
     @PostMapping("/api/user/{id}/message")
@@ -163,6 +163,12 @@ public class UserController {
     public ResponseEntity unblock(@PathVariable("id") Long id) throws Exception {
         LOGGER.info("unblock");
         return userService.unblock(id);
+    }
+
+    @GetMapping("/api/user/{id}/role")
+    public ResponseEntity getRole(@PathVariable("id")Long id){
+        User user = userService.findById(id);
+        return new ResponseEntity(user.getRoles().get(0), HttpStatus.OK);
     }
 
     // Add note for user to help to decide to ban user
