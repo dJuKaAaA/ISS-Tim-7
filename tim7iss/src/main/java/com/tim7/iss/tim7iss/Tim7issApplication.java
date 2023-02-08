@@ -805,10 +805,10 @@ public class Tim7issApplication {
         );
         rideRepository.save(ride);
 
-        messageRepository.save(new Message(null, LocalDateTime.of(2023, Month.OCTOBER, 8, 9, 32), "Ride", "Sta se radi", passenger2, sasaMatic, ride));
-        messageRepository.save(new Message(null, LocalDateTime.of(2023, Month.OCTOBER, 8, 10, 32), "Ride", "Evo nista", sasaMatic, passenger2, ride));
-        messageRepository.save(new Message(null, LocalDateTime.of(2023, Month.OCTOBER, 8, 11, 32), "Panic", "He is crazy", passenger2, admin, null));
-        messageRepository.save(new Message(null, LocalDateTime.of(2023, Month.OCTOBER, 8, 12, 32), "Support", "I need help with something", passenger2, admin, null));
+        messageRepository.save(new Message(null, LocalDateTime.of(2023, Month.OCTOBER, 1, 9, 32), "Ride", "Sta se radi", passenger2, sasaMatic, ride));
+        messageRepository.save(new Message(null, LocalDateTime.of(2023, Month.OCTOBER, 1, 10, 32), "Ride", "Evo nista", sasaMatic, passenger2, ride));
+        messageRepository.save(new Message(null, LocalDateTime.of(2023, Month.OCTOBER, 1, 11, 32), "Panic", "He is crazy", passenger2, admin, null));
+        messageRepository.save(new Message(null, LocalDateTime.of(2023, Month.OCTOBER, 1, 12, 32), "Support", "Yeap", admin, passenger2, null));
 
 
         //

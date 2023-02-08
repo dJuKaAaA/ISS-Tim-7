@@ -149,8 +149,10 @@ public class UserService implements UserDetailsService {
     public ResponseEntity<MessageDto> sendMessage(Long id, String senderEmail, @Valid MessageDto messageDTO) throws RideNotFoundException, UserNotFoundException {
 
         Ride ride = null;
-        if (messageDTO.getRideId() != null) {
+        if (messageDTO.getRideId() != null && messageDTO.getRideId() != 0) {
             ride = rideRepository.findById(messageDTO.getRideId()).orElseThrow(RideNotFoundException::new);
+        }else{
+            messageDTO.setType("Support");
         }
         User receiver = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("Receiver not found"));
         User sender = userRepository.findByEmailAddress(senderEmail);
