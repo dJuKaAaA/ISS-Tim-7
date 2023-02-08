@@ -156,8 +156,8 @@ public class DriverController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @GetMapping("/{id}/ride")
-    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable Long id, Pageable page) throws DriverNotFoundException {
-        PaginatedResponseDto<RideDto> paginatedRides = rideService.getPaginatedRidesForDriverAsDto(id, page);
+    public ResponseEntity<PaginatedResponseDto<RideDto>> getRides(@PathVariable Long id, Pageable pageable) throws DriverNotFoundException {
+        PaginatedResponseDto<RideDto> paginatedRides = rideService.getPaginatedRidesForDriverAsDto(id, pageable);
         return new ResponseEntity<>(paginatedRides, HttpStatus.OK);
     }
 
@@ -169,7 +169,7 @@ public class DriverController {
     }
 
     /* Admin won't be able to access this endpoint even though he has authorization because this method uses
-     *  the value from the token to identify the driver so it can fetch their ongoing shift */
+     *  the value from the token to identify the driver, so it can fetch their ongoing shift */
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @PutMapping("/working-hour/{workingHourId}")
     public ResponseEntity<WorkingHourDto> changeWorkHour(@PathVariable Long workingHourId, @Valid @RequestBody EndShiftDto endShiftDto, Principal principal) throws NoShiftOngoingException, DriverNotFoundException, VehicleNotAssignedException {

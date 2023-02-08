@@ -61,9 +61,7 @@ public class PassengerController {
 
     @GetMapping
     @PreAuthorize("hasRole('PASSENGER') or hasRole('ADMIN')")
-    public ResponseEntity<PaginatedResponseDto<UserDto>> load(@RequestHeader(value = "Authorization") String authHeader, Pageable page) throws UnauthorizedException {
-//        if(authHeader == null)
-//            throw new UnauthorizedException();
+    public ResponseEntity<PaginatedResponseDto<UserDto>> load(Pageable page) {
         Collection<UserDto> passengers = new ArrayList<>();
         for (Passenger passenger : passengerService.findAll(page)) {
             passengers.add(new UserDto(passenger));
@@ -113,12 +111,11 @@ public class PassengerController {
 
     @GetMapping("/{id}/ride")
     @PreAuthorize("hasRole('PASSENGER')")
-    public ResponseEntity<PaginatedResponseDto<RideDto>> findRidesByPassengerId(@RequestHeader(value = "Authorization") String authHeader, @PathVariable Long id, Pageable page) throws UserNotFoundException {
-//        ridesService.findByFilter();
+    public ResponseEntity<PaginatedResponseDto<RideDto>> findRidesByPassengerId(@PathVariable Long id, Pageable pageable) throws UserNotFoundException {
         if(passengerService.findById(id) == null)
             throw new UserNotFoundException("Passenger does not exist!");
         Collection<RideDto> rides = new ArrayList<>();
-        for (Ride ride : rideService.findRideByPassengerId(id)) {
+        for (Ride ride : rideService.findRideByPassengerId(id, pageable)) {
             rides.add(new RideDto(ride));
         }
         return new ResponseEntity<>(new PaginatedResponseDto<>(rides.size(), rides), HttpStatus.OK);

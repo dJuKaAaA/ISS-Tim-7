@@ -1,6 +1,7 @@
 package com.tim7.iss.tim7iss.repositories;
 
 import com.tim7.iss.tim7iss.models.Ride;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,7 +12,11 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 
     List<Ride> findByDriverId(Long driverId);
 
+    List<Ride> findByDriverId(Long driverId, Pageable pageable);
+
     List<Ride> findRidesByPassengersId(Long passengerId);
+
+    List<Ride> findRidesByPassengersId(Long passengerId, Pageable pageable);
 
     @Query(value = "select r.* from ride r left join passenger_rides fr on r.id = fr.ride_id where fr.passenger_id = ?1 and r.status = ?2", nativeQuery = true)
     List<Ride> findByPassengersIdAndStatus(Long passenger_id, Integer status);

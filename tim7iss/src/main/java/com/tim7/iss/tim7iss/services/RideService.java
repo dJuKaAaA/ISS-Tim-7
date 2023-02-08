@@ -41,8 +41,8 @@ public class RideService {
         rideRepository.save(ride);
     }
 
-    public List<Ride> findRideByPassengerId(Long id) {
-        return rideRepository.findRidesByPassengersId(id);
+    public List<Ride> findRideByPassengerId(Long id, Pageable pageable) {
+        return rideRepository.findRidesByPassengersId(id, pageable);
     }
 
 
@@ -466,9 +466,9 @@ public class RideService {
 
 
     // Testirano
-    public PaginatedResponseDto<RideDto> getPaginatedRidesForDriverAsDto(Long driverId, Pageable page) throws DriverNotFoundException {
+    public PaginatedResponseDto<RideDto> getPaginatedRidesForDriverAsDto(Long driverId, Pageable pageable) throws DriverNotFoundException {
         driverRepository.findById(driverId).orElseThrow(DriverNotFoundException::new);
-        List<RideDto> rides = rideRepository.findByDriverId(driverId).stream().map(RideDto::new).toList();
+        List<RideDto> rides = rideRepository.findByDriverId(driverId, pageable).stream().map(RideDto::new).toList();
         return new PaginatedResponseDto<>(rides.size(), rides);
     }
 

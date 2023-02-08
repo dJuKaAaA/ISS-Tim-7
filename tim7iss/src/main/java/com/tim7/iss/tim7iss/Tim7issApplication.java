@@ -74,352 +74,42 @@ public class Tim7issApplication {
     // DISCLAIMER: for testing purposes
     @Bean
     protected InitializingBean sendDatabase() {
-//        return this::testDataDjukanovic;
-//        return this::testDataMartic;
-//        return this::testDataStanojlovic;
-        return this::generateTestDataInDataBase;
-//        return this::projectDefenceTestData;
+        return this::generateData;
     }
 
-    private void testDataDjukanovic() throws IOException {
-        Random random = new Random();
-
-        // vehicle type creation
-        VehicleType vehicleType = vehicleTypeRepository.save(new VehicleType(null, 100, "STANDARD"));
-
-        // role creation
-        Role adminRole = roleRepository.save(new Role(null, "ROLE_ADMIN"));
-        Role driverRole = roleRepository.save(new Role(null, "ROLE_DRIVER"));
-        Role passengerRole = roleRepository.save(new Role(null, "ROLE_PASSENGER"));
-        Role anonymousRole = roleRepository.save(new Role(null, "ROLE_ANONYMOUS"));
-
-        // Admin creation
-        Admin admin = new Admin();
-        admin.setFirstName("Adonis");
-        admin.setLastName("Adonis");
-        admin.setProfilePicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
-        admin.setPhoneNumber("003814523423");
-        admin.setEmailAddress("admin@email.com");
-        admin.setPassword("$2a$12$c9cKc9F6WaOKIchi9bWCpOrWRnXTBEKTU4NFtS3azXhJWy4TAcTey");  // Admin123
-        admin.setEnabled(true);
-        admin.setRoles(List.of(adminRole));
-        adminRepository.save(admin);
-
-        // driver creation
-        Driver driver = new Driver(new UserDto(null, "Mika", "Mikic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372222", "mika.mikic@email.com", "Mikina adresa", "$2a$12$4z3y3x45WYUdy98AhcW5Vee6UmIAClGcs61e1yJZpwpaobzkm5asa"));  // Mika1234
-        driver.setEnabled(true);
-        driver.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, vehicleType, driver, new Location(null, "Fakultet tehnickih nauka Univerziteta u Novom Sadu, Trg Dositeja Obradovica, Novi Sad", 45.24648813f, 19.8516641f)));
-        driver.setWorkHours(Set.of(new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 19, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 19, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 20, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 20, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 21, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 21, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 22, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 22, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 23, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 23, 16, 0))));
-        driver.setRoles(List.of(driverRole));
-        driverRepository.save(driver);
-
-        // passenger creation
-        Passenger passenger1 = new Passenger(new UserDto(null, "Petar", "Petrovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372727", "petar.petrovic@email.com", "Petrova adresa", "$2a$12$lA8WEWzn3E7l53E2HYpX3ee0q.ZOVDjY34jNYTs/n9ucvebpY3v86")); // Petar123
-        passenger1.setRoles(List.of(passengerRole));
-        passenger1.setEnabled(true);
-        passengerRepository.save(passenger1);
-        Passenger passenger2 = new Passenger(new UserDto(null, "Jovan", "Jovanovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "jovan.jovanovic@email.com", "Jovanova adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passenger2.setRoles(List.of(passengerRole));
-        passenger2.setEnabled(true);
-        passengerRepository.save(passenger2);
-        Passenger passenger3 = new Passenger(new UserDto(null, "Mirko", "Mirkovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "00381737111", "mirko.mirkovic@email.com", "Mirkova adresa", "$2a$12$nYULTJpydL5pFRSxQ30DnOlhu/m/O6U4CoWLqea82PYKNsswHCEsG"));  // Mirko123
-        passenger3.setRoles(List.of(passengerRole));
-        passenger3.setEnabled(true);
-        passengerRepository.save(passenger3);
-        Passenger passenger4 = new Passenger(new UserDto(null, "Aleksandar", "Popovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "0038173724234", "aleksandar.popovic@email.com", "Aleksandrova adresa", "$2a$12$yNYY1KoO4DDFSLzqRBXPJ.EJU3us/O8ws5d45pQ856BoiS70mslyu"));  // Aleksandar123
-        passenger4.setRoles(List.of(passengerRole));
-        passenger4.setEnabled(true);
-        passengerRepository.save(passenger4);
-        Passenger passenger5 = new Passenger(new UserDto(null, "Vuk", "Perisic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372727", "vuk.perisic@email.com", "Vukova adresa", "$2a$12$fCHBcs11T5oI78NcRModiuCn5TjFE1QLn9x1awvf0meSO7LqSepc2"));  // Vuk12345
-        passenger5.setRoles(List.of(passengerRole));
-        passenger5.setEnabled(true);
-        passengerRepository.save(passenger5);
-
-
-        // declaring routes that will be saved when the ride that contains them gets created
-        Route route1 = new Route(null, 1000, 3, new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija", 45.24914205013315f, 19.843100056994654f), new Location(null, "Srpsko narodno pozorište, Pozorišni trg, Novi Sad, Srbija", 45.25510777309239f, 19.842949154190308f));
-        Route route2 = new Route(null, 1900, 5, new Location(null, "Katolicka Porta 4, Novi Sad", 45.25642044682303f, 19.845453240699275f), new Location(null, "Dunavski Park, Dunavska, Novi Sad, Srbija", 45.25539880319645f, 19.85058802720829f));
-        Route route3 = new Route(null, 3600, 9, new Location(null, "NTP NS, Fruškogorska, Novi Sad, Serbia", 45.24475880747688f, 19.84708251359552f), new Location(null, "Knin, Novi Sad, Serbia", 45.25433739645546f, 19.820878211862986f));
-        Route route4 = new Route(null, 6700, 10, new Location(null, "Prime Training Facility, Svetozara Miletića, Novi Sad, Srbija", 45.257847680306085f, 19.843377640699245f), new Location(null, "Police Academy, Železnička, Sremska Kamenica, Srbija", 45.22163647056052f, 19.850156546431652f));
-        Route route5 = new Route(null, 5400, 11, new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija", 45.24914205013315f, 19.843100056994654f), new Location(null, "Sportski Centar “Slana Bara”, Sentandrejski put, Novi Sad, Srbija", 45.29135042557076f, 19.824244340624777f));
-
-        // ride creation
-        // TODO: Make at least 20
-        // TODO: Place the right price depending on the vehicle type and route distance
-        // TODO: Place the right ride length
-        Ride ride1 = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(random.nextInt(60, 1400)), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1, passenger2, passenger3), null, List.of(route1.clone())));
-        Ride ride2 = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(random.nextInt(1500, 2800)), LocalDateTime.now().plusMinutes(random.nextInt(2900, 3000)), route3.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger4, passenger5), null, List.of(route3.clone())));
-        Ride ride3 = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(30), null, route4.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger2, passenger3, passenger5), null, List.of(route4.clone())));
-        Ride ride4 = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2022, Month.OCTOBER, 1, 11, 23), LocalDateTime.of(2022, Month.OCTOBER, 1, 12, 1), route2.getEstimatedTimeInMinutes(), driver.getVehicle().isBabyAllowed(), false, false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1, passenger2, passenger4), null, List.of(route2.clone())));
-        Ride ride5 = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(random.nextInt(3100, 4200)), null, route5.getEstimatedTimeInMinutes(), false, false, true, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1, passenger3, passenger5), null, List.of(route5.clone())));
-        Ride ride6 = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2022, Month.NOVEMBER, 1, 9, 3), LocalDateTime.of(2022, Month.NOVEMBER, 1, 9, 25), route5.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger5), null, List.of(route5.clone())));
-        Ride ride7 = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(random.nextInt(4300, 6000)), null, route3.getEstimatedTimeInMinutes(), driver.getVehicle().isBabyAllowed(), driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger4), null, List.of(route3.clone())));
-
-        // creating vehicles
-        locationRepository.save(new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f));
-        locationRepository.save(new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f));
-        vehicleRepository.save(new Vehicle(null, "BMW iXM60", "PGAA112", 5, false, false, vehicleType, null, new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f)));
-        vehicleRepository.save(new Vehicle(null, "BMW iX3", "PGAA113", 5, true, true, vehicleType, null, new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f)));
-
-        // panic creation
-        // TODO: Enter valid date time according to ride start date
-        panicRepository.save(new Panic(null, LocalDateTime.now(), false, "Driver is very uncomfortable and is making racist comments", ride7, passenger4));
-
-        // review creation
-        DriverReview driverReview = new DriverReview();
-        driverReview.setRating(5f);
-        driverReview.setComment("This driver is awesome!");
-        driverReview.setRide(ride4);
-        driverReview.setPassenger(passenger1);
-        driverReview.setDriver(ride4.getDriver());
-        VehicleReview vehicleReview = new VehicleReview();
-        vehicleReview.setRating(5f);
-        vehicleReview.setComment("This car is very clean!");
-        vehicleReview.setRide(ride4);
-        vehicleReview.setPassenger(passenger1);
-        vehicleReview.setVehicle(ride4.getDriver().getVehicle());
-        driverReviewRepository.save(driverReview);
-        vehicleReviewRepository.save(vehicleReview);
-        messageRepository.save(new Message(null, LocalDateTime.now(), "Ride", "proba", driver, passenger2, ride4));
-        messageRepository.save(new Message(null, LocalDateTime.now(), "Ride", "proba", passenger3, driver, ride4));
-
-        // aditional driver
-        Driver driver2 = new Driver(new UserDto(null, "Pera", "Peric", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372222", "pera.peric@email.com", "Perina adresa", "$2a$12$YzM..B5oG29ezUdF3pC6qexJQpw4UJSxdoaQD9Y.aiURFBuU4/3Qe"));  // Pera1234
-        driver2.setEnabled(true);
-        driver2.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, vehicleType, driver2, new Location(null, "Bistrica, Novi Sad", 45.25207768500065f, 19.799845506488243f)));
-        driver2.setRoles(List.of(driverRole));
-        driverRepository.save(driver2);
-    }
-
-    private void testDataMartic() throws IOException {
-
-    }
-
-    private void testDataStanojlovic() {
-
-    }
-
-    private void generateTestDataInDataBase() throws IOException {
-
+    private void generateData() throws IOException {
 
         Random random = new Random();
 
         // vehicle type creation
+        //
+        //
 
-        // vehicle type creation
-        // id = 1
-        VehicleType vehicleType = vehicleTypeRepository.save(new VehicleType(null, 100, "STANDARD"));
-        VehicleType vehicleTypeLuxury = vehicleTypeRepository.save(new VehicleType(null, 300, "LUXURY"));
-
-        // role creation
-        Role adminRole = roleRepository.save(new Role(null, "ROLE_ADMIN"));
-        Role driverRole = roleRepository.save(new Role(null, "ROLE_DRIVER"));
-        Role passengerRole = roleRepository.save(new Role(null, "ROLE_PASSENGER"));
-        Role anonymousRole = roleRepository.save(new Role(null, "ROLE_ANONYMOUS"));
-
-        // id = 1
-        Driver driver = new Driver(new UserDto(null, "Mika", "Mikic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372222", "mika.mikic@email.com", "Mikina adresa", "$2a$12$4z3y3x45WYUdy98AhcW5Vee6UmIAClGcs61e1yJZpwpaobzkm5asa"));  // Mika1234
-        driver.setEnabled(true);
-
-        // vehicleId = 1
-        driver.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, vehicleType, driver, new Location(null, "Fakultet tehnickih nauka Univerziteta u Novom Sadu, Trg Dositeja Obradovica, Novi Sad", 45.24648813f, 19.8516641f)));
-
-        driver.setWorkHours(Set.of(new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 19, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 19, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 20, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 20, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 21, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 21, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 22, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 22, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 23, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 23, 16, 0))));
-        driver.setRoles(List.of(driverRole));
-        driverRepository.save(driver);
-
-        // id = 2
-        Driver driverWithNoDrive = new Driver(new UserDto(null, "Pera", "Peric", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372222", "pera.peric@email.com", "Perina adresa", "$2a$12$YzM..B5oG29ezUdF3pC6qexJQpw4UJSxdoaQD9Y.aiURFBuU4/3Qe"));  // Pera1234
-        driverWithNoDrive.setEnabled(true);
-        driverWithNoDrive.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, vehicleType, driverWithNoDrive, new Location(null, "Bistrica, Novi Sad", 45.25207768500065f, 19.799845506488243f)));
-        driverWithNoDrive.setRoles(List.of(driverRole));
-        driverWithNoDrive.setEnabled(true);
-        driverRepository.save(driverWithNoDrive);
-
-
-        // passenger creation
-        // id = 3
-        Passenger passenger1 = new Passenger(new UserDto(null, "Petar", "Petrovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372727", "petar.petrovic@email.com", "Petrova adresa", "$2a$12$lA8WEWzn3E7l53E2HYpX3ee0q.ZOVDjY34jNYTs/n9ucvebpY3v86")); // Petar123
-        passenger1.setRoles(List.of(passengerRole));
-        passenger1.setEnabled(true);
-        passengerRepository.save(passenger1);
-
-        // id = 4
-        Passenger passenger2 = new Passenger(new UserDto(null, "Jovan", "Jovanovic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "jovan.jovanovic@email.com", "Jovanova adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passenger2.setRoles(List.of(passengerRole));
-        passenger2.setEnabled(true);
-        passengerRepository.save(passenger2);
-
-
-        // id = 5
-        Admin admin = new Admin();
-        admin.setFirstName("Adonis");
-        admin.setLastName("Adonis");
-        admin.setProfilePicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
-        admin.setPhoneNumber("003814523423");
-        admin.setEmailAddress("admin@email.com");
-        admin.setPassword("$2a$12$c9cKc9F6WaOKIchi9bWCpOrWRnXTBEKTU4NFtS3azXhJWy4TAcTey");  // Admin123
-        admin.setEnabled(true);
-        admin.setRoles(List.of(adminRole));
-        adminRepository.save(admin);
-
-
-        // id = 6
-        Passenger passenger3 = new Passenger(new UserDto(null, "Rade", "Radic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "rade" + ".radic@email.com", "Radetova adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passenger3.setRoles(List.of(passengerRole));
-        passenger3.setEnabled(true);
-        passengerRepository.save(passenger3);
-
-        // id = 7
-        Passenger passengerWhoIsNotSupposedToHaveAnyAcceptedRides = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "neko.nekic@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passengerWhoIsNotSupposedToHaveAnyAcceptedRides.setRoles(List.of(passengerRole));
-        passengerWhoIsNotSupposedToHaveAnyAcceptedRides.setEnabled(true);
-        passengerRepository.save(passengerWhoIsNotSupposedToHaveAnyAcceptedRides);
-
-
-        // id = 8
-        Driver hopefullyAvailableDriver = new Driver(new UserDto(null, "Pera", "Peric", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817372222", "pera.peric@email.com", "Perina adresa", "$2a$12$YzM..B5oG29ezUdF3pC6qexJQpw4UJSxdoaQD9Y.aiURFBuU4/3Qe"));  // Pera1234
-        hopefullyAvailableDriver.setEnabled(true);
-        hopefullyAvailableDriver.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, vehicleType, hopefullyAvailableDriver, new Location(null, "Bistrica, Novi Sad", 45.25207768500065f, 19.799845506488243f)));
-        hopefullyAvailableDriver.setRoles(List.of(driverRole));
-        hopefullyAvailableDriver.setEnabled(true);
-        hopefullyAvailableDriver.setActive(true);
-        driverRepository.save(hopefullyAvailableDriver);
-
-        // id = 9
-        Passenger anotherPassengerWhoIsNotSupposedToHaveAnyAcceptedRides = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "neko2.nekic@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        anotherPassengerWhoIsNotSupposedToHaveAnyAcceptedRides.setRoles(List.of(passengerRole));
-        anotherPassengerWhoIsNotSupposedToHaveAnyAcceptedRides.setEnabled(true);
-        passengerRepository.save(anotherPassengerWhoIsNotSupposedToHaveAnyAcceptedRides);
-
-        // declaring routes that will be saved when the ride that contains them gets created
-        // id = 1
-        Route route1 = new Route(null, 1000, 10, new Location(null, "The Camelot Novi Sad, Sremska, Novi Sad, Srbija", 45.24914205013315f, 19.843100056994654f), new Location(null, "Srpsko narodno pozoriste, Pozorisni trg, Novi Sad, Srbija", 45.25510777309239f, 19.842949154190308f));
-
-        // ride creation
-        // PENDING id = 1
-        Ride pendingRide = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1, passenger2), null, List.of(route1.clone())));
-
-        // ACTIVE id = 2
-        Ride activeRide = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACTIVE, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
-
-        // FINISHED id = 3
-        Ride finishedRide = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), LocalDateTime.of(2023, Month.JANUARY, 19, 16, 20), route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.FINISHED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
-
-        // REJECTED id = 4
-        Ride rejectedRide = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.REJECTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
-        Refusal refusal = new Refusal(null, driver, "Refusal", LocalDateTime.now().minusMinutes(195), rejectedRide);
-        refusalRepository.save(refusal);
-
-        // ACCEPTED RIDE id = 5
-        Ride acceptedRide = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
-
-        // Ride that is supposed to be deleted during the tests -> id = 6
-        Ride rideToBeDeleted = rideRepository.save(new Ride(null, 1000, LocalDateTime.now().plusMinutes(30), null, route1.getEstimatedTimeInMinutes(), false, false, false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger2), null, List.of(route1.clone())));
-
-        // id = 7
-        Ride rideForDriverAtThatMomentTest = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.MAY, 19, 8, 1), null, route1.getEstimatedTimeInMinutes(), false, false, false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
-
-        // Ride for withdrawal id = 6
-        Ride rideForWithdrawal = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
-
-        //Ride for cancelation id = 7
-        Ride rideForCancelation = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.PENDING, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
-
-        //Ride for acceptance id = 8
-        Ride rideForAcceptance = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACCEPTED, driver, driver.getVehicle().getVehicleType(), Set.of(passenger1), null, List.of(route1.clone())));
-
-        // id = 7
-        Driver driver2 = new Driver(new UserDto(null, "Pera", "Peric", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "pera@email.com", "Perina adresa", "$2a$12$4z3y3x45WYUdy98AhcW5Vee6UmIAClGcs61e1yJZpwpaobzkm5asa"));
-        driver2.setRoles(List.of(driverRole));
-        driver2.setEnabled(true);
-        driver2.setVehicle(new Vehicle(null, "BMW X2", "PGAA111", 5, false, true, vehicleType, driver2, new Location(null, "Fakultet tehnickih nauka Univerziteta u Novom Sadu, Trg Dositeja Obradovica, Novi Sad", 45.24648813f, 19.8516641f)));
-        driver2.setWorkHours(Set.of(new WorkHour(null, driver2, LocalDateTime.of(2022, Month.DECEMBER, 19, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 19, 16, 0)), new WorkHour(null, driver, LocalDateTime.of(2022, Month.DECEMBER, 20, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 20, 16, 0)), new WorkHour(null, driver2, LocalDateTime.of(2022, Month.DECEMBER, 21, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 21, 16, 0)), new WorkHour(null, driver2, LocalDateTime.of(2022, Month.DECEMBER, 22, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 22, 16, 0)), new WorkHour(null, driver2, LocalDateTime.of(2022, Month.DECEMBER, 23, 8, 0), LocalDateTime.of(2022, Month.DECEMBER, 23, 16, 0))));
-        driverRepository.save(driver2);
-
-        //Driver2 acive ride id = 9
-        Ride driver2ActiveRide = rideRepository.save(new Ride(null, 1000, LocalDateTime.of(2023, Month.JANUARY, 19, 16, 0), null, route1.getEstimatedTimeInMinutes(), false, driver.getVehicle().isPetsAllowed(), false, Enums.RideStatus.ACTIVE, driver2, driver2.getVehicle().getVehicleType(), Set.of(passenger2), null, List.of(route1.clone())));
-
-        // Favorite location
-        // id = 1
-        FavoriteLocation favoriteLocation = new FavoriteLocation();
-        favoriteLocation.setFavoriteName("Home to Work");
-        favoriteLocation.setRoutes(Set.of(route1));
-        favoriteLocation.setPassengers(Set.of(passenger1));
-        favoriteLocation.setVehicleType(vehicleType);
-        favoriteLocation.setBabyTransport(false);
-        favoriteLocation.setPetTransport(false);
-        favoriteLocationRepository.save(favoriteLocation);
-
-        // creating vehicles
-        vehicleRepository.save(new Vehicle(null, "BMW iXM60", "PGAA112", 5, false, false, vehicleType, null, new Location(null, "Valentina Vodnika 10, Novi Sad", 45.255956f, 19.8366902f)));
-        vehicleRepository.save(new Vehicle(null, "BMW iX3", "PGAA113", 5, true, true, vehicleType, null, new Location(null, "Beogradska 7, Petrovaradin", 45.254896f, 19.8612956f)));
-
-        Document document = new Document();
-        document.setPicture(DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()));
-        document.setName("Licna karta");
-        document.setDriver(driver);
-        documentRepository.save(document);
-
-
-
-        // schedule ride selenium tests
-        // DO NOT TOUCH !!!
-        Passenger passengerSeleniumTestImmediateSchedule = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "immediate.schedule.success@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passengerSeleniumTestImmediateSchedule.setRoles(List.of(passengerRole));
-        passengerSeleniumTestImmediateSchedule.setEnabled(true);
-        passengerRepository.save(passengerSeleniumTestImmediateSchedule);
-        Passenger passengerSeleniumTestClearingRoutesSchedule = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "clearing.routes.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passengerSeleniumTestClearingRoutesSchedule.setRoles(List.of(passengerRole));
-        passengerSeleniumTestClearingRoutesSchedule.setEnabled(true);
-        passengerRepository.save(passengerSeleniumTestClearingRoutesSchedule);
-        Passenger passengerSeleniumTestPastTimeScheduling = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "past.time.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passengerSeleniumTestPastTimeScheduling.setRoles(List.of(passengerRole));
-        passengerSeleniumTestPastTimeScheduling.setEnabled(true);
-        passengerRepository.save(passengerSeleniumTestPastTimeScheduling);
-        Passenger passengerSeleniumTestPassengerInvitedSchedule = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "passenger.inviting.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passengerSeleniumTestPassengerInvitedSchedule.setRoles(List.of(passengerRole));
-        passengerSeleniumTestPassengerInvitedSchedule.setEnabled(true);
-        passengerRepository.save(passengerSeleniumTestPassengerInvitedSchedule);
-        Passenger passengerSeleniumTestGuestPassenger = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "guest.passenger.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passengerSeleniumTestGuestPassenger.setRoles(List.of(passengerRole));
-        passengerSeleniumTestGuestPassenger.setEnabled(true);
-        passengerRepository.save(passengerSeleniumTestGuestPassenger);
-        Passenger passengerSeleniumTestLaterTimeScheduling = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "later.time.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passengerSeleniumTestLaterTimeScheduling.setRoles(List.of(passengerRole));
-        passengerSeleniumTestLaterTimeScheduling.setEnabled(true);
-        passengerRepository.save(passengerSeleniumTestLaterTimeScheduling);
-        Passenger passengerSeleniumTestInviteThenRemoveGuest = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "remove.guest.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passengerSeleniumTestInviteThenRemoveGuest.setRoles(List.of(passengerRole));
-        passengerSeleniumTestInviteThenRemoveGuest.setEnabled(true);
-        passengerRepository.save(passengerSeleniumTestInviteThenRemoveGuest);
-        Passenger passengerSeleniumTestSetFavoriteScheduling = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "set.favorite.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passengerSeleniumTestSetFavoriteScheduling.setRoles(List.of(passengerRole));
-        passengerSeleniumTestSetFavoriteScheduling.setEnabled(true);
-        passengerRepository.save(passengerSeleniumTestSetFavoriteScheduling);
-        Passenger passengerSeleniumTestLuxuryVehicleTypeRequest = new Passenger(new UserDto(null, "Neko", "Nekic", DatatypeConverter.printBase64Binary(Constants.getPlaceHolderProfilePicture()), "003817379278", "luxury.vehicle.type.schedule@email.com", "Neka adresa", "$2a$12$pr0BMsJvyWNGiFuQmMQ.UeV8a7zvlv.m3m9nCVprTwcKBpe2iYJS."));  // Jovan123
-        passengerSeleniumTestLuxuryVehicleTypeRequest.setRoles(List.of(passengerRole));
-        passengerSeleniumTestLuxuryVehicleTypeRequest.setEnabled(true);
-        passengerRepository.save(passengerSeleniumTestLuxuryVehicleTypeRequest);
-
-    }
-
-    private void projectDefenceTestData() throws IOException {
-
-        Random random = new Random();
-
-        // vehicle type creation
         VehicleType standardVehicleType = vehicleTypeRepository.save(new VehicleType(null, 100, "STANDARD"));
         VehicleType vanVehicleType = vehicleTypeRepository.save(new VehicleType(null, 50, "VAN"));
         VehicleType luxuryVehicleType = vehicleTypeRepository.save(new VehicleType(null, 300, "LUXURY"));
 
+        //
+        //
+        // vehicle type creation
+
         // role creation
+        //
+        //
+
         Role adminRole = roleRepository.save(new Role(null, "ROLE_ADMIN"));
         Role driverRole = roleRepository.save(new Role(null, "ROLE_DRIVER"));
         Role passengerRole = roleRepository.save(new Role(null, "ROLE_PASSENGER"));
         Role anonymousRole = roleRepository.save(new Role(null, "ROLE_ANONYMOUS"));
 
+        //
+        //
+        // role creation
+
         // Admin creation
+        //
+        //
+
         Admin admin = new Admin();
         admin.setFirstName("Andrew");
         admin.setLastName("Tate");
@@ -430,6 +120,10 @@ public class Tim7issApplication {
         admin.setEnabled(true);
         admin.setRoles(List.of(adminRole));
         adminRepository.save(admin);
+
+        //
+        //
+        // Admin creation
 
         // driver creation
         //
